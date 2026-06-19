@@ -1,4 +1,6 @@
 import { userModel } from "../models/user.model.js"
+import jwt from 'jsonwebtoken'
+import sendEmail from "../services/email.service.js"
 
 export async function registerController(req, res) {
     const { username, email, password } = req.body
@@ -18,6 +20,12 @@ export async function registerController(req, res) {
         password
     })
 
+    const token = jwt.sign({
+        id: user._id
+    }, process.env.JWT_SECRET, { expiresIn: '7d' })
+
+    res.cookie("token", token)
+
     res.status(201).json({
         message: "User registered successfully",
         success: true,
@@ -25,5 +33,166 @@ export async function registerController(req, res) {
             username: user.username,
             email: user.username
         }
+    })
+}
+
+export async function loginController(req, res){
+    const { email, password } = req.body
+
+    const user = await userModel.findOne({ email })
+    if(!user){
+        return res.status(404).json({
+            message: "User not exist with this email, register first.",
+            success: false,
+            err: "User not exist"
+        })
+    }
+
+    const correctPass = await user.comparePassword(password)
+    if(!correctPass){
+        return res.status(401).json({
+            message: "Invalid credential",
+            success: false,
+            err: "Invalid credential"
+        })
+    }
+
+    const token = jwt.sign({
+        id: user._id
+    }, process.env.JWT_SECRET, { expiresIn: '7d' })
+
+    res.cookie("token", token)
+
+    res.status(200).json({
+        message: "User logged in successfully",
+        success: true,
+        user: {
+            username: user.username,
+            email: user.email
+        }
+    })
+}
+
+export async function resetPasswordController(req, res) {
+    const { email } = req.body
+
+    const user = await userModel.findOne({ email })
+    if(!user){
+        return res.status(404).json({
+            message: "User not exist with this email",
+            success: false,
+            err: "User not exist"
+        })
+    }
+
+    const token = jwt.sign({
+        id: user._id
+    }, process.env.JWT_SECRET, { expiresIn: '15m' })
+
+    const resetLink = `${process.env.CLIENT_URL || 'http://localhost:5173'}/reset-password?token=${token}`
+
+    await sendEmail({
+        to: email,
+        subject: "Reset your password",
+        html: `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Your Password</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9fafb;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f3f4f6;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #7c3aed;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .heading {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-top: 0;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .text {
+            font-size: 16px;
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        .button-wrapper {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #7c3aed;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.3), 0 2px 4px -1px rgba(124, 58, 237, 0.1);
+            text-align: center;
+        }
+        .footer {
+            font-size: 13px;
+            color: #9ca3af;
+            text-align: center;
+            line-height: 1.5;
+            border-top: 1px solid #f3f4f6;
+            padding-top: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="logo">GGS Task Management</div>
+            <h1 class="heading">Reset your password</h1>
+            <p class="text">
+                You recently requested to reset your password for your GGS Task Management account. Click the button below to choose a new one. This link is valid for 15 minutes.
+            </p>
+            <div class="button-wrapper">
+                <a href="${resetLink}" class="button" style="color: #ffffff;">Change password</a>
+            </div>
+            <div class="footer">
+                If you did not request a password reset, please ignore this email or contact support if you have questions.<br><br>
+                &copy; ${new Date().getFullYear()} GGS Task Management. All rights reserved.
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+        `
+    })
+
+    res.status(200).json({
+        message: "Password reset link sent to your email",
+        success: true
     })
 }
