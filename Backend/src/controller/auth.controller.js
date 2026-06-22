@@ -347,3 +347,40 @@ export async function updateUserController(req, res){
         })
     }
 }
+
+export async function deleteUserController(req, res) {
+    try {
+        const { id } = req.params
+
+        const user = await userModel.findById(id)
+
+        if(!user){
+            return res.status(404).json({
+                message: "User not found",
+                success: false,
+                err: "User not found"
+            })
+        }
+
+        if (user.role === 'admin') {
+            return res.status(400).json({
+                message: "You can't delete yourself",
+                success: false,
+                err: "You can't delete yourself"
+            })
+        }
+
+        await userModel.findByIdAndDelete(user._id)
+
+        return res.status(200).json({
+            message: "Delete user successfully",
+            success: true
+        })
+    } catch (err) {
+        return res.status(400).json({
+            message: "Failed to delete user",
+            success: false,
+            err: err.message
+        })
+    }
+}
