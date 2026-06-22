@@ -4,7 +4,18 @@ import sendEmail from "../services/email.service.js"
 import bcrypt from "bcryptjs"
 
 export async function addUserController(req, res) {
-    const { username, email, password } = req.body
+    const userId = req.userId
+    const { username, email, role, password } = req.body
+
+    const adminUser = await userModel.findById(userId)
+
+    if(adminUser.role !== "admin"){
+        return res.status(403).json({
+            message: "Only admin can add user",
+            success: false,
+            error: "Only admin can add user"
+        })
+    }
 
     const isUserExist = await userModel.findOne({ email })
     if(isUserExist){
@@ -18,6 +29,7 @@ export async function addUserController(req, res) {
     const user = await userModel.create({
         username,
         email,
+        role,
         password
     })
 
@@ -26,7 +38,8 @@ export async function addUserController(req, res) {
         success: true,
         user: {
             username: user.username,
-            email: user.username
+            email: user.username,
+            role: user.role
         }
     })
 }
@@ -272,4 +285,42 @@ export async function resetPasswordController(req, res) {
         message: "Reset password successfully",
         success: true
     })
+}
+
+export async function getUserController(req, res){
+    try {
+        const userId = req.userId
+    
+        const user = await userModel.findById(userId)
+        
+        if(!user){
+            return res.status(404).json({
+                message: "User not found",
+                success: false,
+                err: "User not found"
+            })
+        }
+        
+        if(user.role !== "admin"){
+            return res.status(403).json({
+                message: "Only admin can access user list",
+                success: false,
+                err: "Only admin can access users"
+            })
+        }
+    
+        const allUser = await userModel.find().select("-password -resetToken")
+    
+        res.status(200).json({
+            message: "Users fetched successfully",
+            success: true,
+            allUser
+        })
+    } catch (err) {
+        return res.status(400).json({
+            message: "Unexpected error",
+            success: false,
+            err: err.message
+        })
+    }
 }

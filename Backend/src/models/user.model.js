@@ -15,7 +15,8 @@ const userSchema = new mongoose.Schema({
         lowercase: true
     },
     role: {
-        enum: ["admin", "head", "user"],
+        type: String,
+        enum: ["admin", "head", "user"]
     },
     password: {
         type: String,
@@ -28,7 +29,7 @@ const userSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
-    }
+    },
 }, { timestamps: true })
 
 userSchema.pre("save", async function() {
