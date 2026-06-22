@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { addUserValidation, resetPasswordValidation } from "../validation/auth.validation.js";
-import { addUserController, forgetPasswordController, getUserController, loginController, resetPasswordController, updateUserController } from "../controller/auth.controller.js";
+import { addUserController, deleteUserController, forgetPasswordController, getUserController, loginController, resetPasswordController, updateUserController } from "../controller/auth.controller.js";
 import { verifyUser } from "../middleware/auth.middleware.js";
 import { verifyAdmin } from "../middleware/admin.middleware.js";
 
@@ -16,7 +16,7 @@ authRouter.patch("/reset-password", resetPasswordValidation, resetPasswordContro
 
 // User management
 authRouter.get('/users', verifyAdmin, getUserController)
-authRouter.patch('/users/:id', verifyAdmin, updateUserController)
-
+authRouter.patch('/user/:id', verifyAdmin, updateUserController)
+authRouter.delete('/user/:id', verifyAdmin, deleteUserController)
 
 export default authRouter;
