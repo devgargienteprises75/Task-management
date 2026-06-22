@@ -14,10 +14,17 @@ const userSchema = new mongoose.Schema({
         trim: true,
         lowercase: true
     },
+    role: {
+        enum: ["admin", "head", "user"],
+    },
     password: {
         type: String,
         required: true
-    }
+    },
+    resetToken: {
+        type: String,
+        default: null
+    },
 }, { timestamps: true })
 
 userSchema.pre("save", async function() {

@@ -1,9 +1,9 @@
 import { userModel } from "../models/user.model.js"
-import jwt from 'jsonwebtoken'
+import jwt, { decode } from 'jsonwebtoken'
 import sendEmail from "../services/email.service.js"
 import bcrypt from "bcryptjs"
 
-export async function registerController(req, res) {
+export async function addUserController(req, res) {
     const { username, email, password } = req.body
 
     const isUserExist = await userModel.findOne({ email })
@@ -20,12 +20,6 @@ export async function registerController(req, res) {
         email,
         password
     })
-
-    const token = jwt.sign({
-        id: user._id
-    }, process.env.JWT_SECRET, { expiresIn: '7d' })
-
-    res.cookie("token", token)
 
     res.status(201).json({
         message: "User registered successfully",
@@ -89,6 +83,13 @@ export async function forgetPasswordController(req, res) {
     const token = jwt.sign({
         id: user._id
     }, process.env.JWT_SECRET, { expiresIn: '15m' })
+
+    const hashedToken = await bcrypt.hash(token, 8)
+
+    await userModel.findByIdAndUpdate(
+        user._id,
+        { resetToken: hashedToken }
+    )
 
     const resetLink = `${process.env.CLIENT_URL || 'http://localhost:8000'}/reset-password?token=${token}`
 
@@ -202,19 +203,37 @@ export async function resetPasswordController(req, res) {
     const { token } = req.query
     const { newPassword, confirmPassword } = req.body
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    const user = await userModel.findOne({ _id: decoded.id})
+    let decoded;
 
-    if(!user){
+    try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET)
+    } catch (err) {
         return res.status(401).json({
-            message: "Unaouthorized Token",
+            message: "Invalid or expired Token",
             success: false,
-            err: "Unauthorized token"
+            err: "invalid or expired token"
+        })
+    }
+
+    const user = await userModel.findById(decoded.id)
+
+    if (!user) {
+        return res.status(404).json({
+            success: false,
+            message: "User not found"
+        })
+    }
+
+    if(newPassword.length < 8){
+        return res.status(400).json({
+            message: "Password should be 8 character",
+            success: false,
+            err: "Password should be 8 character"
         })
     }
 
     if(newPassword !== confirmPassword){
-        return res.status(409).json({
+        return res.status(400).json({
             message: "Password should be match",
             success: false,
             err: "Password doesn't matched"
@@ -223,9 +242,30 @@ export async function resetPasswordController(req, res) {
 
     const hashPass = await bcrypt.hash(newPassword, 10)
 
+    if (user.resetToken == null) {
+        return res.status(401).json({
+            message: "Reset token already used",
+            success: false,
+            err: "Reset token already used"
+        })
+    }
+
+    const compareToken = await bcrypt.compare(token, user.resetToken)
+
+    if(!compareToken){
+        return res.status(401).json({
+            message: "Invalid reset token",
+            success: false,
+            err: "Invalid reset token"
+        })
+    }
+
     await userModel.findByIdAndUpdate(
         user._id,
-        { password: hashPass }
+        { $set: { 
+            password: hashPass,
+            resetToken: null
+        }}
     )
 
     res.status(200).json({
