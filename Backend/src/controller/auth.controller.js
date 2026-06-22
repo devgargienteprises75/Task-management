@@ -306,8 +306,44 @@ export async function getUserController(req, res){
 }
 
 export async function updateUserController(req, res){
-    const userId = req.userId
-    const { id } = req.params
+    try {
+        const { id } = req.params
+        const { newRole, currentActiveStatus } = req.body
+    
+        const user = await userModel.findById(id)
+        if(!user){
+            return res.status(404).json({
+                message: "User not found",
+                success: false,
+                err: "User not found"
+            })
+        }
+    
+        const updateData = {}
+    
+        if(newRole !== undefined){
+            updateData.role = newRole
+        }
+        if(currentActiveStatus !== undefined)[
+            updateData.isActive = currentActiveStatus
+        ]
+    
+        const updateUser = await userModel.findByIdAndUpdate(
+            user._id,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        )
 
-
+        return res.status(200).json({
+            message: "User update successfully",
+            success: true,
+            updateUser
+        })
+    } catch (err) {
+        return res.status(400).json({
+            message: "Failed to update user",
+            success: false,
+            err: err.message
+        })
+    }
 }
