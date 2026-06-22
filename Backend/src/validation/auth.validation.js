@@ -12,7 +12,7 @@ async function validate(req, res, next) {
     next()
 }
 
-export const registerValidation = [
+export const addUserValidation = [
     body('username')
         .notEmpty().withMessage('Username is required')
         .isString().withMessage('Username should be valid string'),
