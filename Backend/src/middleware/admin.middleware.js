@@ -1,12 +1,12 @@
 import jwt from 'jsonwebtoken'
-import 'dotenv/config'
+import { userModel } from '../models/user.model.js';
 
-export async function verifyUser(req, res, next) {
+export async function verifyAdmin(req, res, next) {
     const { token } = req.cookies
 
     if(!token){
         return res.status(401).json({
-            message: "Token missing, user not logged in",
+            message: "Missing token",
             success: false,
             err: "Token missing"
         })
@@ -21,11 +21,20 @@ export async function verifyUser(req, res, next) {
             return res.status(401).json({
                 message: "Unauthorized token",
                 success: false,
-                err: "Unauthorized"
+                err: "Unauthorized token"
             })
         }
 
-        req.userId = decoded.id
+        const user = await userModel.findById(decoded.id)
+
+        if(user.role !== "admin"){
+            return res.status(403).json({
+                message: "Only admin can access this path",
+                success: false,
+                err: "Only admin can access this path"
+            })
+        }
+
         next()
     } catch (err) {
         return res.status(400).json({

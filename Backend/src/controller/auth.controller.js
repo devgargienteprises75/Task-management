@@ -289,26 +289,6 @@ export async function resetPasswordController(req, res) {
 
 export async function getUserController(req, res){
     try {
-        const userId = req.userId
-    
-        const user = await userModel.findById(userId)
-        
-        if(!user){
-            return res.status(404).json({
-                message: "User not found",
-                success: false,
-                err: "User not found"
-            })
-        }
-        
-        if(user.role !== "admin"){
-            return res.status(403).json({
-                message: "Only admin can access user list",
-                success: false,
-                err: "Only admin can access users"
-            })
-        }
-    
         const allUser = await userModel.find().select("-password -resetToken")
     
         res.status(200).json({
@@ -323,4 +303,11 @@ export async function getUserController(req, res){
             err: err.message
         })
     }
+}
+
+export async function updateUserController(req, res){
+    const userId = req.userId
+    const { id } = req.params
+
+
 }
