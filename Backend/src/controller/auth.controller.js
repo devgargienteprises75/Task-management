@@ -3,6 +3,7 @@ import jwt, { decode } from 'jsonwebtoken'
 import sendEmail from "../services/email.service.js"
 import bcrypt from "bcryptjs"
 
+// Add User controller
 export async function addUserController(req, res) {
     const userId = req.userId
     const { username, email, role, password } = req.body
@@ -44,6 +45,7 @@ export async function addUserController(req, res) {
     })
 }
 
+// Login controller
 export async function loginController(req, res){
     const { email, password } = req.body
 
@@ -81,6 +83,7 @@ export async function loginController(req, res){
     })
 }
 
+// Forget password controller
 export async function forgetPasswordController(req, res) {
     const { email } = req.body
 
@@ -212,6 +215,7 @@ export async function forgetPasswordController(req, res) {
     })
 }
 
+// Reset password controller
 export async function resetPasswordController(req, res) {
     const { token } = req.query
     const { newPassword, confirmPassword } = req.body
@@ -287,6 +291,7 @@ export async function resetPasswordController(req, res) {
     })
 }
 
+// Fetch user controller
 export async function getUserController(req, res){
     try {
         const allUser = await userModel.find().select("-password -resetToken")
@@ -305,6 +310,7 @@ export async function getUserController(req, res){
     }
 }
 
+// Update user controller
 export async function updateUserController(req, res){
     try {
         const { id } = req.params
@@ -331,7 +337,7 @@ export async function updateUserController(req, res){
         const updateUser = await userModel.findByIdAndUpdate(
             user._id,
             { $set: updateData },
-            { new: true, runValidators: true }
+            { returnDocument: 'after', runValidators: true }
         )
 
         return res.status(200).json({
@@ -348,6 +354,7 @@ export async function updateUserController(req, res){
     }
 }
 
+// delete user controller
 export async function deleteUserController(req, res) {
     try {
         const { id } = req.params
