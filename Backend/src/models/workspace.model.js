@@ -15,7 +15,8 @@ const workspaceSchema = new mongoose.Schema({
     },
     members: {
         type: Array,
-        default: []
+        default: [],
+        ref: "Users"
     },
     status: {
         type: String,

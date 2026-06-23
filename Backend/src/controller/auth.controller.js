@@ -330,9 +330,9 @@ export async function updateUserController(req, res){
         if(newRole !== undefined){
             updateData.role = newRole
         }
-        if(currentActiveStatus !== undefined)[
+        if(currentActiveStatus !== undefined){
             updateData.isActive = currentActiveStatus
-        ]
+        }
     
         const updateUser = await userModel.findByIdAndUpdate(
             user._id,
