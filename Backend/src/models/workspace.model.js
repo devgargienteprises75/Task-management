@@ -13,11 +13,11 @@ const workspaceSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Users"
     },
-    members: {
-        type: Array,
+    members: [{
+        type: mongoose.Schema.Types.ObjectId,
         default: [],
         ref: "Users"
-    },
+    }],
     status: {
         type: String,
         enum: ["active", "inactive"],
