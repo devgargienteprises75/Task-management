@@ -118,20 +118,20 @@ export async function editWorkspaceController(req, res) {
                 err: "Invalid workspace ID format"
             })
         }
-    
+
         const workspace = await workspaceModel.findById(workspaceid)
-    
-        if(!workspace){
+
+        if (!workspace) {
             return res.status(404).json({
                 message: "Workspace not found",
                 success: false,
                 err: "Workspace not found"
             })
         }
-    
+
         const updatedWorkspace = {}
-    
-        if(newName !== undefined){
+
+        if (newName !== undefined) {
             // Check if another workspace already uses the new name
             const existingWorkspace = await workspaceModel.findOne({ name: newName, _id: { $ne: workspaceid } });
             if (existingWorkspace) {
@@ -143,10 +143,10 @@ export async function editWorkspaceController(req, res) {
             }
             updatedWorkspace.name = newName
         }
-        if(newDescription !== undefined){
+        if (newDescription !== undefined) {
             updatedWorkspace.description = newDescription
         }
-        if(newMemberList !== undefined){
+        if (newMemberList !== undefined) {
             if (!Array.isArray(newMemberList)) {
                 return res.status(400).json({
                     message: "Member list must be an array of user IDs",
@@ -181,21 +181,21 @@ export async function editWorkspaceController(req, res) {
 
             updatedWorkspace.members = uniqueMemberList
         }
-    
+
         const newWorkspace = await workspaceModel.findByIdAndUpdate(
             workspace._id,
             { $set: updatedWorkspace },
-            { runValidators: true, new: true }
+            { runValidators: true, returnDocument: 'after' }
         )
-        .populate("members", "username email role")
-        .populate("createdBy", "username email role");
- 
+            .populate("members", "username email role")
+            .populate("createdBy", "username email role");
+
         return res.status(200).json({
             message: "Workspace updated successfully",
             success: true,
             newWorkspace
         })
-        
+
     } catch (err) {
         return res.status(400).json({
             message: "Failed to update workspace",
@@ -219,7 +219,7 @@ export async function deleteWorkspaceController(req, res) {
 
         const workspace = await workspaceModel.findById(workspaceid)
 
-        if(!workspace){
+        if (!workspace) {
             return res.status(404).json({
                 message: "Workspace not found",
                 success: false,
@@ -240,4 +240,77 @@ export async function deleteWorkspaceController(req, res) {
             err: err.message
         })
     }
-}
+}
+
+export async function addUserController(req, res) {
+    const { workspaceid } = req.params
+    const { newMemberList } = req.body
+
+    const workspace = await workspaceModel.findById(workspaceid)
+
+    if(!workspace){
+        return res.status(400).json({
+            message: "Workspace not found",
+            success: false,
+            err: "Workspace not found"
+        })
+    }
+
+    if(newMemberList === undefined){
+        return res.status(400).json({
+            message: "New members list is empty",
+            success: false,
+            err: "Members list is empty"
+        })
+    }
+
+    if(!Array.isArray(newMemberList)){
+        return res.status(400).json({
+            message: "Member list must be an array of user IDs",
+            success: false,
+            err: "Member list must be an array"
+        })
+    }
+
+    // Verify they are valid ObjectIds
+    for(const memberId of newMemberList){
+        if(!mongoose.Types.ObjectId.isValid(memberId)){
+            return res.status(400).json({
+                message: `Invalid member user ID format: ${memberId}`,
+                success: false,
+                err: "Invalid ObjectId format"
+            })
+        }
+    }
+
+    // Remove duplicates
+    const uniqueMemberList = [...new Set(newMemberList)]
+
+    // Verify they exist in DB
+    const existingUsersCount = await userModel.countDocuments({ _id: { $in: uniqueMemberList }})
+    if(existingUsersCount !== uniqueMemberList.length){
+        return res.status(400).json({
+            message: "One or more member user IDs do not exist",
+            success: false,
+            err: "User not found"
+        })
+    }
+
+    const userAdd = await workspaceModel.findByIdAndUpdate(
+        workspace._id,
+        { 
+            $addToSet: {
+                members:{ $each: uniqueMemberList }
+            },
+        },
+        { returnDocument: 'after' }
+    )
+    .populate("members", "username email role")
+    .populate("createdBy", "username email role")
+
+    res.status(200).json({
+        message: "Add User Successfully",
+        success: true,
+        userAdd
+    })
+}
