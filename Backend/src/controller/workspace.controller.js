@@ -314,3 +314,61 @@ export async function addUserController(req, res) {
         userAdd
     })
 }
+
+export async function removeUserController(req, res) {
+    try {
+        const { workspaceid } = req.params
+        const { userId } = req.body
+    
+        const workspace = await workspaceModel.findById(workspaceid)
+    
+        if(!workspace){
+            return res.status(404).json({
+                message: "Workspace not found",
+                success: false,
+                err: "Workspace not found"
+            })
+        }
+    
+        if(userId === undefined){
+            return res.status(400).json({
+                message: "New members list is empty",
+                success: false,
+                err: "Members list is empty"
+            })
+        }
+    
+        if(!mongoose.Types.ObjectId.isValid(userId)){
+            return res.status(400).json({
+                message: `Invalid member user ID format: ${userId}`,
+                success: false,
+                err: "Invalid ObjectId format"
+            })
+        }
+    
+        const updatedWorkspace = await workspaceModel.findByIdAndUpdate(
+            workspace._id,
+            { 
+                $pull: {
+                    members: userId
+                }
+            },
+            { returnDocument: 'after' }
+        )
+        .populate("members", "username email role")
+        .populate("createdBy", "username email role")
+    
+        return res.status(200).json({
+            message: "User removed successfully",
+            success: true,
+            updatedWorkspace
+        })
+
+    } catch (err) {
+        return res.status(400).json({
+            message: "Failed to remove user",
+            success: false,
+            err: err.mmessage
+        })
+    }
+}
