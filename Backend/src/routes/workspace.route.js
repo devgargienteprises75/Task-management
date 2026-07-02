@@ -1,17 +1,17 @@
 import { Router } from "express";
 import { addUserController, createWorkspaceController, deleteWorkspaceController, editWorkspaceController, getWorkspaceController, removeUserController } from "../controller/workspace.controller.js";
-import { workspaceVerification } from "../middleware/workspace.middleware.js";
+import { requireAdminOrHead } from "../middleware/workspace.middleware.js";
 
 const workspaceRouter = Router()
 
 // Workspace management
-workspaceRouter.post('/create', workspaceVerification, createWorkspaceController)
-workspaceRouter.get('/get-workspaces', workspaceVerification, getWorkspaceController)
-workspaceRouter.patch('/:workspaceid', workspaceVerification, editWorkspaceController)
-workspaceRouter.delete('/:workspaceid', workspaceVerification, deleteWorkspaceController)
+workspaceRouter.post('/create', requireAdminOrHead, createWorkspaceController)
+workspaceRouter.get('/get-workspaces', requireAdminOrHead, getWorkspaceController)
+workspaceRouter.patch('/:workspaceid', requireAdminOrHead, editWorkspaceController)
+workspaceRouter.delete('/:workspaceid', requireAdminOrHead, deleteWorkspaceController)
 
 // User Management in Workspace
-workspaceRouter.patch("/add-user/:workspaceid", workspaceVerification, addUserController)
-workspaceRouter.patch("/remove-user/:workspaceid", workspaceVerification, removeUserController)
+workspaceRouter.patch("/add-user/:workspaceid", requireAdminOrHead, addUserController)
+workspaceRouter.patch("/remove-user/:workspaceid", requireAdminOrHead, removeUserController)
 
 export default workspaceRouter;

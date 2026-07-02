@@ -1,7 +1,9 @@
 import jwt from 'jsonwebtoken'
 import { userModel } from '../models/user.model.js';
+import { workspaceModel } from '../models/workspace.model.js';
+import mongoose from 'mongoose';
 
-export async function workspaceVerification(req, res, next) {
+export async function requireAdminOrHead(req, res, next) {
     const { token } = req.cookies
 
     if(!token){
@@ -35,6 +37,58 @@ export async function workspaceVerification(req, res, next) {
         }
 
         req.userId = user._id
+        next()
+    } catch (err) {
+        return res.status(400).json({
+            message: "Unexpected error",
+            success: false,
+            err: err.message
+        })
+    }
+}
+
+export async function verifyWorkspaceOwnership(req, res, next) {
+    try {
+        const { workspaceid } = req.params;
+        const { assignTo } = req.body;
+        const userId = req.userId;
+    
+        if(!workspaceid){
+            return res.status(400).json({
+                message: "Workspace Id not available",
+                success: false,
+                err: "Workspace Id not available"
+            })
+        }
+    
+        const workspace = await workspaceModel.findById(workspaceid)
+        if(!workspace){
+            return res.status(404).json({
+                message: "Workspace not found",
+                success: false,
+                err: "Workspace not found"
+            })
+        }
+
+        console.log(userId, workspace.createdBy);
+
+        if(!workspace.createdBy.equals(userId)){
+            return res.status(401).json({
+                message: "Workspace not owned by this user",
+                success: false,
+                err: "Workspace not owned by this user"
+            })
+        }
+    
+        const assignedMember = workspace.members.find((id) => assignTo === id.toString())
+        if(!assignedMember){
+            return res.status(400).json({
+                message: "Assign user is not the member of this workspace",
+                success: false,
+                err: "Assign user is not the member of this workspace"
+            })
+        }
+
         next()
     } catch (err) {
         return res.status(400).json({
