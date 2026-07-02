@@ -2,6 +2,7 @@ import cookieParser from 'cookie-parser'
 import express from 'express'
 import authRouter from './routes/auth.route.js'
 import workspaceRouter from './routes/workspace.route.js'
+import taskRouter from './routes/task.routes.js'
 
 const app = express()
 
@@ -15,5 +16,6 @@ app.get('/health', (req, res) => {
 
 app.use('/api/auth', authRouter)
 app.use('/api/workspace', workspaceRouter)
+app.use('/api/task', taskRouter)
 
 export default app

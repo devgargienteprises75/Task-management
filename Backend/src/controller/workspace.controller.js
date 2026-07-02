@@ -5,7 +5,7 @@ import { workspaceModel } from "../models/workspace.model.js";
 export async function createWorkspaceController(req, res) {
     try {
         const { name, description, members } = req.body
-
+        
         if (!name) {
             return res.status(400).json({
                 message: "Workspace name is required",
