@@ -69,3 +69,20 @@ export async function createTaskController(req, res) {
         })
     }
 }
+
+export async function getTasksController(req, res) {
+    try {
+        const { workspaceid } = req.params
+        const userId = req.userId
+
+        const tasks = await taskModel.find({ workspaceId: workspaceid })
+        
+        
+    } catch (err) {
+        return res.status(400).json({
+            message: "Unexpected error",
+            success: false,
+            err: err.message
+        })
+    }
+}

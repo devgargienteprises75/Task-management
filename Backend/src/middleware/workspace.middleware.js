@@ -1,8 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { userModel } from '../models/user.model.js';
 import { workspaceModel } from '../models/workspace.model.js';
-import mongoose from 'mongoose';
-
 export async function requireAdminOrHead(req, res, next) {
     const { token } = req.cookies
 
@@ -86,6 +84,49 @@ export async function verifyWorkspaceOwnership(req, res, next) {
                 message: "Assign user is not the member of this workspace",
                 success: false,
                 err: "Assign user is not the member of this workspace"
+            })
+        }
+
+        next()
+    } catch (err) {
+        return res.status(400).json({
+            message: "Unexpected error",
+            success: false,
+            err: err.message
+        })
+    }
+}
+
+export async function verifyWorkspaceUser(req, res, next){
+    try {
+        const { workspaceid } = req.params;
+        const userId = req.userId
+    
+        if(!workspaceid){
+            return res.status(400).json({
+                message: "Workspace Id not available",
+                success: false,
+                err: "Workspace Id not available"
+            })
+        }
+
+        const workspace = await workspaceModel.findById(workspaceid);
+        if(!workspace){
+            return res.status(404).json({
+                message: "Workspace not found",
+                success: false,
+                err: "Workspace not found"
+            })
+        }
+
+        const user = await userModel.findById(userId)
+        const workspaceMember = workspace.members.find((id) => userId === id.toString())
+
+        if(!workspaceMember && !workspace.createdBy.equals(userId)){
+            return res.status(400).json({
+                message: "Member not in this workspace",
+                success: false,
+                err: "Member not in this workspace"
             })
         }
 
