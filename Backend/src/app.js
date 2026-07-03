@@ -11,7 +11,7 @@ app.use(cookieParser())
 
 // Health Check
 app.get('/health', (req, res) => {
-    res.json({ message: "Server is running"})
+    res.json({ message: "Server is running" })
 })
 
 app.use('/api/auth', authRouter)
