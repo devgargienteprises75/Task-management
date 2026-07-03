@@ -77,6 +77,42 @@ export async function getTasksController(req, res) {
 
         const tasks = await taskModel.find({ workspaceId: workspaceid })
         
+
+    } catch (err) {
+        return res.status(400).json({
+            message: "Unexpected error",
+            success: false,
+            err: err.message
+        })
+    }
+}
+
+export async function getTaskDetailController(req, res) {
+    try {
+        const { workspaceid, taskid } = req.params;
+
+        if(!taskid){
+            return res.status(400).json({
+                message: "Missing task Id",
+                success: false,
+                err: "Missing task Id"
+            })
+        }
+
+        const task = await taskModel.findById(taskid)
+        if(!task){
+            return res.status(404).json({
+                message: "Task not found",
+                success: false,
+                err: "Task not found"
+            })
+        }
+
+        return res.status(200).json({
+            message: "Task detail fetched successfully",
+            success: true,
+            task
+        })
         
     } catch (err) {
         return res.status(400).json({
