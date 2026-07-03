@@ -1,7 +1,9 @@
+import mongoose from "mongoose"
 import { taskModel } from "../models/task.model.js"
 import { userModel } from "../models/user.model.js"
 import { workspaceModel } from "../models/workspace.model.js"
 
+// Create and assign task
 export async function createTaskController(req, res) {
     try {
         const { workspaceid } = req.params
@@ -70,6 +72,7 @@ export async function createTaskController(req, res) {
     }
 }
 
+// Fetch all tasks
 export async function getTasksController(req, res) {
     try {
         const { workspaceid } = req.params
@@ -87,6 +90,7 @@ export async function getTasksController(req, res) {
     }
 }
 
+// Fetch task detail
 export async function getTaskDetailController(req, res) {
     try {
         const { workspaceid, taskid } = req.params;
@@ -114,6 +118,88 @@ export async function getTaskDetailController(req, res) {
             task
         })
         
+    } catch (err) {
+        return res.status(400).json({
+            message: "Unexpected error",
+            success: false,
+            err: err.message
+        })
+    }
+}
+
+// Update Task
+export async function updateTaskController(req, res){
+    try {
+        const userId = req.userId
+        const { workspaceid, taskid } = req.params
+        const { newTitle, newDescription, assignTo, status, priority, dueDate } = req.body
+        const assignToId = assignTo ? new mongoose.Types.ObjectId(assignTo) : undefined
+
+        if(!userId){
+            return res.status(400).json({
+                message: "User Id missing",
+                success: false,
+                err: "User Id missing"
+            })
+        }
+    
+        const user = await userModel.findById(userId)   
+        if(!user){
+            return res.status(404).json({
+                message: "User not found",
+                success: false,
+                err: "User not found"
+            })
+        }
+        
+        const workspace = await workspaceModel.findById(workspaceid)
+        const task = await taskModel.findById(taskid)
+
+        if(!task){
+            return res.status(404).json({
+                message: "Task not found",
+                success: false,
+                err: "Task not found"
+            })
+        }
+
+        if(user.role === "user"){
+            const newTask = await taskModel.findByIdAndUpdate(
+                task._id,
+                { $set: { status } },
+                { runValidators: true, new: true }
+            )
+
+            return res.status(200).json({
+                message: "Status updated successfully",
+                success: true,
+                newTask
+            })
+        }
+
+        if(user.role === "admin" || user.role === "head"){
+            const newTask = await taskModel.findByIdAndUpdate(
+                task._id,
+                { $set: {
+                    title: newTitle || task.title,
+                    description: newDescription || task.description,
+                    assignTo: assignToId || task.assignTo,
+                    priority: priority || task.priority,
+                    dueDate: dueDate || task.dueDate
+                }},
+                {
+                    runValidators: true,
+                    returnDocument: 'after'
+                }
+            )
+
+            return res.status(200).json({
+                message: "Task updated successfully",
+                success: true,
+                newTask
+            })
+        }
+
     } catch (err) {
         return res.status(400).json({
             message: "Unexpected error",
