@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { requireAdminOrHead, verifyWorkspaceOwnership, verifyWorkspaceUser } from "../middleware/workspace.middleware.js";
-import { createTaskController, getTasksController, getTaskDetailController, updateTaskController } from "../controller/task.controller.js";
+import { createTaskController, getTasksController, getTaskDetailController, updateTaskController, deleteTaskController } from "../controller/task.controller.js";
 import { verifyUser } from "../middleware/auth.middleware.js";
 
 const taskRouter = Router()
@@ -18,5 +18,8 @@ taskRouter.get("/:workspaceid/task-details/:taskid", verifyUser, verifyWorkspace
 
 // Edit or update task
 taskRouter.patch("/:workspaceid/:taskid", verifyUser, verifyWorkspaceUser, updateTaskController )
+
+// Delete task
+taskRouter.delete("/:workspaceid/delete/:taskid", verifyUser, verifyWorkspaceUser, deleteTaskController)
 
 export default taskRouter

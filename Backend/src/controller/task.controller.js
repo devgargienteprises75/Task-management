@@ -80,6 +80,11 @@ export async function getTasksController(req, res) {
 
         const tasks = await taskModel.find({ workspaceId: workspaceid })
         
+        return res.status(200).json({
+            message: "Fetched tasks successfully",
+            success: true,
+            tasks
+        })
 
     } catch (err) {
         return res.status(400).json({
@@ -163,11 +168,11 @@ export async function updateTaskController(req, res){
             })
         }
 
-        if(user.role === "user"){
+        if(user.role === "user" || user.role === "head"){
             const newTask = await taskModel.findByIdAndUpdate(
                 task._id,
                 { $set: { status } },
-                { runValidators: true, new: true }
+                { runValidators: true, returnDocument: 'after' }
             )
 
             return res.status(200).json({
@@ -202,6 +207,54 @@ export async function updateTaskController(req, res){
 
     } catch (err) {
         return res.status(400).json({
+            message: "Unexpected error",
+            success: false,
+            err: err.message
+        })
+    }
+}
+
+export async function deleteTaskController(req, res) {
+    try {
+        const { workspaceid, taskid } = req.params
+        const userId = req.userId
+
+        const task = await taskModel.findById(taskid)
+        if(!task){
+            return res.status(404).json({
+                message: "Task not found",
+                success: false,
+                err: "Task not found"
+            })
+        }
+
+        const user = await userModel.findById(userId)
+
+        if(user.role === "user" || (user.role === "head" && task.assignTo.equals(user._id))){
+            return res.status(400).json({
+                message: "AssignedTo user cannot access to delete tasks",
+                success: false,
+                err: "AssignedTo user cannot access to delete tasks"
+            })
+        }
+
+        if(!task.assignBy.equals(userId)){
+            return res.status(400).json({
+                message: "Task only deleted by assigned head",
+                success: false,
+                err: "Task only deleted by assigned head"
+            })
+        }
+
+        await taskModel.findByIdAndDelete(task._id)
+
+        return res.status(200).json({
+            message: "Task deleted successfully",
+            success: true
+        })
+
+    } catch (err) {
+        return res.status(400)({
             message: "Unexpected error",
             success: false,
             err: err.message
