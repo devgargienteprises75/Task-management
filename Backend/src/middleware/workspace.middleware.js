@@ -121,12 +121,12 @@ export async function verifyWorkspaceUser(req, res, next){
 
         const user = await userModel.findById(userId)
         const workspaceMember = workspace.members.find((id) => userId === id.toString())
-
+        
         if(!workspaceMember && !workspace.createdBy.equals(userId)){
             return res.status(400).json({
-                message: "Member not in this workspace",
+                message: "Member are not from this workspace",
                 success: false,
-                err: "Member not in this workspace"
+                err: "Member are not from this workspace"
             })
         }
 
