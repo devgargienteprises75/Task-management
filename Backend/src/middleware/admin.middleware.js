@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { userModel } from '../models/user.model.js';
+import { config } from '../config/config.js';
 
 export async function verifyAdmin(req, res, next) {
     const { token } = req.cookies
@@ -15,7 +16,7 @@ export async function verifyAdmin(req, res, next) {
     let decoded;
 
     try {
-        decoded = jwt.verify(token, process.env.JWT_SECRET)
+        decoded = jwt.verify(token, config.JWT_SECRET)
 
         if(!decoded.id){
             return res.status(401).json({

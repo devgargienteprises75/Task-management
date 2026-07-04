@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { userModel } from '../models/user.model.js';
 import { workspaceModel } from '../models/workspace.model.js';
+import { config } from '../config/config.js';
 export async function requireAdminOrHead(req, res, next) {
     const { token } = req.cookies
 
@@ -15,7 +16,7 @@ export async function requireAdminOrHead(req, res, next) {
     let decoded;
 
     try {
-        decoded = jwt.verify(token, process.env.JWT_SECRET)
+        decoded = jwt.verify(token, config.JWT_SECRET)
 
         const user = await userModel.findById(decoded.id)
         if(!user){
