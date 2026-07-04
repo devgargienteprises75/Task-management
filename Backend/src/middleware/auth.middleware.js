@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+import { config } from '../config/config.js';
 
 export async function verifyUser(req, res, next) {
     const { token } = req.cookies
@@ -14,7 +15,7 @@ export async function verifyUser(req, res, next) {
     let decoded;
 
     try {
-        decoded = jwt.verify(token, process.env.JWT_SECRET)
+        decoded = jwt.verify(token, config.JWT_SECRET)
 
         if(!decoded.id){
             return res.status(401).json({

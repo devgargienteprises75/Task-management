@@ -2,6 +2,7 @@ import { userModel } from "../models/user.model.js"
 import jwt, { decode } from 'jsonwebtoken'
 import sendEmail from "../services/email.service.js"
 import bcrypt from "bcryptjs"
+import { config } from "../config/config.js"
 
 // Add User controller
 export async function addUserController(req, res) {
@@ -69,7 +70,7 @@ export async function loginController(req, res){
 
     const token = jwt.sign({
         id: user._id
-    }, process.env.JWT_SECRET, { expiresIn: '7d' })
+    }, config.JWT_SECRET, { expiresIn: '7d' })
 
     res.cookie("token", token)
 
@@ -98,7 +99,7 @@ export async function forgetPasswordController(req, res) {
 
     const token = jwt.sign({
         id: user._id
-    }, process.env.JWT_SECRET, { expiresIn: '15m' })
+    }, config.JWT_SECRET, { expiresIn: '15m' })
 
     const hashedToken = await bcrypt.hash(token, 8)
 
