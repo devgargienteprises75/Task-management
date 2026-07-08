@@ -1,6 +1,14 @@
 import { Router } from "express";
 import { requireAdminOrHead, verifyWorkspaceOwnership, verifyWorkspaceUser } from "../middleware/workspace.middleware.js";
-import { createTaskController, getTasksController, getTaskDetailController, updateTaskController, deleteTaskController, addCommentsController } from "../controller/task.controller.js";
+import { 
+    createTaskController, 
+    getTasksController, 
+    getTaskDetailController, 
+    updateTaskController, 
+    deleteTaskController, 
+    addCommentsController,
+    getCommentsList
+} from "../controller/task.controller.js";
 import { verifyUser } from "../middleware/auth.middleware.js";
 
 const taskRouter = Router()
@@ -22,7 +30,9 @@ taskRouter.patch("/:workspaceid/:taskid", verifyUser, verifyWorkspaceUser, updat
 taskRouter.delete("/:workspaceid/delete/:taskid", verifyUser, verifyWorkspaceUser, deleteTaskController)
 
 
-// Add Comments
+// Comments
 taskRouter.post("/:workspaceid/:taskid/comment", verifyUser, verifyWorkspaceUser, addCommentsController)
+taskRouter.get("/:workspaceid/:taskid/comments-list", verifyUser, verifyWorkspaceUser, getCommentsList)
+
 
 export default taskRouter

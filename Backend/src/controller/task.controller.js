@@ -333,3 +333,43 @@ export async function addCommentsController(req, res) {
         })
     }
 }
+
+// Get all comment list
+export async function getCommentsList(req, res) {
+    try {
+        const userId = req.userId
+        const { taskid, workspaceid } = req.params
+
+        const task = await taskModel.findById(taskid)
+        if(!task){
+            return res.status(404).json({
+                message: "Task not found",
+                success: false,
+                err: "Task not found"
+            })
+        }
+
+        if(task.workspaceId.toString() !== workspaceid){
+            return res.status(403).json({
+                message: "Task not from the selected workspace",
+                success: false,
+                err: "Task not from the selected workspace"
+            })
+        }
+
+        const allComments = await commentModel.find()
+
+        return res.status(200).json({
+            message: "All comments fetched successfully",
+            success: true,
+            allComments
+        })
+
+    } catch (err) {
+        return res.status(400).json({
+            message: "Unexpected error",
+            success: false,
+            err: err.message
+        })
+    }
+}
