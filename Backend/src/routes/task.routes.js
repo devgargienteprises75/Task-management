@@ -7,7 +7,8 @@ import {
     updateTaskController, 
     deleteTaskController, 
     addCommentsController,
-    getCommentsList
+    getCommentsList,
+    deleteCommentController
 } from "../controller/task.controller.js";
 import { verifyUser } from "../middleware/auth.middleware.js";
 
@@ -33,6 +34,6 @@ taskRouter.delete("/:workspaceid/delete/:taskid", verifyUser, verifyWorkspaceUse
 // Comments
 taskRouter.post("/:workspaceid/:taskid/comment", verifyUser, verifyWorkspaceUser, addCommentsController)
 taskRouter.get("/:workspaceid/:taskid/comments-list", verifyUser, verifyWorkspaceUser, getCommentsList)
-
+taskRouter.delete("/comments/:commentid", verifyUser, deleteCommentController)
 
 export default taskRouter

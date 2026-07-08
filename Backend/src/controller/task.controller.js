@@ -373,3 +373,54 @@ export async function getCommentsList(req, res) {
         })
     }
 }
+
+// Delete comment
+export async function deleteCommentController(req, res) {
+    try {
+        const userId = req.userId
+        const { commentid } = req.params
+
+        const comment = await commentModel.findById(commentid)
+        if(!comment){
+            return res.status(404).json({
+                message: "Comment not found",
+                success: false,
+                err: "Comment not found"
+            })
+        }
+
+        const user = await userModel.findById(userId)
+        if(!user){
+            return res.status(404).json({
+                message: "User not found",
+                success: false,
+                err: "User not found"
+            })
+        }
+
+        if(user.role === "user" || user.role === "head"){
+            if(!comment.user.equals(user._id)){
+                return res.status(403).json({
+                    message: "User can delete only their comment",
+                    success: false,
+                    err: "User can delete only their comment"
+                })
+            }
+        }
+
+        const deletedComment = await commentModel.findByIdAndDelete(commentid)
+        
+        return res.status(200).json({
+            message: "Comment deleted successfully",
+            success: true,
+            deletedComment
+        })
+
+    } catch (err) {
+        return res.status(400).json({
+            message: "Unexpected error",
+            success: false,
+            err: err.message
+        })
+    }
+}
