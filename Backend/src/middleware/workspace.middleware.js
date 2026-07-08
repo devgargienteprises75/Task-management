@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 import { userModel } from '../models/user.model.js';
 import { workspaceModel } from '../models/workspace.model.js';
 import { config } from '../config/config.js';
+
 export async function requireAdminOrHead(req, res, next) {
     const { token } = req.cookies
 
@@ -100,7 +101,7 @@ export async function verifyWorkspaceOwnership(req, res, next) {
 
 export async function verifyWorkspaceUser(req, res, next){
     try {
-        const { workspaceid } = req.params;
+        const { workspaceid, taskid } = req.params;
         const userId = req.userId
     
         if(!workspaceid){
