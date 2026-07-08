@@ -1,11 +1,10 @@
 import { Router } from "express";
 import { requireAdminOrHead, verifyWorkspaceOwnership, verifyWorkspaceUser } from "../middleware/workspace.middleware.js";
-import { createTaskController, getTasksController, getTaskDetailController, updateTaskController, deleteTaskController } from "../controller/task.controller.js";
+import { createTaskController, getTasksController, getTaskDetailController, updateTaskController, deleteTaskController, addCommentsController } from "../controller/task.controller.js";
 import { verifyUser } from "../middleware/auth.middleware.js";
 
 const taskRouter = Router()
 
-    // Manage Tasks
 
 // Assign new Task
 taskRouter.post("/:workspaceid/create-task", requireAdminOrHead, verifyWorkspaceOwnership, createTaskController)
@@ -21,5 +20,9 @@ taskRouter.patch("/:workspaceid/:taskid", verifyUser, verifyWorkspaceUser, updat
 
 // Delete task
 taskRouter.delete("/:workspaceid/delete/:taskid", verifyUser, verifyWorkspaceUser, deleteTaskController)
+
+
+// Add Comments
+taskRouter.post("/:workspaceid/:taskid/comment", verifyUser, verifyWorkspaceUser, addCommentsController)
 
 export default taskRouter
