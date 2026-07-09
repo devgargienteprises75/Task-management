@@ -38,7 +38,7 @@ export async function verifyAdmin(req, res, next) {
 
         next()
     } catch (err) {
-        return res.status(400).json({
+        return res.status(500).json({
             message: "Unexpected error",
             success: false,
             err: err.message
