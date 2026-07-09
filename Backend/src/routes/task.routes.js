@@ -11,12 +11,13 @@ import {
     deleteCommentController
 } from "../controller/task.controller.js";
 import { verifyUser } from "../middleware/auth.middleware.js";
+import { taskValidation } from "../validation/task.validation.js";
 
 const taskRouter = Router()
 
 
 // Assign new Task
-taskRouter.post("/:workspaceid/create-task", requireAdminOrHead, verifyWorkspaceOwnership, createTaskController)
+taskRouter.post("/:workspaceid/create-task", requireAdminOrHead, verifyWorkspaceOwnership, taskValidation, createTaskController)
 
 // Fetch all task of workspace
 taskRouter.get("/:workspaceid/tasks", verifyUser, verifyWorkspaceUser, getTasksController)

@@ -1,6 +1,6 @@
 import { validationResult, body } from "express-validator";
 
-async function validate(req, res, next) {
+function validate(req, res, next) {
     const errors = validationResult(req)
 
     if (!errors.isEmpty()) {
