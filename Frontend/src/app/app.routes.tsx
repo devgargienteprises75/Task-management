@@ -1,9 +1,10 @@
+import Login from "@/features/auth/pages/Login";
 import { createBrowserRouter } from "react-router-dom";
 
 export const routes = createBrowserRouter([
     {
         path: "/",
-        element: <Dashboard />
+        // element: <Dashboard />
     },
     {
         path: "/login",
@@ -11,14 +12,14 @@ export const routes = createBrowserRouter([
     },
     {
         path: "/workspaces",
-        element: <Workspace />
+        // element: <Workspace />
     },
     {
         path: "/workspaces/:id",
-        element: <WorkspaceList />
+        // element: <WorkspaceList />
     },
     {
         path: "/task/:id",
-        element: <Task />
+        // element: <Task />
     },
 ])

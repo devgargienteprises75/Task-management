@@ -1,8 +1,7 @@
-export interface ApiResponse<T> {
+export type ApiResponse<T> = {
     success: boolean;
     message: string;
-    data: T;
-}
+} & T;
 
 // Standard error format
 export interface ApiError {
