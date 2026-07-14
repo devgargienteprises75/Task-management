@@ -41,7 +41,8 @@ export async function addUserController(req, res) {
         user: {
             username: user.username,
             email: user.username,
-            role: user.role
+            role: user.role,
+            isActive: user.isActive
         }
     })
 }
@@ -79,7 +80,9 @@ export async function loginController(req, res){
         success: true,
         user: {
             username: user.username,
-            email: user.email
+            email: user.email,
+            role: user.role,
+            isActive: user.isActive
         }
     })
 }
