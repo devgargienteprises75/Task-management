@@ -1,7 +1,8 @@
 export interface user {
-    username: string,
-    email: string,
-    role: 'admin' | 'head' | 'user',
-    password: string,
-    isAstive: string
+    _id: string;
+    username: string;
+    email: string;
+    role: 'admin' | 'head' | 'user';
+    password: string;
+    isActive: string;
 }
