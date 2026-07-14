@@ -8,7 +8,7 @@ export const adminApi = {
         return res.data
     },
     addUser: async (credential: CreateUserPayload) => {
-        const res = await api.post<ApiResponse<AuthResponse>>("/api/add-user", credential);
+        const res = await api.post<ApiResponse<AuthResponse>>("/auth/add-user", credential);
         return res.data
     },
     updateUser: async (userId: string, credential: UpdateUserPayload) => {

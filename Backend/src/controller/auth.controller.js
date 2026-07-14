@@ -40,7 +40,7 @@ export async function addUserController(req, res) {
         success: true,
         user: {
             username: user.username,
-            email: user.username,
+            email: user.email,
             role: user.role,
             isActive: user.isActive
         }
