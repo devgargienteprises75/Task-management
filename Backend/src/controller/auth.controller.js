@@ -338,7 +338,7 @@ export async function updateUserController(req, res){
             updateData.isActive = currentActiveStatus
         }
     
-        const updateUser = await userModel.findByIdAndUpdate(
+        const updatedUser = await userModel.findByIdAndUpdate(
             user._id,
             { $set: updateData },
             { returnDocument: 'after', runValidators: true }
@@ -347,7 +347,7 @@ export async function updateUserController(req, res){
         return res.status(200).json({
             message: "User update successfully",
             success: true,
-            updateUser
+            updatedUser
         })
     } catch (err) {
         return res.status(400).json({

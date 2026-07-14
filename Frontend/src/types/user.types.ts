@@ -4,5 +4,5 @@ export interface user {
     email: string;
     role: 'admin' | 'head' | 'user';
     password: string;
-    isActive: string;
+    isActive: boolean;
 }
