@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux"
-import { addUserToList, setAdminLoading, setUser } from "../admin.slice"
+import { addUserToList, setAdminLoading, setUser, updateUserInList } from "../admin.slice"
 import { adminApi } from "../services/admin.api"
-import type { CreateUserPayload } from "@/types/admin.types"
+import type { CreateUserPayload, UpdateUserPayload } from "@/types/admin.types"
 
 const useAdmin = () => {
     const dispatch = useDispatch()
@@ -49,9 +49,31 @@ const useAdmin = () => {
         }
     }
 
+    const handleUpdateUser = async (userId: any, credential: UpdateUserPayload) => {
+        dispatch(setAdminLoading(true))
+
+        try {
+            const res = await updateUser(userId, credential)
+            dispatch(updateUserInList(res.updatedUser))
+            return {
+                success: true,
+                message: res.message
+            }
+        } catch (err: any) {
+            const message = err?.response?.data?.message || err.message;
+            return {
+                success: false,
+                message
+            }
+        } finally {
+            dispatch(setAdminLoading(false))
+        }
+    }
+
     return {
         handleGetUsers,
-        handleAddUser
+        handleAddUser,
+        handleUpdateUser
     }
 }
 
