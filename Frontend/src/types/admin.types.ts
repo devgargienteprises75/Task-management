@@ -1,7 +1,7 @@
 import type { user } from "./user.types";
 
 export interface CreateUserPayload {
-    name: string;
+    username: string;
     email: string;
     role: 'admin' | 'head' | 'user';
     password? : string
