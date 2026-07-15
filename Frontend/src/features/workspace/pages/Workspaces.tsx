@@ -1,5 +1,6 @@
 import type { RootState } from "@/app/app.store"
 import Sidebar from "@/components/Sidebar"
+import type { workspace as WorkspaceType } from "@/types"
 import { Search, Plus, Users, LayoutGrid, MoreVertical } from "lucide-react"
 import { useSelector } from "react-redux"
 
@@ -45,10 +46,10 @@ const Workspaces = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {allWorkspaces[0]?.map((workspace) => (
+                        {allWorkspaces?.map((workspace: WorkspaceType) => (
                             <div key={workspace._id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all cursor-pointer flex flex-col h-full group">
                                 <div className="flex justify-between items-start mb-4">
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold ${workspace?.iconColor }`}>
+                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold`}>
                                         {workspace?.name?.charAt(0).toUpperCase()}
                                     </div>
                                     <div className="flex items-center gap-2">
