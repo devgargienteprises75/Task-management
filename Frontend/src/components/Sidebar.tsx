@@ -1,5 +1,6 @@
 import type { RootState } from "@/app/app.store";
 import useAdmin from "@/features/admin/hooks/useAdmin";
+import useWorkspace from "@/features/workspace/hooks/useWorkspace";
 import { Calendar, Folder, LayoutList, Plus, User } from "lucide-react"
 import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom";
@@ -9,11 +10,17 @@ const Sidebar = () => {
     const { user } = useSelector((state: RootState) => state.auth)
 
     const { handleGetUsers } = useAdmin()
+    const { handleGetWorkspaces } = useWorkspace()
     const navigate = useNavigate()
 
     const getUser = async () => {
         await handleGetUsers()
         navigate("/users")
+    }
+
+    const getWorkspace = async () => {
+        await handleGetWorkspaces()
+        navigate("/workspaces")
     }
 
     return (
@@ -52,9 +59,9 @@ const Sidebar = () => {
                     </button>
                 }
 
-                <div className="pt-4 pb-1 px-4 text-sm font-bold text-gray-900 flex justify-between items-center mt-2">
-                    <span className="flex items-center gap-3"><Folder size={18} className="text-gray-500" /> Workspaces</span>
-                </div>
+                <button onClick={getWorkspace} className="flex w-full items-center gap-3 px-4 py-2.5 text-gray-900 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-50 cursor-pointer">
+                    <Folder size={18} /> Workspaces
+                </button>
             </nav>
         </aside>
     )
