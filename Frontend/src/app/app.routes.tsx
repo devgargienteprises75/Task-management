@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Protected from "./Protected";
 import Dashboard from "@/pages/Dashboard";
 import Users from "@/features/admin/pages/Users";
+import Workspaces from "@/features/workspace/pages/Workspaces";
 
 export const routes = createBrowserRouter([
     {
@@ -17,7 +18,7 @@ export const routes = createBrowserRouter([
     },
     {
         path: "/workspaces",
-        // element: <Workspace />
+        element: <Workspaces />
     },
     {
         path: "/workspaces/:id",

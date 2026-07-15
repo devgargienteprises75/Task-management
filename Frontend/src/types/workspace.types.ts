@@ -10,3 +10,10 @@ export interface workspace {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface workspaceState {
+    workspace: workspace | null;
+    allWorkspaces: workspace[];
+    isLoading: boolean;
+    error: string | null;
+}

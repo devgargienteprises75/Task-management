@@ -357,7 +357,10 @@ export async function getCommentsList(req, res) {
             })
         }
 
-        const allComments = await commentModel.find()
+        const allComments = await commentModel.find({
+            workspaceId: workspaceid,
+            taskId: taskid
+        })
 
         return res.status(200).json({
             message: "All comments fetched successfully",
