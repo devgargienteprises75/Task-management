@@ -1,14 +1,17 @@
 import type { RootState } from "@/app/app.store"
 import Sidebar from "@/components/Sidebar"
 import type { workspace as WorkspaceType } from "@/types"
-import { Search, Plus, Users, LayoutGrid, MoreVertical } from "lucide-react"
+import { Search, Plus, LayoutGrid, LayoutList } from "lucide-react"
 import { useState } from "react"
 import { useSelector } from "react-redux"
 import CreateWorkspaceModal from "../components/CreateWorkspaceModal"
+import WorkspaceCard from "../components/WorkspaceCard"
+import WorkspaceList from "../components/WorkspaceList"
 
 const Workspaces = () => {
 
     const [ workspaceModal, setWorkspaceModal] = useState<boolean>(false)
+    const [ layoutStyle, setlayoutStyle ] = useState<'grid' | 'list'>('grid')
 
     const { allWorkspaces } = useSelector((state: RootState) => state.workspace)
     console.log(allWorkspaces);
@@ -42,54 +45,31 @@ const Workspaces = () => {
                 {/* Main Content Area */}
                 <div className="flex-1 overflow-auto p-8">
                     {/* Toolbar / Filters (optional space) */}
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg font-bold text-gray-800">All Workspaces</h3>
-                        <div className="flex items-center gap-2">
-                            <button className="p-2 bg-white border border-gray-200 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors shadow-sm">
+                    <div className="flex justify-end items-end mb-6">
+                        <div className="relative flex items-center bg-gray-100 p-1 rounded-lg w-fit shadow-inner">
+                            <div 
+                                className={`absolute left-1 top-1 bottom-1 w-[32px] bg-white rounded-md shadow-sm border border-gray-200/60 transition-transform duration-300 ease-in-out ${layoutStyle === 'grid' ? 'translate-x-0' : 'translate-x-full'}`}
+                            ></div>
+                            <button 
+                                onClick={() => setlayoutStyle('grid')} 
+                                className={`relative z-10 w-[32px] h-[32px] flex justify-center items-center transition-colors duration-300 cursor-pointer ${layoutStyle === 'grid' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-700'}`}
+                            >
                                 <LayoutGrid size={16} />
+                            </button>
+                            <button 
+                                onClick={() => setlayoutStyle('list')} 
+                                className={`relative z-10 w-[32px] h-[32px] flex justify-center items-center transition-colors duration-300 cursor-pointer ${layoutStyle === 'list' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-700'}`}
+                            >
+                                <LayoutList size={16}/>
                             </button>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className={layoutStyle === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col gap-4"}>
                         {allWorkspaces?.map((workspace: WorkspaceType) => (
-                            <div key={workspace._id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all cursor-pointer flex flex-col h-full group">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold`}>
-                                        {workspace?.name?.charAt(0).toUpperCase()}
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold tracking-wide uppercase ${
-                                            workspace?.status === 'active' 
-                                                ? 'bg-green-50 text-green-600' 
-                                                : 'bg-gray-100 text-gray-500'
-                                        }`}>
-                                            {workspace?.status}
-                                        </span>
-                                        <button className="text-gray-400 hover:text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <MoreVertical size={16} />
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <h3 className="font-bold text-lg mb-2 text-gray-900 group-hover:text-blue-600 transition-colors">{workspace?.name}</h3>
-                                <p className="text-sm text-gray-500 mb-6 flex-1 line-clamp-2 leading-relaxed">
-                                    {workspace?.description}
-                                </p>
-                                
-                                <div className="flex justify-between items-center mt-auto pt-4 border-t border-gray-50">
-                                    <div className="flex -space-x-2">
-                                        <div className="w-8 h-8 rounded-full border-2 border-white bg-blue-200"></div>
-                                        <div className="w-8 h-8 rounded-full border-2 border-white bg-purple-200"></div>
-                                        <div className="w-8 h-8 rounded-full border-2 border-white bg-yellow-200 flex items-center justify-center text-[10px] font-bold text-gray-700">
-                                            +{workspace?.members?.length > 2 ? workspace?.members?.length - 2 : 0}
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 bg-gray-50 px-2 py-1 rounded-md">
-                                        <Users size={12} /> {workspace?.members?.length}
-                                    </div>  
-                                </div>
-                            </div>
+                            layoutStyle === 'grid' 
+                                ? <WorkspaceCard key={workspace._id} workspace={workspace} /> 
+                                : <WorkspaceList key={workspace._id} workspace={workspace} />
                         ))}
                     </div>
                 </div>
