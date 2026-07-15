@@ -1,5 +1,6 @@
 import type { workspace } from '@/types'
-import { MoreVertical, Users } from 'lucide-react'
+import { Pencil, Users } from 'lucide-react'
+import { stringToColor } from '@/lib/colors'
 
 interface WorkspaceType {
     workspace: workspace
@@ -9,7 +10,10 @@ const WorkspaceList = ({ workspace }: WorkspaceType) => {
   return (
     <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all cursor-pointer flex items-center justify-between group">
       <div className="flex items-center gap-4 flex-1">
-        <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center text-lg font-bold text-gray-700 shrink-0">
+        <div 
+          className="w-12 h-12 rounded-lg flex items-center justify-center text-lg font-bold text-gray-900 shrink-0"
+          style={{ backgroundColor: stringToColor(workspace?.name || '') + '50' }}
+        >
           {workspace?.name?.charAt(0).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0 pr-4">
@@ -46,8 +50,8 @@ const WorkspaceList = ({ workspace }: WorkspaceType) => {
           </div>
         </div>
 
-        <button className="text-gray-400 hover:text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-gray-50 rounded-lg">
-          <MoreVertical size={16} />
+        <button className="text-gray-400 hover:text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+          <Pencil size={16} />
         </button>
       </div>
     </div>
