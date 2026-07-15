@@ -14,8 +14,8 @@ const validate = (req, res, next) => {
 } 
 
 export const workspaceValidation = [
-    body("title")
-        .notEmpty().withMessage("Tite is required"),
+    body("name")
+        .notEmpty().withMessage("Workspace name is required"),
 
     body("description")
         .notEmpty().withMessage("AssignTo is Required"),
