@@ -2,9 +2,13 @@ import type { RootState } from "@/app/app.store"
 import Sidebar from "@/components/Sidebar"
 import type { workspace as WorkspaceType } from "@/types"
 import { Search, Plus, Users, LayoutGrid, MoreVertical } from "lucide-react"
+import { useState } from "react"
 import { useSelector } from "react-redux"
+import CreateWorkspaceModal from "../components/CreateWorkspaceModal"
 
 const Workspaces = () => {
+
+    const [ workspaceModal, setWorkspaceModal] = useState<boolean>(false)
 
     const { allWorkspaces } = useSelector((state: RootState) => state.workspace)
     console.log(allWorkspaces);
@@ -27,11 +31,13 @@ const Workspaces = () => {
                         </div>
 
                         {/* Primary Accent Button */}
-                        <button className="flex items-center gap-2 px-4 py-2 bg-[#D1F53B] hover:bg-[#c2e532] text-gray-900 rounded-lg font-semibold text-sm transition-colors shadow-sm cursor-pointer">
+                        <button onClick={() => setWorkspaceModal(true)} className="flex items-center gap-2 px-4 py-2 bg-[#D1F53B] hover:bg-[#c2e532] text-gray-900 rounded-lg font-semibold text-sm transition-colors shadow-sm cursor-pointer">
                             <Plus size={16} strokeWidth={3} /> Create Workspace
                         </button>
                     </div>
                 </header>
+
+                {workspaceModal && <CreateWorkspaceModal setWorkspaceModal={setWorkspaceModal} />}
 
                 {/* Main Content Area */}
                 <div className="flex-1 overflow-auto p-8">
