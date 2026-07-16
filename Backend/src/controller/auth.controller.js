@@ -87,6 +87,34 @@ export async function loginController(req, res){
     })
 }
 
+// Get-me Controlle
+export async function getMeController(req, res) {
+    try {
+        const userId = req.userId
+
+        const user = await userModel.findById(userId)
+        
+        return res.status(200).json({
+            message: "Get user successfully",
+            success: true,
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                isActive: user.isActive
+            }
+        })
+
+    } catch (err) {
+        return res.status(400).json({
+            message: "Unexpected Error",
+            success: false,
+            err: err.message
+        })
+    }
+}
+
 // Forget password controller
 export async function forgetPasswordController(req, res) {
     const { email } = req.body

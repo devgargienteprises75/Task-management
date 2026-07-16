@@ -17,7 +17,7 @@ const Sidebar = () => {
         await handleGetUsers()
         navigate("/users")
     }
-
+    
     const getWorkspace = async () => {
         await handleGetWorkspaces()
         navigate("/workspaces")
