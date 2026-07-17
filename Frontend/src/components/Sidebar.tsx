@@ -1,6 +1,5 @@
 import type { RootState } from "@/app/app.store";
 import useAdmin from "@/features/admin/hooks/useAdmin";
-import useWorkspace from "@/features/workspace/hooks/useWorkspace";
 import { Calendar, Folder, LayoutList, Plus, User } from "lucide-react"
 import { useEffect } from "react";
 import { useSelector } from "react-redux"

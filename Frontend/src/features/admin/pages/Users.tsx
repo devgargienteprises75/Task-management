@@ -4,7 +4,7 @@ import { Pencil, Plus, Search } from "lucide-react"
 import { useSelector } from "react-redux"
 import type { user as UserType } from "@/types"
 import useAdmin from "../hooks/useAdmin"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { cn } from "@/lib/cn"
 import type { CreateUserPayload, UpdateUserPayload } from "@/types/admin.types"
 import Loader from "@/components/Loader"
@@ -21,6 +21,7 @@ const Users = () => {
     const [newRole, setNewRole] = useState<'admin' | 'head' | 'user'>('user')
     const [currentActiveStatus, setCurrentActiveStatus] = useState<boolean>(true)
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+    const [search, setSearch] = useState<string>("")
 
     const { users, isLoading } = useSelector((state: RootState) => state.admin)
 
@@ -59,6 +60,19 @@ const Users = () => {
         setSelectedUserId(null)
     }
 
+    const filterUser = useMemo(() => {
+        const query = search.trim().toLowerCase()
+
+        if(!query) return users
+
+        return users.filter(user => 
+            user.username.toLowerCase().includes(query) ||
+            user.email.toLowerCase().includes(query)
+        )
+    }, [users, search])
+
+    console.log( search, filterUser);
+    
 
     return (
         <div className="flex h-screen bg-[#F9FAFB] font-sans text-gray-900 overflow-hidden">
@@ -74,7 +88,13 @@ const Users = () => {
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
                             <Search size={16} className="text-gray-400" />
-                            <input type="text" placeholder="Search users..." className="bg-transparent outline-none w-48 text-sm" />
+                            <input 
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                type="text" 
+                                placeholder="Search users..." 
+                                className="bg-transparent outline-none w-48 text-sm" 
+                            />
                         </div>
 
                         {/* Primary Accent Button */}
@@ -179,7 +199,7 @@ const Users = () => {
                 )}
 
                 {/* Table Area */}
-                {isLoading ? <Loader /> : (users.length > 0 ? <div className="flex-1 overflow-auto p-8">
+                {isLoading ? <Loader /> : (filterUser.length > 0 ? <div className="flex-1 overflow-auto p-8">
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                         <table className="w-full text-left border-collapse">
                           
@@ -192,7 +212,7 @@ const Users = () => {
                                 </tr>
                             </thead>
                             <tbody className="text-sm divide-y divide-gray-100">
-                                {users?.map((user: UserType) => (
+                                {filterUser?.map((user: UserType) => (
                                     <tr key={user._id} className="hover:bg-gray-50/50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="font-semibold text-gray-900">{user.username}</div>
