@@ -20,7 +20,7 @@ const CreateWorkspaceModal = ({ setWorkspaceModal }: CreateWorkspaceModalProps) 
     const {user} = useSelector((state: RootState) => state.auth)
 
     const { handleCreateWorkspace } = useWorkspace()
-
+    
     const workspaceDetails: workspace = {
         _id: "",
         name: workspaceName,
@@ -36,6 +36,7 @@ const CreateWorkspaceModal = ({ setWorkspaceModal }: CreateWorkspaceModalProps) 
         e.preventDefault()
         await handleCreateWorkspace(workspaceDetails)
 
+        setWorkspaceModal(false)
         setWorkspaceName("")
         setDescription("")
         setMembers([])

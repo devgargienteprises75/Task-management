@@ -71,9 +71,6 @@ const Users = () => {
         )
     }, [users, search])
 
-    console.log( search, filterUser);
-    
-
     return (
         <div className="flex h-screen bg-[#F9FAFB] font-sans text-gray-900 overflow-hidden">
             {/* Sidebar */}
@@ -202,7 +199,6 @@ const Users = () => {
                 {isLoading ? <Loader /> : (filterUser.length > 0 ? <div className="flex-1 overflow-auto p-8">
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                         <table className="w-full text-left border-collapse">
-                          
                             <thead>
                                 <tr className="bg-gray-50/50 border-b border-gray-100 text-sm text-gray-500 font-medium">
                                     <th className="px-6 py-4 font-medium">Name</th>
