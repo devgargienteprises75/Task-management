@@ -7,6 +7,8 @@ import useAdmin from "../hooks/useAdmin"
 import { useState } from "react"
 import { cn } from "@/lib/cn"
 import type { CreateUserPayload, UpdateUserPayload } from "@/types/admin.types"
+import Loader from "@/components/Loader"
+import NotFound from "@/components/NotFound"
 
 const Users = () => {
 
@@ -20,8 +22,7 @@ const Users = () => {
     const [currentActiveStatus, setCurrentActiveStatus] = useState<boolean>(true)
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
 
-    const { users } = useSelector((state: RootState) => state.admin)
-    console.log(users);
+    const { users, isLoading } = useSelector((state: RootState) => state.admin)
 
     const credential: CreateUserPayload = {
         username,
@@ -178,9 +179,10 @@ const Users = () => {
                 )}
 
                 {/* Table Area */}
-                <div className="flex-1 overflow-auto p-8">
+                {isLoading ? <Loader /> : (users.length > 0 ? <div className="flex-1 overflow-auto p-8">
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                         <table className="w-full text-left border-collapse">
+                          
                             <thead>
                                 <tr className="bg-gray-50/50 border-b border-gray-100 text-sm text-gray-500 font-medium">
                                     <th className="px-6 py-4 font-medium">Name</th>
@@ -288,7 +290,7 @@ const Users = () => {
                             </div>
                         )}
                     </div>
-                </div>
+                </div> : <NotFound heading="Users"/>)}
             </main>
         </div>
     )
