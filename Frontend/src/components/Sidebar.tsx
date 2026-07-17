@@ -2,6 +2,7 @@ import type { RootState } from "@/app/app.store";
 import useAdmin from "@/features/admin/hooks/useAdmin";
 import useWorkspace from "@/features/workspace/hooks/useWorkspace";
 import { Calendar, Folder, LayoutList, Plus, User } from "lucide-react"
+import { useEffect } from "react";
 import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom";
 
@@ -10,8 +11,13 @@ const Sidebar = () => {
     const { user } = useSelector((state: RootState) => state.auth)
 
     const { handleGetUsers } = useAdmin()
-    const { handleGetWorkspaces } = useWorkspace()
     const navigate = useNavigate()
+
+    useEffect(() => {
+        if(user?.role === 'admin' || user?.role === 'head'){
+            handleGetUsers()
+        }
+    }, [user])
 
     const getUser = async () => {
         await handleGetUsers()
@@ -19,7 +25,6 @@ const Sidebar = () => {
     }
     
     const getWorkspace = async () => {
-        await handleGetWorkspaces()
         navigate("/workspaces")
     }
 
@@ -48,7 +53,7 @@ const Sidebar = () => {
                     <LayoutList size={18} /> Task List
                 </button>
 
-                {user.role === "admin" &&
+                {user?.role === "admin" &&
                     <button
                         onClick={() => {
                             getUser()

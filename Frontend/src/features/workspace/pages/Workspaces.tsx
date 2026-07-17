@@ -2,19 +2,26 @@ import type { RootState } from "@/app/app.store"
 import Sidebar from "@/components/Sidebar"
 import type { workspace as WorkspaceType } from "@/types"
 import { Search, Plus, LayoutGrid, LayoutList } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import CreateWorkspaceModal from "../components/CreateWorkspaceModal"
 import WorkspaceCard from "../components/WorkspaceCard"
 import WorkspaceList from "../components/WorkspaceList"
+import Loader from "@/components/Loader"
+import useWorkspace from "../hooks/useWorkspace"
+import NotFound from "@/components/NotFound"
 
 const Workspaces = () => {
 
     const [ workspaceModal, setWorkspaceModal] = useState<boolean>(false)
     const [ layoutStyle, setlayoutStyle ] = useState<'grid' | 'list'>('grid')
 
-    const { allWorkspaces } = useSelector((state: RootState) => state.workspace)
-    console.log(allWorkspaces);
+    const { handleGetWorkspaces } = useWorkspace()
+    const { allWorkspaces, isLoading } = useSelector((state: RootState) => state.workspace)
+    
+    useEffect(() => {
+        handleGetWorkspaces()
+    }, [])
 
     return (
         <div className="flex h-screen bg-[#F9FAFB] font-sans text-gray-900 overflow-hidden">
@@ -65,13 +72,13 @@ const Workspaces = () => {
                         </div>
                     </div>
 
-                    <div className={layoutStyle === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col gap-4"}>
+                    {isLoading ? <Loader /> : (allWorkspaces.length > 0 ? <div className={layoutStyle === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col gap-4"}>
                         {allWorkspaces?.map((workspace: WorkspaceType) => (
                             layoutStyle === 'grid' 
                                 ? <WorkspaceCard key={workspace._id} workspace={workspace} /> 
                                 : <WorkspaceList key={workspace._id} workspace={workspace} />
                         ))}
-                    </div>
+                    </div> : <NotFound heading="Workspaces"/>)}
                 </div>
             </main>
         </div>

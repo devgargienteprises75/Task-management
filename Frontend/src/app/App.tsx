@@ -8,25 +8,13 @@ import useAuth from "@/features/auth/hooks/useAuth"
 
 const App = () => {
 
-  const { user, isLoading } = useSelector((state: RootState) => state.auth)
+  const { user } = useSelector((state: RootState) => state.auth)
   const { handleGetUsers } = useAdmin()
   const { handleGetMe } = useAuth()
-
-  
-  console.log(user);
-  console.log(isLoading);
 
   useEffect(() => {
     handleGetMe()
   }, [])
-
-
-  
-  // if(user.role === 'admin' || user.role === 'head'){
-  //   useEffect(() => {
-  //     handleGetUsers()
-  //   }, [])
-  // }
 
   return (
     <RouterProvider router={routes} />
