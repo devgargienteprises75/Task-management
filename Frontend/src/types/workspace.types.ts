@@ -4,7 +4,7 @@ export interface workspace {
     _id: string;
     name: string;
     description?: string;
-    createdBy: string | user;
+    createdBy: string;
     members: (string | user)[];
     status: 'active' | 'inactive';
     createdAt: string;
