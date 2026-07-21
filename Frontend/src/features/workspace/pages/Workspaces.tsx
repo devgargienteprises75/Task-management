@@ -12,13 +12,15 @@ import useWorkspace from "../hooks/useWorkspace"
 import NotFound from "@/components/NotFound"
 import WorkspaceToolbar from "../components/WorkspaceToolbar"
 import EditWorkspaceModal from "../components/EditWorkspaceModal"
+import DeleteWorkspace from "../components/DeleteWorkspace"
 
 const Workspaces = () => {
 
+    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
     const [workspaceModal, setWorkspaceModal] = useState<boolean>(false)
     const [layoutStyle, setLayoutStyle] = useState<'grid' | 'list'>('grid')
     const [search, setSearch] = useState<string>("")
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+    const [modalOption, setModalOption] = useState<'edit' | 'delete' | ''>("")
     const [newName, setNewName] = useState<string>("")
     const [newDescription, setNewDescription] = useState<string>("")
     const [newMemberList, setNewMemberList] = useState<(string | user)[]>([])
@@ -99,7 +101,9 @@ const Workspaces = () => {
                             <>
                                 <WorkspaceComponent 
                                     workspace={workspace} 
-                                    setIsModalOpen={setIsModalOpen}
+                                    setIsMenuOpen={setIsMenuOpen}
+                                    modalOption={modalOption} 
+                                    setModalOption={setModalOption}
                                     setSelectedWorkspaceId={setSelectedWorkspaceId}
                                     setSelectedWorkspace={setSelectedWorkspace}
                                     setNewName={setNewName}
@@ -111,15 +115,25 @@ const Workspaces = () => {
                     </div> : <NotFound heading="Workspaces" />)}
                 </div>
 
-                {isModalOpen && selectedWorkspace && (
+                {modalOption === 'edit' && selectedWorkspace && (
                     <EditWorkspaceModal 
                         workspace={selectedWorkspace} 
-                        isModalOpen={isModalOpen} 
-                        setIsModalOpen={setIsModalOpen}
+                        isMenuOpen={isMenuOpen}
+                        setIsMenuOpen={setIsMenuOpen}
+                        modalOption={modalOption}
+                        setModalOption={setModalOption}
                         workspaceDetail={workspaceDetail}
                         setNewName={setNewName}
                         setNewDescription={setNewDescription}
                         setNewMemberList={setNewMemberList}
+                    />
+                )}
+
+                {modalOption === 'delete' && selectedWorkspace && (
+                    <DeleteWorkspace 
+                        workspace={selectedWorkspace}
+                        isMenuOpen={isMenuOpen}
+                        setIsMenuOpen={setIsMenuOpen}
                     />
                 )}
             </main>

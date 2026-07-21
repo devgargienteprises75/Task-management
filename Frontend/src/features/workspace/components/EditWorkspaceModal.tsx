@@ -8,17 +8,20 @@ import useWorkspace from "../hooks/useWorkspace";
 
 interface EditWorkspacePayload {
     workspace: workspace,
-    isModalOpen: boolean,
-    setIsModalOpen: Dispatch<SetStateAction<boolean>>;
+    isMenuOpen: boolean,
+    modalOption: 'edit' | 'delete' | '';
+    setModalOption: Dispatch<SetStateAction<'edit' | 'delete' | ''>>
+    setIsMenuOpen: Dispatch<SetStateAction<boolean>>;
     setNewName: Dispatch<SetStateAction<string>>
     setNewDescription: Dispatch<SetStateAction<string>>
     setNewMemberList: Dispatch<SetStateAction<(string | user)[]>>
     workspaceDetail: UpdateWorkspace
 }
 
-const EditWorkspaceModal = ({ workspace, isModalOpen, setIsModalOpen, workspaceDetail, setNewName, setNewDescription, setNewMemberList }: EditWorkspacePayload) => {
-    if (!isModalOpen) return null
+const EditWorkspaceModal = ({ workspace, isMenuOpen, setModalOption, workspaceDetail, setNewName, setNewDescription, setNewMemberList }: EditWorkspacePayload) => {
+    if (!isMenuOpen) return null
 
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
     const [selectBoxOpen, setSelectBoxOpen] = useState<boolean>(false)
 
     const users = useSelector((state: RootState) => state.admin.users)
@@ -40,6 +43,7 @@ const EditWorkspaceModal = ({ workspace, isModalOpen, setIsModalOpen, workspaceD
             newMemberList: workspaceDetail.newMemberList.map(getMemberId)
         })
         setIsModalOpen(false)
+        setModalOption('')
 
         setNewName(workspace.name)
         setNewDescription(workspace.description ?? "")
@@ -47,13 +51,16 @@ const EditWorkspaceModal = ({ workspace, isModalOpen, setIsModalOpen, workspaceD
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100/00 px-4 backdrop-blur-[2px]">
+         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100/00 px-4 backdrop-blur-[2px]">
             <div className="w-full max-w-md overflow-visible rounded-2xl border border-gray-100 bg-white shadow-xl">
                 <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/50 px-6 py-5">
                     <h3 className="text-lg font-bold text-gray-900">Edit Workspace</h3>
                     <button
                         type="button"
-                        onClick={() => setIsModalOpen(false)}
+                        onClick={() => {
+                            setIsModalOpen(false)
+                            setModalOption('')
+                        }}
                         className="cursor-pointer text-gray-400 transition-colors hover:text-gray-900"
                         aria-label="Close edit workspace modal"
                     >

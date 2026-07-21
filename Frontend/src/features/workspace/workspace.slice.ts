@@ -22,6 +22,12 @@ const workspaceSlice = createSlice({
       const index = state.allWorkspaces.findIndex(w => w._id === action.payload._id)
       if(index !== -1) state.allWorkspaces[index] = action.payload
     },
+    setDeleteWorkspace: (state, action: PayloadAction<string>) => {
+      const index = state.allWorkspaces.findIndex(w => w._id === action.payload)
+      if (index !== -1) {
+        state.allWorkspaces.splice(index, 1)
+      }
+    },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
@@ -31,7 +37,7 @@ const workspaceSlice = createSlice({
   },
 });
 
-export const { setWorkspace, setLoading, setAllWorkspaces, setUpdatedWorkspace } =
+export const { setWorkspace, setLoading, setAllWorkspaces, setUpdatedWorkspace, setDeleteWorkspace } =
   workspaceSlice.actions;
 
 export default workspaceSlice.reducer;

@@ -13,5 +13,9 @@ export const workspaceApi = {
     editWorkspace: async (workspaceDetail: UpdateWorkspace) => {
         const res = await api.patch(`/workspace/${workspaceDetail.workspaceId}`, workspaceDetail)
         return res.data
+    }, 
+    deleteWorkspace: async (workspaceId: string) => {
+        const res = await api.delete(`/workspace/${workspaceId}`)
+        return res.data
     }
 }
