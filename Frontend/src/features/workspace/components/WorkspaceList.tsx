@@ -1,16 +1,23 @@
-import type { workspace } from '@/types'
+import type { user, workspace } from '@/types'
 import { Pencil, Users } from 'lucide-react'
 import { stringToColor } from '@/lib/colors'
+import type { Dispatch, SetStateAction } from 'react';
 
 interface WorkspaceType {
-    workspace: workspace
+  workspace: workspace;
+  setIsModalOpen: Dispatch<SetStateAction<boolean>>;
+  setSelectedWorkspaceId: Dispatch<SetStateAction<string>>;
+  setSelectedWorkspace: Dispatch<SetStateAction<workspace | null>>;
+  setNewName: Dispatch<SetStateAction<string>>;
+  setNewMemberList: Dispatch<SetStateAction<(string | user)[]>>;
+  setNewDescription: Dispatch<SetStateAction<string>>;
 }
 
-const WorkspaceList = ({ workspace }: WorkspaceType) => {
+const WorkspaceList = ({ workspace, setIsModalOpen, setNewName, setNewMemberList, setSelectedWorkspaceId, setNewDescription, setSelectedWorkspace }: WorkspaceType) => {
   return (
     <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all cursor-pointer flex items-center justify-between group">
       <div className="flex items-center gap-4 flex-1">
-        <div 
+        <div
           className="w-12 h-12 rounded-lg flex items-center justify-center text-lg font-bold text-gray-900 shrink-0"
           style={{ backgroundColor: stringToColor(workspace?.name || '') + '50' }}
         >
@@ -28,11 +35,10 @@ const WorkspaceList = ({ workspace }: WorkspaceType) => {
 
       <div className="flex items-center gap-6 shrink-0">
         <span
-          className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold tracking-wide uppercase ${
-            workspace?.status === "active"
-              ? "bg-green-50 text-green-600"
-              : "bg-gray-100 text-gray-500"
-          }`}
+          className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold tracking-wide uppercase ${workspace?.status === "active"
+            ? "bg-green-50 text-green-600"
+            : "bg-gray-100 text-gray-500"
+            }`}
         >
           {workspace?.status}
         </span>
@@ -50,10 +56,22 @@ const WorkspaceList = ({ workspace }: WorkspaceType) => {
           </div>
         </div>
 
-        <button className="text-gray-400 hover:text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+        <button
+          onClick={() => {
+            setSelectedWorkspace(workspace)
+            setIsModalOpen(true)
+            setSelectedWorkspaceId(workspace._id)
+            setNewName(workspace.name)
+            setNewDescription(workspace.description ?? "")
+            setNewMemberList(workspace.members)
+          }}
+          className="text-gray-400 hover:text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
+        >
           <Pencil size={16} />
         </button>
       </div>
+
+      {/* Workspace Edit Modal */}
     </div>
   )
 }
