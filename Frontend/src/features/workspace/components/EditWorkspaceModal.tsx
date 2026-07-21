@@ -20,7 +20,6 @@ const EditWorkspaceModal = ({ workspace, isModalOpen, setIsModalOpen, workspaceD
     if (!isModalOpen) return null
 
     const [selectBoxOpen, setSelectBoxOpen] = useState<boolean>(false)
-    const memberItems: (string | user)[] = workspace.members ?? []
 
     const users = useSelector((state: RootState) => state.admin.users)
     const { handleEditWorkspace } = useWorkspace()
@@ -30,6 +29,9 @@ const EditWorkspaceModal = ({ workspace, isModalOpen, setIsModalOpen, workspaceD
     }
 
     const normalizedMemberIds = workspaceDetail.newMemberList.map(getMemberId)
+
+    // Find actual user objects so we can display their names in the badges
+    const selectedUsers = users.filter(u => normalizedMemberIds.includes(u._id))
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -96,57 +98,65 @@ const EditWorkspaceModal = ({ workspace, isModalOpen, setIsModalOpen, workspaceD
                             <Users size={15} className="text-gray-400" />
                             Update Members
                         </label>
-                        <div 
-                            onClick={() => setSelectBoxOpen(!selectBoxOpen)}
-                            className={cn(
-                                "relative rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 cursor-pointer",
-                                selectBoxOpen ? "border-gray-900 bg-white ring-1 ring-gray-900" : "border-gray-200 hover:border-gray-300"
-                        )}>
-                            <div className="flex flex-wrap gap-2">
-                                {memberItems.length > 0 ? (
-                                    memberItems.map((member) => (
-                                        <span
-                                            key={typeof member === "string" ? member : member._id}
-                                            className={cn(
-                                                "inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700"
-                                            )}
-                                        >
-                                            {typeof member === "string" ? member : member.username}
-                                        </span>
-                                    ))
-                                ) : (
-                                    <span className="text-sm text-gray-500">No members assigned</span>
-                                )}
-                                <div className="flex items-center gap-2 absolute right-4 top-1/2 -translate-y-1/2">
-                                    <span className="text-gray-500 text-sm">Change members...</span>
-                                    <ChevronRight size={16} className={`text-gray-400 transition-transform duration-300 ${selectBoxOpen ? 'rotate-180' : ''}`} />
+                        <div className="relative">
+                            <div
+                                onClick={() => setSelectBoxOpen(!selectBoxOpen)}
+                                className={cn(
+                                    "rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 cursor-pointer min-h-[50px] flex items-center",
+                                    selectBoxOpen ? "border-gray-900 bg-white ring-1 ring-gray-900" : "border-gray-200 hover:border-gray-300"
+                                )}>
+                                <div className="flex flex-wrap gap-2 w-full pr-24">
+                                    {selectedUsers.length > 0 ? (
+                                        selectedUsers.map((u) => (
+                                            <span
+                                                key={u._id}
+                                                className={cn(
+                                                    "inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700"
+                                                )}
+                                            >
+                                                {u.username}
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <span className="text-sm text-gray-500">No members assigned</span>
+                                    )}
+                                </div>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
+                                    <span className="text-gray-500 text-sm">Change</span>
+                                    <ChevronRight size={16} className={`text-gray-400 transition-transform duration-300 ${selectBoxOpen ? 'rotate-90' : ''}`} />
                                 </div>
                             </div>
 
                             {selectBoxOpen && (
-                                <div className="absolute left-0 top-full z-50 mt-2 max-h-[300px] w-full overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-xl space-y-1">
-                                    {users.map((user) => (
-                                        <label 
-                                            key={user._id}
-                                            htmlFor={user._id}
-                                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group"
-                                        >
-                                            <input 
-                                                onChange={(e) => {
-                                                    if(e.target.checked) {
-                                                        setNewMemberList([...workspaceDetail.newMemberList.map(getMemberId), user._id])
-                                                    }
-                                                }}
-                                                checked={normalizedMemberIds.includes(user._id)}
-                                                type="checkbox" 
-                                                id={user._id} 
-                                                className="w-4 h-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900 cursor-pointer accent-[#D1F53B]"
-                                            />
-                                            <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                                                {user.username}
-                                            </span>
-                                        </label>
-                                    ))}
+                                <div className="absolute top-0 left-[calc(100%+32px)] w-[280px] z-50 max-h-[300px] overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-xl space-y-1">
+                                    {users.map((user) => {
+                                        const isChecked = normalizedMemberIds.includes(user._id);
+                                        return (
+                                            <label
+                                                key={user._id}
+                                                htmlFor={user._id}
+                                                className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group"
+                                            >
+                                                <input
+                                                    onChange={() => {
+                                                        const currentIds = workspaceDetail.newMemberList.map(getMemberId);
+                                                        if (!isChecked) {
+                                                            setNewMemberList([...currentIds, user._id])
+                                                        } else {
+                                                            setNewMemberList(currentIds.filter(id => id !== user._id))
+                                                        }
+                                                    }}
+                                                    checked={isChecked}
+                                                    type="checkbox"
+                                                    id={user._id}
+                                                    className="w-4 h-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900 cursor-pointer accent-[#D1F53B]"
+                                                />
+                                                <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                                                    {user.username}
+                                                </span>
+                                            </label>
+                                        )
+                                    })}
                                 </div>
                             )}
                         </div>
