@@ -1,6 +1,6 @@
 import type { RootState } from "@/app/app.store"
 import Sidebar from "@/components/Sidebar"
-import type { workspace as WorkspaceType } from "@/types"
+import type { UpdateWorkspace, user, workspace as WorkspaceType } from "@/types"
 import { Search, Plus } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useSelector } from "react-redux"
@@ -11,12 +11,19 @@ import Loader from "@/components/Loader"
 import useWorkspace from "../hooks/useWorkspace"
 import NotFound from "@/components/NotFound"
 import WorkspaceToolbar from "../components/WorkspaceToolbar"
+import EditWorkspaceModal from "../components/EditWorkspaceModal"
 
 const Workspaces = () => {
 
     const [workspaceModal, setWorkspaceModal] = useState<boolean>(false)
     const [layoutStyle, setLayoutStyle] = useState<'grid' | 'list'>('grid')
     const [search, setSearch] = useState<string>("")
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+    const [newName, setNewName] = useState<string>("")
+    const [newDescription, setNewDescription] = useState<string>("")
+    const [newMemberList, setNewMemberList] = useState<(string | user)[]>([])
+    const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string>("")
+    const [selectedWorkspace, setSelectedWorkspace] = useState<WorkspaceType | null>(null)
 
     const { handleGetWorkspaces } = useWorkspace()
     const { allWorkspaces, isLoading } = useSelector((state: RootState) => state.workspace)
@@ -42,6 +49,13 @@ const Workspaces = () => {
             workspace.description?.toLowerCase().includes(query)
         )
     }, [search, allWorkspaces])
+
+    const workspaceDetail: UpdateWorkspace = {
+        workspaceId: selectedWorkspaceId,
+        newName,
+        newDescription,
+        newMemberList
+    }
 
     return (
         <div className="flex h-screen bg-[#F9FAFB] font-sans text-gray-900 overflow-hidden">
@@ -82,10 +96,32 @@ const Workspaces = () => {
 
                     {isLoading ? <Loader /> : (filterWorkspace.length > 0 ? <div className={layoutStyle === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col gap-4"}>
                         {filterWorkspace?.map((workspace: WorkspaceType) => (
-                            <WorkspaceComponent workspace={workspace} />
+                            <>
+                                <WorkspaceComponent 
+                                    workspace={workspace} 
+                                    setIsModalOpen={setIsModalOpen}
+                                    setSelectedWorkspaceId={setSelectedWorkspaceId}
+                                    setSelectedWorkspace={setSelectedWorkspace}
+                                    setNewName={setNewName}
+                                    setNewDescription={setNewDescription}
+                                    setNewMemberList={setNewMemberList}
+                                />
+                            </>
                         ))}
                     </div> : <NotFound heading="Workspaces" />)}
                 </div>
+
+                {isModalOpen && selectedWorkspace && (
+                    <EditWorkspaceModal 
+                        workspace={selectedWorkspace} 
+                        isModalOpen={isModalOpen} 
+                        setIsModalOpen={setIsModalOpen}
+                        workspaceDetail={workspaceDetail}
+                        setNewName={setNewName}
+                        setNewDescription={setNewDescription}
+                        setNewMemberList={setNewMemberList}
+                    />
+                )}
             </main>
         </div>
     )

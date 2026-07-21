@@ -12,7 +12,7 @@ interface CreateWorkspaceModalProps {
 
 const CreateWorkspaceModal = ({ setWorkspaceModal }: CreateWorkspaceModalProps) => {
 
-    const [selecBoxOpen, setSelectBoxOpen] = useState<boolean>(false)
+    const [selectBoxOpen, setSelectBoxOpen] = useState<boolean>(false)
     const [workspaceName, setWorkspaceName] = useState<string>("")
     const [description, setDescription] = useState<string>("")
     const [members, setMembers] = useState<user[]>([])
@@ -86,17 +86,17 @@ const CreateWorkspaceModal = ({ setWorkspaceModal }: CreateWorkspaceModalProps) 
                         <label className="block text-sm font-medium text-gray-700 mb-1.5">Add Members</label>
                         <div className="relative">
                             <div
-                                onClick={() => setSelectBoxOpen(!selecBoxOpen)}
+                                onClick={() => setSelectBoxOpen(!selectBoxOpen)}
                                 className={cn(
                                     "flex items-center justify-between w-full rounded-xl border bg-gray-50 px-4 py-3 text-[15px] text-gray-900 transition-all cursor-pointer",
-                                    selecBoxOpen ? "border-gray-900 bg-white ring-1 ring-gray-900" : "border-gray-200 hover:border-gray-300"
+                                    selectBoxOpen ? "border-gray-900 bg-white ring-1 ring-gray-900" : "border-gray-200 hover:border-gray-300"
                                 )}
                             >
                                 <span className="text-gray-500">Select members...</span>
-                                <ChevronRight size={18} className={`text-gray-400 transition-transform duration-300 ${selecBoxOpen ? 'rotate-180' : ''}`} />
+                                <ChevronRight size={18} className={`text-gray-400 transition-transform duration-300 ${selectBoxOpen ? 'rotate-180' : ''}`} />
                             </div>
                             
-                            {selecBoxOpen && (
+                            {selectBoxOpen && (
                                 <div className="absolute top-0 left-[calc(100%+32px)] w-[280px] z-50 max-h-[300px] overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-xl space-y-1">
                                     {users.map(user => (
                                         <label 

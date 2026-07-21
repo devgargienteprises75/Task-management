@@ -1,12 +1,19 @@
-import type { workspace } from "@/types";
-import { MoreVertical, Pencil, Users } from "lucide-react";
+import type { user, workspace } from "@/types";
+import { Pencil, Users } from "lucide-react";
+import { stringToColor } from "@/lib/colors";
+import type { Dispatch, SetStateAction } from "react";
 
 interface WorkspaceType {
-    workspace: workspace
+    workspace: workspace;
+    setIsModalOpen: Dispatch<SetStateAction<boolean>>;
+    setSelectedWorkspaceId: Dispatch<SetStateAction<string>>;
+    setSelectedWorkspace: Dispatch<SetStateAction<workspace | null>>;
+    setNewName: Dispatch<SetStateAction<string>>;
+    setNewMemberList: Dispatch<SetStateAction<(string)[]>>;
+    setNewDescription: Dispatch<SetStateAction<string>>;
 }
-import { stringToColor } from "@/lib/colors";
 
-const WorkspaceCard = ({ workspace}: WorkspaceType) => {
+const WorkspaceCard = ({ workspace, setIsModalOpen, setNewName, setNewMemberList, setSelectedWorkspaceId, setNewDescription, setSelectedWorkspace }: WorkspaceType) => {
     
   return (
     <div
@@ -30,7 +37,17 @@ const WorkspaceCard = ({ workspace}: WorkspaceType) => {
           >
             {workspace?.status}
           </span>
-          <button className="text-gray-400 hover:text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+          <button
+            onClick={() => {
+              setSelectedWorkspace(workspace)
+              setIsModalOpen(true)
+              setSelectedWorkspaceId(workspace._id)
+              setNewName(workspace.name)
+              setNewDescription(workspace.description ?? "")
+              setNewMemberList(workspace.members)
+            }}
+            className="text-gray-400 hover:text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+          >
             <Pencil size={16} />
           </button>
         </div>
@@ -58,6 +75,8 @@ const WorkspaceCard = ({ workspace}: WorkspaceType) => {
           <Users size={12} /> {workspace?.members?.length}
         </div>
       </div>
+
+      {/* Workspace Edit Modal */}
     </div>
   );
 };

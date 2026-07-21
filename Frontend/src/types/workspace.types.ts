@@ -17,3 +17,10 @@ export interface workspaceState {
     isLoading: boolean;
     error: string | null;
 }
+
+export interface UpdateWorkspace {
+    workspaceId: string | user;
+    newName: string;
+    newDescription: string;
+    newMemberList: (string | user)[]
+}

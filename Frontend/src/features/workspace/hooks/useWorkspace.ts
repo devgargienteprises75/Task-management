@@ -1,10 +1,10 @@
-import type { workspace } from "@/types";
+import type { UpdateWorkspace, workspace } from "@/types";
 import { workspaceApi } from "../services/workspace.api";
 import { useDispatch } from "react-redux";
-import { setAllWorkspaces, setLoading, setWorkspace } from "../workspace.slice";
+import { setAllWorkspaces, setLoading, setUpdatedWorkspace, setWorkspace } from "../workspace.slice";
 
 const useWorkspace = () => {
-  const { createWorkspace, getWorkspaces } = workspaceApi;
+  const { createWorkspace, getWorkspaces, editWorkspace } = workspaceApi;
   const dispatch = useDispatch();
 
   const handleCreateWorkspace = async (workspaceDetail: workspace) => {
@@ -50,9 +50,32 @@ const useWorkspace = () => {
     }
   };
 
+  const handleEditWorkspace = async (workspaceDetail: UpdateWorkspace) => {
+    dispatch(setLoading(true))
+                
+    try {
+      const res = await editWorkspace(workspaceDetail)
+      dispatch(setUpdatedWorkspace(res.newWorkspace))
+      dispatch(setLoading(false))
+      return {
+        success: true,
+        message: res.message
+      }
+    } catch (err: any) {
+      const message = err?.response?.data?.message || err.message
+      return {
+        success: false,
+        message
+      }
+    } finally {
+      dispatch(setLoading(false))
+    }
+  }
+
   return {
     handleCreateWorkspace,
     handleGetWorkspaces,
+    handleEditWorkspace
   };
 };
 
