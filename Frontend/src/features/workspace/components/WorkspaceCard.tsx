@@ -1,24 +1,60 @@
 import type { user, workspace } from "@/types";
-import { Pencil, Users } from "lucide-react";
+import { EllipsisVertical, Pencil, Trash2, Users } from "lucide-react";
 import { stringToColor } from "@/lib/colors";
-import type { Dispatch, SetStateAction } from "react";
+import { useState, useRef, useEffect, type Dispatch, type SetStateAction } from "react";
+import useWorkspace from "../hooks/useWorkspace";
 
 interface WorkspaceType {
     workspace: workspace;
-    setIsModalOpen: Dispatch<SetStateAction<boolean>>;
+    setIsMenuOpen: Dispatch<SetStateAction<boolean>>;
     setSelectedWorkspaceId: Dispatch<SetStateAction<string>>;
     setSelectedWorkspace: Dispatch<SetStateAction<workspace | null>>;
+    modalOption: 'edit' | 'delete' | '';
+    setModalOption: Dispatch<SetStateAction<'edit' | 'delete' | ''>>
     setNewName: Dispatch<SetStateAction<string>>;
-    setNewMemberList: Dispatch<SetStateAction<(string)[]>>;
+    setNewMemberList: Dispatch<SetStateAction<(string | user)[]>>;
     setNewDescription: Dispatch<SetStateAction<string>>;
 }
 
-const WorkspaceCard = ({ workspace, setIsModalOpen, setNewName, setNewMemberList, setSelectedWorkspaceId, setNewDescription, setSelectedWorkspace }: WorkspaceType) => {
-    
+const WorkspaceCard = ({ workspace, setIsMenuOpen, setModalOption, setNewName, setNewMemberList, setSelectedWorkspaceId, setNewDescription, setSelectedWorkspace }: WorkspaceType) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedWorkspace(workspace);
+    setModalOption('edit');
+    setIsMenuOpen(true);
+    setSelectedWorkspaceId(workspace._id);
+    setNewName(workspace.name);
+    setNewDescription(workspace.description ?? "");
+    setNewMemberList(workspace.members);
+    setIsDropdownOpen(false);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedWorkspace(workspace);
+    setModalOption('delete');
+    setIsMenuOpen(true);
+    setSelectedWorkspaceId(workspace._id);
+    setIsDropdownOpen(false);
+  };
+
   return (
     <div
       key={workspace._id}
-      className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all cursor-pointer flex flex-col h-full group"
+      className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all cursor-pointer flex flex-col h-full group relative"
     >
       <div className="flex justify-between items-start mb-4">
         <div
@@ -37,19 +73,35 @@ const WorkspaceCard = ({ workspace, setIsModalOpen, setNewName, setNewMemberList
           >
             {workspace?.status}
           </span>
-          <button
-            onClick={() => {
-              setSelectedWorkspace(workspace)
-              setIsModalOpen(true)
-              setSelectedWorkspaceId(workspace._id)
-              setNewName(workspace.name)
-              setNewDescription(workspace.description ?? "")
-              setNewMemberList(workspace.members)
-            }}
-            className="text-gray-400 hover:text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-          >
-            <Pencil size={16} />
-          </button>
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsDropdownOpen(!isDropdownOpen);
+              }}
+              className="text-gray-400 hover:text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer p-1 rounded-md hover:bg-gray-100"
+            >
+              <EllipsisVertical size={16}/>
+            </button>
+
+            {isDropdownOpen && (
+              <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden z-20 py-1">
+                <button
+                  onClick={handleEditClick}
+                  className="w-full text-left px-3 py-2 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer transition-colors"
+                >
+                  <Pencil size={14} className="text-gray-400" /> Edit
+                </button>
+                <div className="h-px bg-gray-100 w-full" />
+                <button
+                  onClick={handleDeleteClick}
+                  className="w-full text-left px-3 py-2 text-[13px] font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer transition-colors"
+                >
+                  <Trash2 size={14} className="text-red-500" /> Delete
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

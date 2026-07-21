@@ -1,10 +1,10 @@
 import type { UpdateWorkspace, workspace } from "@/types";
 import { workspaceApi } from "../services/workspace.api";
 import { useDispatch } from "react-redux";
-import { setAllWorkspaces, setLoading, setUpdatedWorkspace, setWorkspace } from "../workspace.slice";
+import { setAllWorkspaces, setDeleteWorkspace, setLoading, setUpdatedWorkspace, setWorkspace } from "../workspace.slice";
 
 const useWorkspace = () => {
-  const { createWorkspace, getWorkspaces, editWorkspace } = workspaceApi;
+  const { createWorkspace, getWorkspaces, editWorkspace, deleteWorkspace } = workspaceApi;
   const dispatch = useDispatch();
 
   const handleCreateWorkspace = async (workspaceDetail: workspace) => {
@@ -70,12 +70,33 @@ const useWorkspace = () => {
     } finally {
       dispatch(setLoading(false))
     }
+  };
+
+  const handleDeleteWorkspace = async (workspaceId: string) => {
+    dispatch(setLoading(true))
+
+    try {
+      const res = await deleteWorkspace(workspaceId)
+      dispatch(setDeleteWorkspace(workspaceId))
+      return {
+        success: true,
+        message: res.message
+      }
+    } catch (err: any) {
+      return {
+        success: false,
+        message: err?.response?.data?.message || err.message
+      }
+    } finally {
+      dispatch(setLoading(false))
+    }
   }
 
   return {
     handleCreateWorkspace,
     handleGetWorkspaces,
-    handleEditWorkspace
+    handleEditWorkspace,
+    handleDeleteWorkspace
   };
 };
 
