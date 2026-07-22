@@ -59,6 +59,8 @@ const Workspaces = () => {
         newMemberList
     }
 
+    
+
     return (
         <div className="flex h-screen bg-[#F9FAFB] font-sans text-gray-900 overflow-hidden">
             {/* Sidebar */}

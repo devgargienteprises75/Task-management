@@ -8,9 +8,20 @@ export interface task {
     workspaceId: string | workspace;
     assignTo: string | user;
     assignBy: string | user;
-    status: 'Pending' | 'Completed' | 'Hold';
+    status: 'Todo' | 'In-progress' | 'Done';
     priority: 'High' | 'Medium' | 'Low';
     dueDate?: string;
-    createAt: string;
-    updatedAt: string;
+    createAt?: string;
+    updatedAt?: string;
+}
+
+export interface TaskResponse {
+    task: task
+}
+
+export interface TaskState {
+    task: task | null;
+    allTask: task[];
+    isLoading: boolean;
+    error: string | null;
 }

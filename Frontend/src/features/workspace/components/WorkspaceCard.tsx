@@ -3,6 +3,10 @@ import { EllipsisVertical, Pencil, Trash2, Users } from "lucide-react";
 import { stringToColor } from "@/lib/colors";
 import { useState, useRef, useEffect, type Dispatch, type SetStateAction } from "react";
 import useWorkspace from "../hooks/useWorkspace";
+import useTask from "@/features/task/hooks/useTask";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/app/app.store";
+import { useNavigate } from "react-router-dom";
 
 interface WorkspaceType {
     workspace: workspace;
@@ -51,9 +55,18 @@ const WorkspaceCard = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
     setIsDropdownOpen(false);
   };
 
+  const { handleGetTask } = useTask()
+  const navigate = useNavigate()
+
+  const getTasks = async (workspaceId: string) => {
+    await handleGetTask(workspaceId)
+    navigate(`/${workspace._id}/tasks`)
+  }
+
   return (
     <div
       key={workspace._id}
+      onClick={() => getTasks(workspace._id)}
       className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all cursor-pointer flex flex-col h-full group relative"
     >
       <div className="flex justify-between items-start mb-4">
