@@ -16,7 +16,7 @@ authRouter.post("/forget-password", forgetPasswordController)
 authRouter.patch("/reset-password", resetPasswordValidation, resetPasswordController)
 
 // User management
-authRouter.get('/users', verifyAdmin, getUserController)
+authRouter.get('/users', verifyUser, getUserController)
 authRouter.patch('/user/:id', verifyAdmin, updateUserController)
 authRouter.delete('/user/:id', verifyAdmin, deleteUserController)
 

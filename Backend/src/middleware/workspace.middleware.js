@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 import { userModel } from '../models/user.model.js';
 import { workspaceModel } from '../models/workspace.model.js';
 import { config } from '../config/config.js';
+import mongoose from 'mongoose';
 
 export async function requireAdminOrHead(req, res, next) {
     const { token } = req.cookies
@@ -79,9 +80,11 @@ export async function verifyWorkspaceOwnership(req, res, next) {
                 err: "Workspace not owned by this user"
             })
         }
+
+        const assignToId = assignTo.map((id) => new mongoose.Types.ObjectId(id))
     
-        const assignedMember = workspace.members.find((id) => assignTo === id.toString())
-        if(!assignedMember){
+        const assignedMember = workspace.members.filter((id) => assignToId.includes(id.toString()))
+        if(assignedMember.length !== assignToId.length){
             return res.status(400).json({
                 message: "Assign user is not the member of this workspace",
                 success: false,

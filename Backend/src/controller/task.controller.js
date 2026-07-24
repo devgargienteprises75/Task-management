@@ -11,7 +11,12 @@ export async function createTaskController(req, res) {
         const userId = req.userId
         const { title, description, assignTo, priority, dueDate} = req.body
 
-        if(!title || !description || !assignTo){
+        const assignToId = assignTo.map((id) => {
+            return new mongoose.Types.ObjectId(id)
+        })
+        console.log(assignToId);
+        
+        if(!title || !description || !assignToId){
             return res.status(400).json({
                 message: "Required missing fields",
                 success: false,
@@ -53,7 +58,7 @@ export async function createTaskController(req, res) {
             title,
             description,
             workspaceId: workspaceid,
-            assignTo,
+            assignTo: assignToId,
             assignBy: userId,
             priority,
             dueDate: parsedDueDate

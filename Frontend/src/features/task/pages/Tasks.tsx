@@ -1,4 +1,6 @@
+import type { RootState } from "@/app/app.store";
 import Sidebar from "@/components/Sidebar";
+import type { task, user } from "@/types";
 import {
   Calendar,
   CheckSquare,
@@ -17,140 +19,25 @@ import {
   FolderKanban,
   Tag
 } from "lucide-react";
-import { useState } from "react";
-
-interface DummyTask {
-  id: string;
-  title: string;
-  description: string;
-  priority: "High" | "Medium" | "Low";
-  category: string;
-  status: "Todo" | "In-progress" | "Done";
-  dueDate: string;
-  assignees: { name: string; bg: string }[];
-  commentsCount: number;
-  attachmentsCount: number;
-  subtasks: { completed: number; total: number };
-}
-
-const dummyTasks: DummyTask[] = [
-  {
-    id: "TASK-101",
-    title: "Design System Tokens & Dark Mode Palette",
-    description: "Establish foundational color variables, typography scales, and dark mode theme specifications.",
-    priority: "High",
-    category: "Design",
-    status: "Todo",
-    dueDate: "Jul 28, 2026",
-    assignees: [
-      { name: "Alex Riv", bg: "bg-purple-500" },
-      { name: "Sarah Chen", bg: "bg-blue-500" },
-    ],
-    commentsCount: 4,
-    attachmentsCount: 2,
-    subtasks: { completed: 2, total: 6 },
-  },
-  {
-    id: "TASK-102",
-    title: "Setup OAuth 2.0 & Google Authentication",
-    description: "Integrate passport Google Strategy and refresh token rotation logic on the backend auth middleware.",
-    priority: "High",
-    category: "Backend",
-    status: "Todo",
-    dueDate: "Jul 30, 2026",
-    assignees: [{ name: "Marcus Vance", bg: "bg-emerald-500" }],
-    commentsCount: 7,
-    attachmentsCount: 1,
-    subtasks: { completed: 0, total: 4 },
-  },
-  {
-    id: "TASK-103",
-    title: "Landing Page Micro-animations",
-    description: "Add Framer Motion scroll triggers and interactive hover transitions for feature showcase cards.",
-    priority: "Medium",
-    category: "Frontend",
-    status: "Todo",
-    dueDate: "Aug 02, 2026",
-    assignees: [{ name: "Elena Rostova", bg: "bg-pink-500" }],
-    commentsCount: 2,
-    attachmentsCount: 0,
-    subtasks: { completed: 1, total: 3 },
-  },
-  {
-    id: "TASK-104",
-    title: "Kanban Drag-and-Drop State Integration",
-    description: "Implement smooth HTML5 drag events with optimistic store updates for column status updates.",
-    priority: "High",
-    category: "Frontend",
-    status: "In-progress",
-    dueDate: "Jul 26, 2026",
-    assignees: [
-      { name: "Sarah Chen", bg: "bg-blue-500" },
-      { name: "Alex Riv", bg: "bg-purple-500" },
-    ],
-    commentsCount: 12,
-    attachmentsCount: 5,
-    subtasks: { completed: 3, total: 5 },
-  },
-  {
-    id: "TASK-105",
-    title: "API Endpoint Rate Limiting & Caching",
-    description: "Configure Redis caching layer for workspace queries and rate limiting middleware for public APIs.",
-    priority: "Medium",
-    category: "Backend",
-    status: "In-progress",
-    dueDate: "Jul 29, 2026",
-    assignees: [{ name: "Marcus Vance", bg: "bg-emerald-500" }],
-    commentsCount: 3,
-    attachmentsCount: 1,
-    subtasks: { completed: 4, total: 4 },
-  },
-  {
-    id: "TASK-106",
-    title: "User Profile Settings Modal",
-    description: "Build user profile edit form with avatar file upload preview and password updates.",
-    priority: "Low",
-    category: "Frontend",
-    status: "In-progress",
-    dueDate: "Aug 05, 2026",
-    assignees: [{ name: "Elena Rostova", bg: "bg-pink-500" }],
-    commentsCount: 1,
-    attachmentsCount: 0,
-    subtasks: { completed: 1, total: 2 },
-  },
-  {
-    id: "TASK-107",
-    title: "Database Index Optimization for Task Queries",
-    description: "Create compound indexes on (workspaceId, status, priority) to boost query performance.",
-    priority: "Medium",
-    category: "Database",
-    status: "Done",
-    dueDate: "Jul 22, 2026",
-    assignees: [{ name: "Marcus Vance", bg: "bg-emerald-500" }],
-    commentsCount: 8,
-    attachmentsCount: 3,
-    subtasks: { completed: 3, total: 3 },
-  },
-  {
-    id: "TASK-108",
-    title: "UI Component Library Audit & Testing",
-    description: "Validate accessibility contrast ratios and responsive flex layouts across tablet and mobile viewports.",
-    priority: "Low",
-    category: "QA",
-    status: "Done",
-    dueDate: "Jul 21, 2026",
-    assignees: [
-      { name: "Sarah Chen", bg: "bg-blue-500" },
-      { name: "Elena Rostova", bg: "bg-pink-500" },
-    ],
-    commentsCount: 5,
-    attachmentsCount: 2,
-    subtasks: { completed: 5, total: 5 },
-  },
-];
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import useTask from "../hooks/useTask";
 
 const Tasks = () => {
   const [selectedView, setSelectedView] = useState<"board" | "list">("board");
+
+  const {handleGetAllTask} = useTask()
+
+  const allTask = useSelector((state: RootState) => state.task.allTask)
+  const users = useSelector((state: RootState) => state.admin.users)
+
+  useEffect(() => {
+    if(!allTask.length){
+      handleGetAllTask()
+    }
+  }, [])
+
+  const taskUser = users.filter(u => allTask.find(t => t.assignTo.includes(u._id)))
 
   const getPriorityStyles = (priority: "High" | "Medium" | "Low") => {
     switch (priority) {
@@ -165,31 +52,14 @@ const Tasks = () => {
     }
   };
 
-  const getCategoryStyles = (category: string) => {
-    switch (category) {
-      case "Design":
-        return "bg-purple-50 text-purple-600 border border-purple-100";
-      case "Backend":
-        return "bg-blue-50 text-blue-600 border border-blue-100";
-      case "Frontend":
-        return "bg-indigo-50 text-indigo-600 border border-indigo-100";
-      case "Database":
-        return "bg-cyan-50 text-cyan-600 border border-cyan-100";
-      case "QA":
-        return "bg-teal-50 text-teal-600 border border-teal-100";
-      default:
-        return "bg-gray-100 text-gray-700 border border-gray-200";
-    }
-  };
-
-  const todoTasks = dummyTasks.filter((t) => t.status === "Todo");
-  const inProgressTasks = dummyTasks.filter((t) => t.status === "In-progress");
-  const doneTasks = dummyTasks.filter((t) => t.status === "Done");
+  const todoTasks = allTask?.filter((t) => t.status === "Todo");
+  const inProgressTasks = allTask?.filter((t) => t.status === "In-progress");
+  const doneTasks = allTask?.filter((t) => t.status === "Done");
 
   const renderColumn = (
     title: string,
     count: number,
-    tasks: DummyTask[],
+    allTask: task[],
     statusType: "Todo" | "In-progress" | "Done"
   ) => {
     const columnTheme = {
@@ -230,9 +100,9 @@ const Tasks = () => {
 
         {/* Task Cards Stack */}
         <div className="flex-1 flex flex-col gap-3.5 overflow-y-auto pr-0.5">
-          {tasks.map((task) => (
+          {allTask?.map((task) => (
             <div
-              key={task.id}
+              key={task._id}
               className={`bg-white p-4 rounded-xl border border-gray-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-200 group cursor-pointer ${
                 statusType === "Done" ? "bg-gray-50/40" : ""
               }`}
@@ -242,9 +112,6 @@ const Tasks = () => {
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${getPriorityStyles(task.priority)}`}>
                     {task.priority}
-                  </span>
-                  <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md ${getCategoryStyles(task.category)}`}>
-                    {task.category}
                   </span>
                 </div>
               </div>
@@ -275,25 +142,25 @@ const Tasks = () => {
                       <span>{task.attachmentsCount}</span>
                     </div>
                   )} */}
-                  {task.commentsCount > 0 && (
+                  {/* {task.commentsCount > 0 && (
                     <div className="flex items-center gap-0.5 text-[11px]">
                       <MessageSquare size={12} />
                       <span>{task.commentsCount}</span>
                     </div>
-                  )}
+                  )} */}
 
                   {/* Assignees Avatars Stack */}
                   <div className="flex -space-x-1.5 ml-1">
-                    {task.assignees.map((user, idx) => (
+                    {taskUser?.map((user:user, idx) => (
                       <div
                         key={idx}
-                        title={user.name}
-                        className={`w-6 h-6 rounded-full border-2 border-white ${user.bg} text-white flex items-center justify-center text-[9px] font-bold shadow-xs`}
+                        title={user?.username}
+                        className={`w-6 h-6 rounded-full border-2 border-white bg-blue-500 text-white flex items-center justify-center text-[9px] font-bold shadow-xs`}
                       >
-                        {user.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
+                        {user?.username
+                          ?.split(" ")
+                          ?.map((n: string) => n[0])
+                          ?.join("")}
                       </div>
                     ))}
                   </div>
@@ -328,7 +195,7 @@ const Tasks = () => {
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-bold tracking-tight text-gray-900">Task Board</h1>
                 <span className="bg-gray-100 text-gray-600 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-gray-200">
-                  {dummyTasks.length} Total
+                  {allTask.length} Total
                 </span>
               </div>
               <p className="text-xs text-gray-500 mt-0.5">
