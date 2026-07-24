@@ -22,6 +22,10 @@ const workspaceSchema = new mongoose.Schema({
         type: String,
         enum: ["active", "inactive"],
         default: "active"
+    },
+    isGeneral: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true })
 

@@ -71,25 +71,24 @@ export async function verifyWorkspaceOwnership(req, res, next) {
             })
         }
 
-        console.log(userId, workspace.createdBy);
-
-        if(!workspace.createdBy.equals(userId)){
-            return res.status(401).json({
-                message: "Workspace not owned by this user",
-                success: false,
-                err: "Workspace not owned by this user"
-            })
-        }
-
-        const assignToId = assignTo.map((id) => new mongoose.Types.ObjectId(id))
-    
-        const assignedMember = workspace.members.filter((id) => assignToId.includes(id.toString()))
-        if(assignedMember.length !== assignToId.length){
-            return res.status(400).json({
-                message: "Assign user is not the member of this workspace",
-                success: false,
-                err: "Assign user is not the member of this workspace"
-            })
+        if(!workspace.isGeneral){
+            if(!workspace.createdBy.equals(userId)){
+                return res.status(401).json({
+                    message: "Workspace not owned by this user",
+                    success: false,
+                    err: "Workspace not owned by this user"
+                })
+            }
+            const assignToId = assignTo.map((id) => new mongoose.Types.ObjectId(id))
+        
+            const assignedMember = workspace.members.filter((id) => assignToId.includes(id.toString()))
+            if(assignedMember.length !== assignToId.length){
+                return res.status(400).json({
+                    message: "Assign user is not the member of this workspace",
+                    success: false,
+                    err: "Assign user is not the member of this workspace"
+                })
+            }
         }
 
         next()
@@ -124,15 +123,16 @@ export async function verifyWorkspaceUser(req, res, next){
             })
         }
 
-        const user = await userModel.findById(userId)
         const workspaceMember = workspace.members.find((id) => userId === id.toString())
         
-        if(!workspaceMember && !workspace.createdBy.equals(userId)){
-            return res.status(400).json({
-                message: "Member are not from this workspace",
-                success: false,
-                err: "Member are not from this workspace"
-            })
+        if(!workspace.isGeneral){
+            if(!workspaceMember && !workspace.createdBy.equals(userId)){
+                return res.status(400).json({
+                    message: "Member are not from this workspace",
+                    success: false,
+                    err: "Member are not from this workspace"
+                })
+            }
         }
 
         next()

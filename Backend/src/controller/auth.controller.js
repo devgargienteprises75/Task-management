@@ -3,6 +3,7 @@ import jwt, { decode } from 'jsonwebtoken'
 import sendEmail from "../services/email.service.js"
 import bcrypt from "bcryptjs"
 import { config } from "../config/config.js"
+import { workspaceModel } from "../models/workspace.model.js"
 
 // Add User controller
 export async function addUserController(req, res) {
@@ -34,6 +35,16 @@ export async function addUserController(req, res) {
         role,
         password
     })
+
+    const workspace = await workspaceModel.findOneAndUpdate(
+        { isGeneral: true },
+        {
+            $push: {
+                members: user._id
+            }
+        },
+        { new: true }
+    )
 
     res.status(201).json({
         message: "User registered successfully",
