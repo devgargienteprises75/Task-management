@@ -9,6 +9,9 @@ const transport = nodemailer.createTransport({
         clientId: config.CLIENT_ID,
         clientSecret: config.CLIENT_SECRET,
         refreshToken: config.REFRESH_TOKEN
+    },
+    tls: {
+        rejectUnauthorized: false    // Remove this before deploy in Production
     }
 })
 

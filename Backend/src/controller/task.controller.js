@@ -73,6 +73,34 @@ export async function createTaskController(req, res) {
     }
 }
 
+// Fetch all tasks of user
+export async function getAllTasksController(req, res){
+    try {
+        const userId = req.userId
+
+        const tasks = await taskModel.find({ assignTo: userId })
+        if(!tasks){
+            return res.status(404).json({
+                message: "No tasks found for this user",
+                success: false,
+                err: "No task found for this user"
+            })
+        }
+
+        return res.status(200).json({
+            message: "Task fetched successfully",
+            success: true,
+            tasks
+        })
+    } catch (err) {
+        return res.status(400).json({
+            message: "Unexpected error",
+            success: false,
+            err: err.message
+        })
+    }
+}
+
 // Fetch all tasks
 export async function getTasksController(req, res) {
     try {
@@ -95,6 +123,8 @@ export async function getTasksController(req, res) {
         })
     }
 }
+
+// Fetch 
 
 // Fetch task detail
 export async function getTaskDetailController(req, res) {

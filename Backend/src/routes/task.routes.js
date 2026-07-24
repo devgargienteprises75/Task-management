@@ -8,7 +8,8 @@ import {
     deleteTaskController, 
     addCommentsController,
     getCommentsList,
-    deleteCommentController
+    deleteCommentController,
+    getAllTasksController
 } from "../controller/task.controller.js";
 import { verifyUser } from "../middleware/auth.middleware.js";
 import { taskValidation } from "../validation/task.validation.js";
@@ -21,6 +22,9 @@ taskRouter.post("/:workspaceid/create-task", requireAdminOrHead, verifyWorkspace
 
 // Fetch all task of workspace
 taskRouter.get("/:workspaceid/tasks", verifyUser, verifyWorkspaceUser, getTasksController)
+
+// Fetch all task by user
+taskRouter.get("/", verifyUser, getAllTasksController)
 
 // Fetch single task detail
 taskRouter.get("/:workspaceid/task-details/:taskid", verifyUser, verifyWorkspaceUser, getTaskDetailController)
