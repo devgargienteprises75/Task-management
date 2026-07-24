@@ -6,11 +6,11 @@ export interface task {
     title: string;
     description: string;
     workspaceId: string | workspace;
-    assignTo: string | user;
+    assignTo: (string | user)[];
     assignBy: string | user;
     status: 'Todo' | 'In-progress' | 'Done';
     priority: 'High' | 'Medium' | 'Low';
-    dueDate?: string;
+    dueDate: string;
     createAt?: string;
     updatedAt?: string;
 }

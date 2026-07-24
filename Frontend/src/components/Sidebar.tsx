@@ -17,11 +17,6 @@ const Sidebar = () => {
             handleGetUsers()
         }
     }, [user])
-
-    const getUser = async () => {
-        await handleGetUsers()
-        navigate("/users")
-    }
     
     const getWorkspace = async () => {
         navigate("/workspaces")
@@ -56,9 +51,7 @@ const Sidebar = () => {
 
                 {user?.role === "admin" &&
                     <button
-                        onClick={() => {
-                            getUser()
-                        }}
+                        onClick={() => navigate("/users")}
                         className="flex w-full items-center gap-3 px-4 py-2.5 text-gray-900 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-100 cursor-pointer"
                     >
                         <User /> User list

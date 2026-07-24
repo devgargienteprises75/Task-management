@@ -10,17 +10,17 @@ const taskSchema = new mongoose.Schema({
         required: true
     },
     workspaceId: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Workspaces",
         required: true
     },
-    assignTo: {
-        type: mongoose.Types.ObjectId,
+    assignTo: [{
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Users",
         required: true
-    },
+    }],
     assignBy: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Users",
         required: true
     },
