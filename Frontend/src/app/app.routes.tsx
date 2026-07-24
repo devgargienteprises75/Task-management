@@ -5,6 +5,7 @@ import Dashboard from "@/pages/Dashboard";
 import Users from "@/features/admin/pages/Users";
 import Workspaces from "@/features/Workspace/pages/Workspaces";
 import SpecificWorkspace from "@/features/workspace/pages/SpecificWorkspace";
+import Tasks from "@/features/task/pages/Tasks";
 
 export const routes = createBrowserRouter([
     {
@@ -26,8 +27,8 @@ export const routes = createBrowserRouter([
         element: <SpecificWorkspace />
     },
     {
-        path: "/task/:id",
-        // element: <Task />
+        path: "/tasks",
+        element: <Tasks />
     },
     {
         path: "/users",

@@ -16,6 +16,6 @@ app.get('/health', (req, res) => {
 
 app.use('/api/auth', authRouter)
 app.use('/api/workspace', workspaceRouter)
-app.use('/api/task', taskRouter)
+app.use('/api/tasks', taskRouter)
 
 export default app

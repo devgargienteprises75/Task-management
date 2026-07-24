@@ -4,7 +4,7 @@ import { setAllTask, setError, setLoading } from "../task.slice"
 
 const useTask = () => {
 
-    const { getTasks, createTask } = taskApi
+    const { getTasks, createTask, getAllTasks } = taskApi
     const dispatch = useDispatch()
 
     const handleGetTask = async (workspaceId: string) => {
@@ -29,10 +29,32 @@ const useTask = () => {
         }
     }
 
+    const handleGetAllTask = async () => {
+        dispatch(setLoading(true))
 
-  return {
-    handleGetTask,
-  }
+        try {
+            const res = await getAllTasks()
+            dispatch(setAllTask(res.tasks))
+            return {
+                success: true,
+                message: res.message
+            }
+        } catch (err: any) {
+            const message = err?.response?.data?.message || err.message;
+            dispatch(setError(message))
+            return {
+                success: false,
+                message: message
+            }
+        } finally {
+            dispatch(setLoading(false))
+        }
+    }
+
+    return {
+        handleGetTask,
+        handleGetAllTask
+    }
 }
 
 export default useTask

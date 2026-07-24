@@ -45,10 +45,12 @@ const Sidebar = () => {
                 </button>
             </div>
             <nav className="flex-1 px-4 space-y-1">
-                <button className="flex items-center gap-3 px-4 py-2.5 text-gray-500 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-50">
+                <button className="flex items-center gap-3 px-4 py-2.5 text-gray-500 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-100">
                     <Calendar size={18} /> Dashboard
                 </button>
-                <button className="flex items-center gap-3 px-4 py-2.5 text-gray-900 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-50">
+                <button 
+                    onClick={() => navigate("/tasks")}
+                    className="flex w-full items-center gap-3 px-4 py-2.5 text-gray-900 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-100 cursor-pointer">
                     <LayoutList size={18} /> Task List
                 </button>
 
@@ -57,13 +59,13 @@ const Sidebar = () => {
                         onClick={() => {
                             getUser()
                         }}
-                        className="flex w-full items-center gap-3 px-4 py-2.5 text-gray-900 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-50 cursor-pointer"
+                        className="flex w-full items-center gap-3 px-4 py-2.5 text-gray-900 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-100 cursor-pointer"
                     >
                         <User /> User list
                     </button>
                 }
 
-                <button onClick={getWorkspace} className="flex w-full items-center gap-3 px-4 py-2.5 text-gray-900 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-50 cursor-pointer">
+                <button onClick={getWorkspace} className="flex w-full items-center gap-3 px-4 py-2.5 text-gray-900 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-100 cursor-pointer">
                     <Folder size={18} /> Workspaces
                 </button>
             </nav>
