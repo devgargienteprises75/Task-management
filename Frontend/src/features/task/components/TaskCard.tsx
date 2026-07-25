@@ -67,7 +67,7 @@ const TaskCard = ({ task, taskUsers, statusType }: TaskCardProps) => {
         {/* Due date */}
         <div className="flex items-center gap-1 text-[11px]">
           <Calendar size={13} className="text-gray-400" />
-          <span>{task.dueDate || "—"}</span>
+          <span>{task.dueDate?.split("T")[0] || "—"}</span>
         </div>
 
         {/* Assignees Avatars Stack */}
