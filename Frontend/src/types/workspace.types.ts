@@ -7,6 +7,7 @@ export interface workspace {
     createdBy: string;
     members: (string | user)[];
     status: 'active' | 'inactive';
+    isGeneral: boolean;
     createdAt: string;
     updatedAt: string;
 }
