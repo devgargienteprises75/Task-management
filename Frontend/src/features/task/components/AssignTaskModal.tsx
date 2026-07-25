@@ -81,6 +81,8 @@ const AssignTaskModal = ({ modalOpen, setModalOpen }: AssignTaskModalProps) => {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [submitted, setSubmitted] = useState(false)
 
+    console.log(dueDate);
+
     const { user } = useSelector((state: RootState) => state.auth)
     const { users } = useSelector((state: RootState) => state.admin)
     
@@ -312,9 +314,6 @@ const AssignTaskModal = ({ modalOpen, setModalOpen }: AssignTaskModalProps) => {
                         </div>
                     </div>
 
-                    {/* Due Date */}
-                    
-
                     {/* Status & Priority — side by side */}
                     <div className="grid grid-cols-2 gap-4">
                         {/* Priority */}
@@ -353,6 +352,7 @@ const AssignTaskModal = ({ modalOpen, setModalOpen }: AssignTaskModalProps) => {
                             </div>
                         </div>
 
+                        {/* Due Date */}
                         <div>
                         <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
                             <Calendar size={14} className="text-gray-400" />

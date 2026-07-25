@@ -10,7 +10,8 @@ export async function createTaskController(req, res) {
         const { workspaceid } = req.params
         const userId = req.userId
         const { title, description, assignTo, priority, dueDate} = req.body
-
+        console.log(dueDate);
+        
         const assignToId = assignTo.map((id) => {
             return new mongoose.Types.ObjectId(id)
         })
@@ -38,12 +39,12 @@ export async function createTaskController(req, res) {
             }
 
             const [year, month, day] = dueDate.split("-").map(Number)
-            parsedDueDate = new Date(year, month - 1, day)
+            parsedDueDate = new Date(Date.UTC(year, month - 1, day))
 
             const isRealDate = 
-                parsedDueDate.getFullYear() === year &&
-                parsedDueDate.getMonth() === month - 1 &&
-                parsedDueDate.getDate() === day
+                parsedDueDate.getUTCFullYear() === year &&
+                parsedDueDate.getUTCMonth() === month - 1 &&
+                parsedDueDate.getUTCDate() === day
 
             if(!isRealDate){
                 return res.status(400).json({
@@ -53,6 +54,9 @@ export async function createTaskController(req, res) {
                 })
             }
         }
+
+        console.log("parsed due date", parsedDueDate);
+        
 
         const task = await taskModel.create({
             title,
