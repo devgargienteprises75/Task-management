@@ -16,7 +16,7 @@ export interface task {
 }
 
 export interface TaskResponse {
-    task: task
+    newTask: task
 }
 
 export interface TaskState {
@@ -24,4 +24,14 @@ export interface TaskState {
     allTask: task[];
     isLoading: boolean;
     error: string | null;
+}
+
+export interface UpdatedTask {
+    _id?: string;
+    title?: string;
+    description?: string;
+    assignTo?: (string | user)[];
+    status?: 'Todo' | 'In-progress' | 'Done';
+    priority?: 'High' | 'Medium' | 'Low';
+    dueDate?: string;
 }

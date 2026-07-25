@@ -1,4 +1,4 @@
-import type { task, TaskState } from "@/types";
+import type { task, TaskState, UpdatedTask } from "@/types";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: TaskState = {
@@ -16,7 +16,11 @@ const taskSlice = createSlice({
             state.task = action.payload
         },
         setAllTask: (state, action: PayloadAction<task[]>) => {
-            state.allTask.push(...action.payload)
+            state.allTask = action.payload
+        },
+        setUpdateTask: (state, action: PayloadAction<UpdatedTask>) => {
+            const index = state.allTask.findIndex(t => String(t._id) === String(action.payload._id))
+            if(index !== -1) state.allTask[index] = {...state.allTask[index], ...action.payload}
         },
         setLoading: (state, action: PayloadAction<boolean>) => {
             state.isLoading = action.payload
@@ -27,5 +31,5 @@ const taskSlice = createSlice({
     }
 })
 
-export const { setTask, setLoading, setAllTask, setError } = taskSlice.actions
+export const { setTask, setLoading, setAllTask, setError, setUpdateTask } = taskSlice.actions
 export default taskSlice.reducer
