@@ -1,12 +1,14 @@
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { taskApi } from "../services/task.api"
-import { setAllTask, setError, setLoading, setTask } from "../task.slice"
-import type { task } from "@/types"
+import { setAllTask, setError, setLoading, setTask, setUpdateTask } from "../task.slice"
+import type { task, UpdatedTask, workspace } from "@/types"
+import type { RootState } from "@/app/app.store"
 
 const useTask = () => {
 
-    const { getTasks, createTask, getAllTasks } = taskApi
+    const { getTasks, createTask, getAllTasks, updateTask } = taskApi
     const dispatch = useDispatch()
+    const allTask = useSelector((state: RootState) => state.task.allTask)
 
     const handleGetTask = async (workspaceId: string) => {
         dispatch(setLoading(true))
@@ -74,10 +76,36 @@ const useTask = () => {
         }
     }
 
+    const handleUpdateTask = async (workspaceId: workspace['_id'], taskDetails: UpdatedTask) => {
+        dispatch(setLoading(true))
+
+        const previousTask = allTask.find(t => t._id === taskDetails._id)
+        dispatch(setUpdateTask({...previousTask, ...taskDetails}))
+        
+        try {
+            const res = await updateTask(workspaceId, taskDetails)
+            dispatch(setUpdateTask(res.newTask))
+            return {
+                success: true,
+                message: res.message
+            }
+        } catch (err:any) {
+            const message = err?.response?.data?.message || err.message;
+            dispatch(setError(message))
+            return {
+                success: false,
+                message: message
+            }
+        } finally {
+            dispatch(setLoading(false))
+        }
+    }
+
     return {
         handleGetTask,
         handleGetAllTask,
-        handleCreateTask
+        handleCreateTask,
+        handleUpdateTask
     }
 }
 
