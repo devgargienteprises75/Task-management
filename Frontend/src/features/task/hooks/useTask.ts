@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux"
 import { taskApi } from "../services/task.api"
-import { setAllTask, setError, setLoading } from "../task.slice"
+import { setAllTask, setError, setLoading, setTask } from "../task.slice"
+import type { task } from "@/types"
 
 const useTask = () => {
 
@@ -50,10 +51,33 @@ const useTask = () => {
             dispatch(setLoading(false))
         }
     }
+    
+    const handleCreateTask = async (workspaceId: string, taskDetails: task) => {
+        dispatch(setLoading(true))
+
+        try {
+            const res = await createTask(workspaceId, taskDetails)
+            dispatch(setTask(res.task))
+            return {
+                success: true,
+                message: res.message
+            }
+        } catch (err:any) {
+            const message = err?.response?.data?.message || err.message;
+            dispatch(setError(message))
+            return {
+                success: false,
+                message: message
+            }
+        } finally {
+            dispatch(setLoading(false))
+        }
+    }
 
     return {
         handleGetTask,
-        handleGetAllTask
+        handleGetAllTask,
+        handleCreateTask
     }
 }
 

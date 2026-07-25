@@ -3,6 +3,7 @@ import { userModel } from '../models/user.model.js';
 import { workspaceModel } from '../models/workspace.model.js';
 import { config } from '../config/config.js';
 import mongoose from 'mongoose';
+import { assign } from 'nodemailer/lib/shared/index.js';
 
 export async function requireAdminOrHead(req, res, next) {
     const { token } = req.cookies
@@ -72,17 +73,17 @@ export async function verifyWorkspaceOwnership(req, res, next) {
         }
 
         if(!workspace.isGeneral){
-            if(!workspace.createdBy.equals(userId)){
+            if(!workspace.createdBy?.equals(userId)){
                 return res.status(401).json({
                     message: "Workspace not owned by this user",
                     success: false,
                     err: "Workspace not owned by this user"
                 })
             }
-            const assignToId = assignTo.map((id) => new mongoose.Types.ObjectId(id))
-        
-            const assignedMember = workspace.members.filter((id) => assignToId.includes(id.toString()))
-            if(assignedMember.length !== assignToId.length){
+            const assignToId = assignTo.map((id) => id.toString())
+            const memberIds = workspace.members.map(id => id.toString())
+            const assignedMember = assignToId.every((id) => memberIds.includes(id))
+            if(!assignedMember){
                 return res.status(400).json({
                     message: "Assign user is not the member of this workspace",
                     success: false,
@@ -126,7 +127,7 @@ export async function verifyWorkspaceUser(req, res, next){
         const workspaceMember = workspace.members.find((id) => userId === id.toString())
         
         if(!workspace.isGeneral){
-            if(!workspaceMember && !workspace.createdBy.equals(userId)){
+            if(!workspaceMember && !workspace.createdBy?.equals(userId)){
                 return res.status(400).json({
                     message: "Member are not from this workspace",
                     success: false,

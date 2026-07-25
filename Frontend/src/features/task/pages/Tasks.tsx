@@ -22,10 +22,11 @@ import {
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import useTask from "../hooks/useTask";
+import AssignTaskModal from "../components/AssignTaskModal";
 
 const Tasks = () => {
   const [selectedView, setSelectedView] = useState<"board" | "list">("board");
-
+  const [modalOpen, setModalOpen] = useState<boolean>(false)
   const {handleGetAllTask} = useTask()
 
   const allTask = useSelector((state: RootState) => state.task.allTask)
@@ -225,11 +226,13 @@ const Tasks = () => {
             </div>
 
             {/* Primary Action Button */}
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm cursor-pointer">
+            <button onClick={() => setModalOpen(true)} className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm cursor-pointer">
               <Plus size={16} strokeWidth={2.5} /> Create Task
             </button>
           </div>
         </header>
+
+        {modalOpen && <AssignTaskModal modalOpen={modalOpen} setModalOpen={setModalOpen} />}
 
         {/* Toolbar: Search, Filters & View Options */}
         <div className="px-8 py-3.5 border-b border-gray-200 bg-white flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
