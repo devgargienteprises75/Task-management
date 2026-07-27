@@ -10,12 +10,10 @@ export async function createTaskController(req, res) {
         const { workspaceid } = req.params
         const userId = req.userId
         const { title, description, assignTo, priority, dueDate} = req.body
-        console.log(dueDate);
         
         const assignToId = assignTo.map((id) => {
             return new mongoose.Types.ObjectId(id)
         })
-        console.log(assignToId);
         
         if(!title || !description || !assignToId){
             return res.status(400).json({
@@ -53,10 +51,7 @@ export async function createTaskController(req, res) {
                     err: "invalid dueDate"
                 })
             }
-        }
-
-        console.log("parsed due date", parsedDueDate);
-        
+        }        
 
         const task = await taskModel.create({
             title,

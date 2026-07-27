@@ -1,6 +1,8 @@
-import type { task, user } from "@/types";
+import type { task, UpdatedTask, user, workspace } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
-import { Calendar } from "lucide-react";
+import { Calendar, Check, Pause, Play } from "lucide-react";
+import useTask from "../hooks/useTask";
+import { useState } from "react";
 
 interface TaskCardProps {
   task: task;
@@ -22,6 +24,9 @@ const getPriorityStyles = (priority: "High" | "Medium" | "Low") => {
 };
 
 const TaskCard = ({ task, taskUsers, statusType }: TaskCardProps) => {
+
+  const [status, setStatus] = useState<'Todo' | 'In-progress' | "Done">(task.status)
+
   const assignees = taskUsers.filter((u) =>
     (task.assignTo as string[]).includes(u._id)
   );
@@ -29,6 +34,18 @@ const TaskCard = ({ task, taskUsers, statusType }: TaskCardProps) => {
   const {ref} = useDraggable({
     id: task._id,
   })
+
+  const { handleUpdateTask } = useTask()
+
+  const updateStatus = async (taskId: any, nextStatus: UpdatedTask["status"]) => {
+    if (!nextStatus || nextStatus === status) return;
+
+    setStatus(nextStatus);
+    await handleUpdateTask(task.workspaceId, {
+      _id: taskId,
+      status: nextStatus
+    });
+  };
 
   return (
     <div
@@ -61,6 +78,39 @@ const TaskCard = ({ task, taskUsers, statusType }: TaskCardProps) => {
       <p className="text-gray-500 text-xs line-clamp-2 mb-4 leading-relaxed font-normal">
         {task.description}
       </p>
+
+      {/* Task actions */}
+      {status !== "Done" && (
+        <div className="flex items-center gap-2 mb-3.5 pt-3 border-t border-gray-100">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              void updateStatus(task._id, status === "Todo" ? "In-progress" : "Todo");
+            }}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-bold transition-all duration-200 cursor-pointer ${
+              status === "Todo"
+                ? "bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md"
+                : "bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100"
+            }`}
+          >
+            {status === "Todo" ? "Start work" : "Put on hold"}
+          </button>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              void updateStatus(task._id, "Done");
+            }}
+            className="flex items-center justify-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-bold text-emerald-700 transition-all duration-200 hover:bg-emerald-100 hover:border-emerald-300 cursor-pointer"
+            aria-label="Mark task as done"
+          >
+            <Check size={14} strokeWidth={3} />
+            Done
+          </button>
+        </div>
+      )}
 
       {/* Footer Meta Details */}
       <div className="flex items-center justify-between pt-3 border-t border-gray-100 text-gray-400 text-xs font-medium">
