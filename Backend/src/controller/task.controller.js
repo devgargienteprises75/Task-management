@@ -82,12 +82,12 @@ export async function getAllTasksController(req, res){
     try {
         const userId = req.userId
 
-        const tasks = await taskModel.find({ assignTo: userId })
+        const tasks = await taskModel.find()
         if(!tasks){
             return res.status(404).json({
-                message: "No tasks found for this user",
+                message: "No tasks found",
                 success: false,
-                err: "No task found for this user"
+                err: "No task found"
             })
         }
 
