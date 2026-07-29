@@ -12,6 +12,7 @@ import {
   Plus,
   Search,
   SlidersHorizontal,
+  UsersRound,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -19,14 +20,17 @@ import useTask from "../hooks/useTask";
 import AssignTaskModal from "../components/AssignTaskModal";
 import { DragDropProvider, useDroppable } from "@dnd-kit/react";
 import RenderColumn from "../components/RenderColumn";
+import TaskCard from "../components/TaskCard";
 
 const Tasks = () => {
 
   const allTask = useSelector((state: RootState) => state.task.allTask)
+  const { user } = useSelector((state: RootState) => state.auth)
+  const users = useSelector((state: RootState) => state.admin.users)
 
   const [selectedView, setSelectedView] = useState<"board" | "list">("board");
   const [modalOpen, setModalOpen] = useState<boolean>(false)
-  
+  const [assignedTask, setAssignedTask] = useState<boolean>(false)
 
   const { handleGetAllTask, handleUpdateTask } = useTask()
 
@@ -53,9 +57,18 @@ const Tasks = () => {
     }
   }
 
-  const todoTasks = allTask?.filter((t) => t.status === "Todo");
-  const inProgressTasks = allTask?.filter((t) => t.status === "In-progress");
-  const doneTasks = allTask?.filter((t) => t.status === "Done");
+  const tasksAssignedByCurrentUser = allTask.filter((task) => {
+    const assignedById = typeof task.assignBy === "string" ? task.assignBy : task.assignBy?._id;
+    return assignedById === user?._id;
+  });
+
+  const tasksAssignedToCurrentUser = allTask.filter(task => {
+    return task.assignTo.some(userId => userId === user?._id)
+  })
+
+  const todoTasks = tasksAssignedToCurrentUser?.filter((t) => t.status === "Todo");
+  const inProgressTasks = tasksAssignedToCurrentUser?.filter((t) => t.status === "In-progress");
+  const doneTasks = tasksAssignedToCurrentUser?.filter((t) => t.status === "Done");  
 
   return (
     <div className="flex h-screen bg-[#F9FAFB] font-sans text-gray-900 overflow-hidden">
@@ -126,48 +139,21 @@ const Tasks = () => {
 
           {/* Controls & Switcher */}
           <div className="flex items-center gap-2.5 justify-end">
-            <button className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer">
-              <Filter size={14} />
-              <span>Filter</span>
-            </button>
-
-            <button className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer">
-              <SlidersHorizontal size={14} />
-              <span>Sort</span>
-            </button>
+            
 
             <div className="h-4 w-[1px] bg-gray-200 mx-0.5" />
 
             {/* View Switcher */}
-            <div className="flex bg-gray-100 p-1 rounded-xl border border-gray-200">
-              <button
-                onClick={() => setSelectedView("board")}
-                className={`p-1.5 rounded-lg transition-all cursor-pointer ${
-                  selectedView === "board"
-                    ? "bg-white text-gray-900 shadow-xs font-bold"
-                    : "text-gray-400 hover:text-gray-700"
-                }`}
-                title="Board View"
-              >
-                <Grid size={15} />
-              </button>
-              <button
-                onClick={() => setSelectedView("list")}
-                className={`p-1.5 rounded-lg transition-all cursor-pointer ${
-                  selectedView === "list"
-                    ? "bg-white text-gray-900 shadow-xs font-bold"
-                    : "text-gray-400 hover:text-gray-700"
-                }`}
-                title="List View"
-              >
-                <List size={15} />
+            <div className="flex items-center rounded-xl border border-gray-200 bg-gray-100 p-1 shadow-inner shadow-gray-200/40">
+              <button onClick={() => setAssignedTask(!assignedTask)} className="rounded-lg bg-white px-3.5 py-2 text-xs font-bold tracking-tight text-gray-800 shadow-sm whitespace-nowrap cursor-pointer">
+                {assignedTask ? "Assign to you" : "Assigned by You"}
               </button>
             </div>
           </div>
         </div>
 
         {/* Board Content */}
-        <DragDropProvider
+        {!assignedTask ? <DragDropProvider
           onDragEnd={(e) => {
             if(e.canceled) return;
 
@@ -184,7 +170,49 @@ const Tasks = () => {
               <RenderColumn title="Done" count={doneTasks.length} allTask={doneTasks} statusType="Done" id="Done" />
             </div>
           </div>
-        </DragDropProvider>
+        </DragDropProvider> : (
+          <DragDropProvider>
+            <section className="flex-1 overflow-auto bg-[#F9FAFB] p-6 lg:p-8">
+            <div className="mx-auto max-w-6xl">
+              <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#D1F53B] text-gray-900">
+                    <UsersRound size={20} strokeWidth={2.3} />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-bold tracking-tight text-gray-900">Tasks assigned by you</h2>
+                    <p className="mt-0.5 text-xs text-gray-500">Tasks you have delegated to your team.</p>
+                  </div>
+                </div>
+                <span className="w-fit rounded-full border border-gray-200 bg-gray-100 px-3 py-1 text-xs font-bold text-gray-700">
+                  {tasksAssignedByCurrentUser.length} {tasksAssignedByCurrentUser.length === 1 ? "task" : "tasks"}
+                </span>
+              </div>
+
+              {tasksAssignedByCurrentUser.length > 0 ? (
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  {tasksAssignedByCurrentUser.map((task) => (
+                    <TaskCard
+                      key={task._id}
+                      task={task}
+                      taskUsers={users}
+                      statusType={task.status}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex min-h-72 flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white px-6 text-center">
+                  <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-gray-100 text-gray-400">
+                    <UsersRound size={20} />
+                  </div>
+                  <h3 className="text-sm font-bold text-gray-800">No assigned tasks yet</h3>
+                  <p className="mt-1 max-w-sm text-xs leading-relaxed text-gray-500">Tasks you assign to teammates will appear here.</p>
+                </div>
+              )}
+            </div>
+            </section>
+          </DragDropProvider>
+        )}
       </main>
     </div>
   );
