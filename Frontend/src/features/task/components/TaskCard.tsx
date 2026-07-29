@@ -1,13 +1,16 @@
 import type { task, UpdatedTask, user, workspace } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
-import { Calendar, Check, Pause, Play } from "lucide-react";
+import { Calendar, Check, MoreVertical, Pause, Play } from "lucide-react";
 import useTask from "../hooks/useTask";
-import { useState } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 
 interface TaskCardProps {
   task: task;
   taskUsers: user[];
   statusType: "Todo" | "In-progress" | "Done";
+  assignedTask?: boolean;
+  setEditModalOpen?: Dispatch<SetStateAction<boolean>>;
+  setSelectedTask?: Dispatch<SetStateAction<task | null>>;
 }
 
 const getPriorityStyles = (priority: "High" | "Medium" | "Low") => {
@@ -23,7 +26,7 @@ const getPriorityStyles = (priority: "High" | "Medium" | "Low") => {
   }
 };
 
-const TaskCard = ({ task, taskUsers, statusType }: TaskCardProps) => {
+const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditModalOpen, setSelectedTask }: TaskCardProps) => {
 
   const [status, setStatus] = useState<'Todo' | 'In-progress' | "Done">(task.status)
 
@@ -65,6 +68,17 @@ const TaskCard = ({ task, taskUsers, statusType }: TaskCardProps) => {
             {task.priority}
           </span>
         </div>
+        {assignedTask && (
+          <button
+            onClick={() => {
+              setSelectedTask?.(task)
+              setEditModalOpen?.(true)
+            }}
+            className="p-1 hover:bg-gray-200/60 rounded-md text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+          >
+              <MoreVertical size={16}/>
+          </button>
+          )}
       </div>
 
       {/* Title & Description */}
@@ -80,7 +94,7 @@ const TaskCard = ({ task, taskUsers, statusType }: TaskCardProps) => {
       </p>
 
       {/* Task actions */}
-      {status !== "Done" && (
+      {!assignedTask && status !== "Done" && (
         <div className="flex items-center gap-2 mb-3.5 pt-3 border-t border-gray-100">
           <button
             type="button"

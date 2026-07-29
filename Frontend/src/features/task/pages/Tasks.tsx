@@ -21,6 +21,7 @@ import AssignTaskModal from "../components/AssignTaskModal";
 import { DragDropProvider, useDroppable } from "@dnd-kit/react";
 import RenderColumn from "../components/RenderColumn";
 import TaskCard from "../components/TaskCard";
+import EditTaskModal from "../components/EditTaskModal";
 
 const Tasks = () => {
 
@@ -28,9 +29,10 @@ const Tasks = () => {
   const { user } = useSelector((state: RootState) => state.auth)
   const users = useSelector((state: RootState) => state.admin.users)
 
-  const [selectedView, setSelectedView] = useState<"board" | "list">("board");
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [assignedTask, setAssignedTask] = useState<boolean>(false)
+  const [editModalOpen, setEditModalOpen] = useState<boolean>(false)
+  const [selectedTask, setSelectedTask] = useState<task | null>(null)
 
   const { handleGetAllTask, handleUpdateTask } = useTask()
 
@@ -171,7 +173,6 @@ const Tasks = () => {
             </div>
           </div>
         </DragDropProvider> : (
-          <DragDropProvider>
             <section className="flex-1 overflow-auto bg-[#F9FAFB] p-6 lg:p-8">
             <div className="mx-auto max-w-6xl">
               <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] sm:flex-row sm:items-center sm:justify-between">
@@ -197,6 +198,9 @@ const Tasks = () => {
                       task={task}
                       taskUsers={users}
                       statusType={task.status}
+                      assignedTask={assignedTask}
+                      setEditModalOpen={setEditModalOpen}
+                      setSelectedTask={setSelectedTask}
                     />
                   ))}
                 </div>
@@ -211,8 +215,9 @@ const Tasks = () => {
               )}
             </div>
             </section>
-          </DragDropProvider>
         )}
+
+        {editModalOpen && selectedTask && <EditTaskModal selectedTask={selectedTask} setEditModalOpen={setEditModalOpen} />}
       </main>
     </div>
   );
