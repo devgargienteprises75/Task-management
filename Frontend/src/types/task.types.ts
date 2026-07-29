@@ -28,8 +28,8 @@ export interface TaskState {
 
 export interface UpdatedTask {
     _id?: string;
-    title?: string;
-    description?: string;
+    newTitle?: string;
+    newDescription?: string;
     assignTo?: (string | user)[];
     status?: 'Todo' | 'In-progress' | 'Done';
     priority?: 'High' | 'Medium' | 'Low';

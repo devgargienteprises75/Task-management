@@ -169,11 +169,15 @@ export async function getTaskDetailController(req, res) {
 
 // Update Task
 export async function updateTaskController(req, res){
+
+    const userId = req.userId
+    const { workspaceid, taskid } = req.params
+    const { newTitle, newDescription, assignTo, status, priority, dueDate } = req.body
+    // const assignToId = assignTo ? new mongoose.Types.ObjectId(assignTo) : undefined
+
+    console.log(newTitle, newDescription, assignTo, status, priority, dueDate,);
+    
     try {
-        const userId = req.userId
-        const { workspaceid, taskid } = req.params
-        const { newTitle, newDescription, assignTo, status, priority, dueDate } = req.body
-        const assignToId = assignTo ? new mongoose.Types.ObjectId(assignTo) : undefined
 
         if(!userId){
             return res.status(400).json({
@@ -203,7 +207,7 @@ export async function updateTaskController(req, res){
             })
         }
 
-        if(user.role === "user" || user.role === "head"){
+        if(user.role === "user"){
             const newTask = await taskModel.findByIdAndUpdate(
                 task._id,
                 { $set: { status } },
@@ -223,7 +227,7 @@ export async function updateTaskController(req, res){
                 { $set: {
                     title: newTitle || task.title,
                     description: newDescription || task.description,
-                    assignTo: assignToId || task.assignTo,
+                    assignTo: assignTo || task.assignTo,
                     priority: priority || task.priority,
                     dueDate: dueDate || task.dueDate
                 }},
