@@ -5,7 +5,7 @@ import type { RootState } from "./app.store"
 import { useEffect } from "react"
 import useAdmin from "@/features/admin/hooks/useAdmin"
 import useAuth from "@/features/auth/hooks/useAuth"
-import useWorkspace from "@/features/Workspace/hooks/useWorkspace"
+import useWorkspace from "@/features/workspace/hooks/useWorkspace"
 
 const App = () => {
 
