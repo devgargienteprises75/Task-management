@@ -54,7 +54,6 @@ export async function verifyWorkspaceOwnership(req, res, next) {
         const { workspaceid } = req.params;
         const { assignTo } = req.body;
         const userId = req.userId;
-        
 
         if(!workspaceid){
             return res.status(400).json({
