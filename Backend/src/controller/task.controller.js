@@ -192,7 +192,18 @@ export async function updateTaskController(req, res){
         }
         
         const workspace = await workspaceModel.findById(workspaceid)
-        const task = await taskModel.findById(taskid)
+        if(!workspace){
+            return res.status(404).json({
+                message: "Workspace not found",
+                success: false,
+                err: "Workspace not found"
+            })
+        }
+
+        const task = await taskModel.findOne({
+            _id: taskid,
+            workspaceId: workspace._id
+        })
 
         if(!task){
             return res.status(404).json({
@@ -206,7 +217,7 @@ export async function updateTaskController(req, res){
         const isAssigned = task?.assignTo?.some(id => {
             return id.toString() === userId
         })
-        
+
         if(isAssigned){
             const newTask = await taskModel.findByIdAndUpdate(
                 task._id,
