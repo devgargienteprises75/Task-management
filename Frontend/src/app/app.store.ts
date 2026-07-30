@@ -1,8 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authSlice from '../features/auth/auth.slice'
-import  adminSlice  from "@/features/admin/admin.slice";
-import workspaceSlice from '@/features/Workspace/workspace.slice'
-import taskSlice from "@/features/Task/task.slice"
+import adminSlice from "@/features/admin/admin.slice";
+import workspaceSlice from '@/features/workspace/workspace.slice'
+import taskSlice from "@/features/task/task.slice"
 
 export const store = configureStore({
     reducer: {

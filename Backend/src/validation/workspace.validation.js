@@ -17,9 +17,6 @@ export const workspaceValidation = [
     body("name")
         .notEmpty().withMessage("Workspace name is required"),
 
-    body("description")
-        .notEmpty().withMessage("AssignTo is Required"),
-
     body("members")
         .isArray().withMessage("Members have to be in Array"),
 

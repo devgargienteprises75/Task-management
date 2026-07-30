@@ -28,13 +28,13 @@ const Workspaces = () => {
     const [selectedWorkspace, setSelectedWorkspace] = useState<WorkspaceType | null>(null)
 
     const { handleGetWorkspaces } = useWorkspace()
-    const { allWorkspaces, isLoading } = useSelector((state: RootState) => state.workspace)
+    const allWorkspaces = useSelector((state: RootState) => state.workspace.allWorkspaces)
+    const isLoading = useSelector((state: RootState) => state.workspace.isLoading)
+    const user = useSelector((state: RootState) => state.auth.user)
 
-    useEffect(() => {
-        if (!allWorkspaces.length) {
-            handleGetWorkspaces()
-        }
-    }, [allWorkspaces])
+    const usersWorkspaces = allWorkspaces.filter(w => {
+        return w.members.some(member => member?._id === user?._id)
+    })
 
     const WorkspaceComponent =
         layoutStyle === "grid"
@@ -44,13 +44,13 @@ const Workspaces = () => {
     const filterWorkspace = useMemo(() => {
         const query = search.trim().toLowerCase()
 
-        if(!query) return allWorkspaces
+        if(!query) return usersWorkspaces
 
-        return allWorkspaces.filter(workspace => 
+        return usersWorkspaces.filter(workspace => 
             workspace.name.toLowerCase().includes(query) ||
             workspace.description?.toLowerCase().includes(query)
         )
-    }, [search, allWorkspaces])
+    }, [search, usersWorkspaces])
 
     const workspaceDetail: UpdateWorkspace = {
         workspaceId: selectedWorkspaceId,
@@ -58,8 +58,6 @@ const Workspaces = () => {
         newDescription,
         newMemberList
     }
-
-    
 
     return (
         <div className="flex h-screen bg-[#F9FAFB] font-sans text-gray-900 overflow-hidden">

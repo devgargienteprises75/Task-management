@@ -26,7 +26,7 @@ import EditTaskModal from "../components/EditTaskModal";
 const Tasks = () => {
 
   const allTask = useSelector((state: RootState) => state.task.allTask)
-  const { user } = useSelector((state: RootState) => state.auth)
+  const user = useSelector((state: RootState) => state.auth.user)
   const users = useSelector((state: RootState) => state.admin.users)
 
   const [modalOpen, setModalOpen] = useState<boolean>(false)
@@ -119,9 +119,9 @@ const Tasks = () => {
             </div>
 
             {/* Primary Action Button */}
-            <button onClick={() => setModalOpen(true)} className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm cursor-pointer">
+            {user?.role !== "user" && <button onClick={() => setModalOpen(true)} className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm cursor-pointer">
               <Plus size={16} strokeWidth={2.5} /> Create Task
-            </button>
+            </button>}
           </div>
         </header>
 
