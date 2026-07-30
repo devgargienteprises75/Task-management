@@ -169,16 +169,11 @@ export async function getTaskDetailController(req, res) {
 
 // Update Task
 export async function updateTaskController(req, res){
-
     const userId = req.userId
     const { workspaceid, taskid } = req.params
     const { newTitle, newDescription, assignTo, status, priority, dueDate } = req.body
-    // const assignToId = assignTo ? new mongoose.Types.ObjectId(assignTo) : undefined
-
-    console.log(newTitle, newDescription, assignTo, status, priority, dueDate,);
     
     try {
-
         if(!userId){
             return res.status(400).json({
                 message: "User Id missing",
@@ -207,7 +202,12 @@ export async function updateTaskController(req, res){
             })
         }
 
-        if(user.role === "user"){
+        const assignToId = assignTo ? assignTo : task.assignTo
+        const isAssigned = task?.assignTo?.some(id => {
+            return id.toString() === userId
+        })
+        
+        if(isAssigned){
             const newTask = await taskModel.findByIdAndUpdate(
                 task._id,
                 { $set: { status } },
@@ -227,7 +227,7 @@ export async function updateTaskController(req, res){
                 { $set: {
                     title: newTitle || task.title,
                     description: newDescription || task.description,
-                    assignTo: assignTo || task.assignTo,
+                    assignTo: assignToId || task.assignTo,
                     priority: priority || task.priority,
                     dueDate: dueDate || task.dueDate
                 }},
