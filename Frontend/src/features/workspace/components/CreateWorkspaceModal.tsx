@@ -2,7 +2,7 @@ import type { RootState } from "@/app/app.store";
 import { cn } from "@/lib/cn"
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import useWorkspace from "../hooks/useWorkspace";
 import type { user, workspace } from "@/types";
 
@@ -17,7 +17,7 @@ const CreateWorkspaceModal = ({ setWorkspaceModal }: CreateWorkspaceModalProps) 
     const [description, setDescription] = useState<string>("")
     const [members, setMembers] = useState<user[]>([])
     const { users } = useSelector((state: RootState) => state.admin)
-    const {user} = useSelector((state: RootState) => state.auth)
+    const user = useSelector((state: RootState) => state.auth.user)
 
     const { handleCreateWorkspace } = useWorkspace()
     
@@ -42,7 +42,7 @@ const CreateWorkspaceModal = ({ setWorkspaceModal }: CreateWorkspaceModalProps) 
         setMembers([])
     }
     return (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm px-4">
             <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100">
                 <div className="px-6 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-t-2xl">
                     <h3 className="font-bold text-lg text-gray-900">Create New Workspace</h3>
@@ -97,7 +97,7 @@ const CreateWorkspaceModal = ({ setWorkspaceModal }: CreateWorkspaceModalProps) 
                             </div>
                             
                             {selectBoxOpen && (
-                                <div className="absolute top-0 left-[calc(100%+32px)] w-[280px] z-50 max-h-[300px] overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-xl space-y-1">
+                                <div className="absolute top-full left-0 right-0 mt-1 w-full z-50 max-h-[200px] overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-xl space-y-1">
                                     {users.map(user => (
                                         <label 
                                             key={user._id}

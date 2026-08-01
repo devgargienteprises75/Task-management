@@ -40,7 +40,7 @@ const RenderColumn = ({ id, title, count, allTask, statusType }: RenderColumnPro
     return (
         <div
             ref={ref}
-            className={`flex flex-col bg-gray-50/70 rounded-2xl border border-gray-200/80 p-4 min-h-[640px] ${columnTheme.accent}`}>
+            className={`flex flex-col bg-gray-50/70 rounded-2xl border border-gray-200/80 p-4 min-h-[300px] md:min-h-[640px] ${columnTheme.accent}`}>
             {/* Column Header */}
             <div className="flex justify-between items-center mb-4 px-1 pb-2 border-b border-gray-200/60">
                 <div className="flex items-center gap-2.5">

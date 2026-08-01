@@ -1,26 +1,25 @@
 import type { RootState } from "@/app/app.store"
 import Sidebar from "@/components/Sidebar"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 import { useParams, Link } from "react-router-dom"
 import { 
-  Calendar, 
   Plus, 
   Search, 
   Filter, 
-  MoreVertical, 
-  CheckSquare, 
   ArrowLeft,
   Users,
   Settings,
   Grid,
   List,
-  Sparkles,
-  FilterIcon
+  FilterIcon,
+  Menu
 } from "lucide-react"
 import  Loader from "@/components/Loader"
 import type { task } from "@/types"
+import { toggleSidebar } from "@/app/layout.slice"
 
 const SpecificWorkspace = () => {
+  const dispatch = useDispatch()
   const { workspaceId } = useParams()
   const { allWorkspaces } = useSelector((state: RootState) => state.workspace)
   const { allTask, isLoading } = useSelector((state: RootState) => state.task)
@@ -46,22 +45,22 @@ const SpecificWorkspace = () => {
   }
 
   // Category badge color helper
-  const getCategoryStyles = (category: string) => {
-    switch (category) {
-      case "Design":
-        return "bg-purple-50 text-purple-600"
-      case "Backend":
-        return "bg-blue-50 text-blue-600"
-      case "Frontend":
-        return "bg-indigo-50 text-indigo-600"
-      case "Database":
-        return "bg-cyan-50 text-cyan-600"
-      case "Research":
-        return "bg-pink-50 text-pink-600"
-      default:
-        return "bg-gray-100 text-gray-700"
-    }
-  }
+  // const getCategoryStyles = (category: string) => {
+  //   switch (category) {
+  //     case "Design":
+  //       return "bg-purple-50 text-purple-600"
+  //     case "Backend":
+  //       return "bg-blue-50 text-blue-600"
+  //     case "Frontend":
+  //       return "bg-indigo-50 text-indigo-600"
+  //     case "Database":
+  //       return "bg-cyan-50 text-cyan-600"
+  //     case "Research":
+  //       return "bg-pink-50 text-pink-600"
+  //     default:
+  //       return "bg-gray-100 text-gray-700"
+  //   }
+  // }
 
   const todoTask = workspaceTask.filter(t => t.status === "Todo")
   const inProgressTasks = workspaceTask.filter(t => t.status === "In-progress")
@@ -69,7 +68,7 @@ const SpecificWorkspace = () => {
 
   const renderColumn = (title: string, count: number, workspaceTask: task[], columnType: "todo" | "inprogress" | "done") => {
     return (
-      <div className="w-full flex flex-col bg-gray-50/50 p-4 rounded-2xl border border-gray-100 min-h-[600px]">
+      <div className="w-full flex flex-col bg-gray-50/50 p-4 rounded-2xl border border-gray-100 min-h-[300px] md:min-h-[600px]">
         {/* Column Header */}
         <div className="flex justify-between items-center mb-4 px-1">
           <div className="flex items-center gap-2">
@@ -98,9 +97,9 @@ const SpecificWorkspace = () => {
                   <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md ${getPriorityStyles(task.priority)}`}>
                     {task.priority} Priority
                   </span>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${getCategoryStyles(task.category)}`}>
-                    {/* {task.category} */}
-                  </span>
+                  {/* <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${getCategoryStyles(task.category)}`}>
+                    {task.category}
+                  </span> */}
                 </div>
 
                 {/* Title & Description */}
@@ -131,11 +130,18 @@ const SpecificWorkspace = () => {
       <Sidebar />
 
       {/* Main Board Container */}
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col min-w-0">
         {/* Workspace Header */}
-        <header className="px-8 py-5 border-b border-gray-200 bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <header className="px-4 sm:px-8 py-5 border-b border-gray-200 bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => dispatch(toggleSidebar())}
+                className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors md:hidden cursor-pointer"
+                aria-label="Toggle sidebar"
+              >
+                <Menu size={20} />
+              </button>
               <Link to="/workspaces" className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors">
                 <ArrowLeft size={16} />
               </Link>
@@ -144,7 +150,7 @@ const SpecificWorkspace = () => {
               </div>
               <h2 className="text-xl font-bold tracking-tight text-gray-900">{workspaceName}</h2>
             </div>
-            <p className="text-xs text-gray-500 ml-14 max-w-xl line-clamp-1">{workspaceDesc}</p>
+            <p className="text-xs text-gray-500 ml-10 sm:ml-14 max-w-xl line-clamp-1">{workspaceDesc}</p>
           </div>
 
           <div className="flex items-center gap-3 self-stretch md:self-auto justify-end">
@@ -164,7 +170,7 @@ const SpecificWorkspace = () => {
         </header>
 
         {/* Toolbar & Filters */}
-        <div className="px-8 py-4 border-b border-gray-150 bg-white flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3.5">
+        <div className="px-4 sm:px-8 py-4 border-b border-gray-150 bg-white flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3.5">
           {/* Left Controls: Search */}
           <div className="flex items-center gap-2.5 bg-gray-50 px-3.5 py-2 rounded-xl border border-gray-200 flex-1 max-w-md">
             <Search size={15} className="text-gray-400" />

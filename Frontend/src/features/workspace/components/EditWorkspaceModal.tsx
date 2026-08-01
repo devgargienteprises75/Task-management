@@ -21,7 +21,6 @@ interface EditWorkspacePayload {
 const EditWorkspaceModal = ({ workspace, isMenuOpen, setModalOption, workspaceDetail, setNewName, setNewDescription, setNewMemberList }: EditWorkspacePayload) => {
     if (!isMenuOpen) return null
 
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
     const [selectBoxOpen, setSelectBoxOpen] = useState<boolean>(false)
 
     const users = useSelector((state: RootState) => state.admin.users)
@@ -42,7 +41,6 @@ const EditWorkspaceModal = ({ workspace, isMenuOpen, setModalOption, workspaceDe
             ...workspaceDetail,
             newMemberList: workspaceDetail.newMemberList.map(getMemberId)
         })
-        setIsModalOpen(false)
         setModalOption('')
 
         setNewName(workspace.name)
@@ -58,7 +56,6 @@ const EditWorkspaceModal = ({ workspace, isMenuOpen, setModalOption, workspaceDe
                     <button
                         type="button"
                         onClick={() => {
-                            setIsModalOpen(false)
                             setModalOption('')
                         }}
                         className="cursor-pointer text-gray-400 transition-colors hover:text-gray-900"
@@ -135,7 +132,7 @@ const EditWorkspaceModal = ({ workspace, isMenuOpen, setModalOption, workspaceDe
                             </div>
 
                             {selectBoxOpen && (
-                                <div className="absolute top-0 left-[calc(100%+32px)] w-[280px] z-50 max-h-[300px] overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-xl space-y-1">
+                                <div className="absolute top-full left-0 right-0 mt-1 w-full z-50 max-h-[200px] overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-xl space-y-1">
                                     {users.map((user) => {
                                         const isChecked = normalizedMemberIds.includes(user._id);
                                         return (

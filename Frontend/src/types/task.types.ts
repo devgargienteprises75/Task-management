@@ -30,6 +30,7 @@ export interface UpdatedTask {
     _id?: string;
     newTitle?: string;
     newDescription?: string;
+    workspaceId?: string | workspace;
     assignTo?: (string | user)[];
     status?: 'Todo' | 'In-progress' | 'Done';
     priority?: 'High' | 'Medium' | 'Low';

@@ -1,7 +1,7 @@
 import { AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { workspace } from "@/types";
-import type { Dispatch, FormEvent, SetStateAction } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import useWorkspace from "../hooks/useWorkspace";
 
 interface DeleteOptionProps {
@@ -18,7 +18,7 @@ const DeleteWorkspace = ({ isMenuOpen, setIsMenuOpen, workspace }: DeleteOptionP
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    await handleDeleteWorkspace(workspace._id)
+    await handleDeleteWorkspace(workspace?._id ?? "")
     setIsMenuOpen(false)
   }
 

@@ -23,7 +23,6 @@ const userId = (value: string | user) => (typeof value === "string" ? value : va
 
 const EditTaskModal = ({ selectedTask, setEditModalOpen }: EditTaskModalProps) => {
   const users = useSelector((state: RootState) => state.admin.users);
-  const { user: currentUser } = useSelector((state: RootState) => state.auth);
   const { handleUpdateTask } = useTask();
 
   const [newTitle, setNewTitle] = useState(selectedTask.title);
@@ -47,8 +46,8 @@ const EditTaskModal = ({ selectedTask, setEditModalOpen }: EditTaskModalProps) =
     const workspaceId = typeof selectedTask.workspaceId === "string"
       ? selectedTask.workspaceId
       : selectedTask.workspaceId._id;
-    const taskDetails: UpdatedTask = { _id: selectedTask._id, newTitle, newDescription, assignTo, priority, dueDate };
-    const result = await handleUpdateTask(workspaceId, taskDetails);
+    const taskDetails: UpdatedTask = { _id: selectedTask._id, newTitle, newDescription, assignTo, priority, dueDate, workspaceId };
+    const result = await handleUpdateTask(taskDetails);
 
     setIsSaving(false);
     if (result?.success) setEditModalOpen(false);

@@ -51,8 +51,8 @@ const WorkspaceList = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
   };
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all cursor-pointer flex items-center justify-between group relative">
-      <div className="flex items-center gap-4 flex-1">
+    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between group gap-4 relative">
+      <div className="flex items-center gap-4 flex-1 w-full">
         <div
           className="w-12 h-12 rounded-lg flex items-center justify-center text-lg font-bold text-gray-900 shrink-0"
           style={{ backgroundColor: stringToColor(workspace?.name || '') + '50' }}
@@ -69,7 +69,7 @@ const WorkspaceList = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
         </div>
       </div>
 
-      <div className="flex items-center gap-6 shrink-0">
+      <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-6 shrink-0 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100">
         <span
           className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold tracking-wide uppercase ${workspace?.status === "active"
             ? "bg-green-50 text-green-600"
@@ -79,7 +79,7 @@ const WorkspaceList = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
           {workspace?.status}
         </span>
 
-        <div className="flex items-center gap-2 w-32 border-l border-gray-100 pl-6">
+        <div className="flex items-center gap-2 sm:w-32 border-l border-gray-100 pl-4 sm:pl-6">
           <div className="flex -space-x-2 shrink-0">
             <div className="w-7 h-7 rounded-full border-2 border-white bg-blue-200"></div>
             <div className="w-7 h-7 rounded-full border-2 border-white bg-purple-200"></div>
@@ -98,7 +98,7 @@ const WorkspaceList = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
               e.stopPropagation();
               setIsDropdownOpen(!isDropdownOpen);
             }}
-            className="text-gray-400 hover:text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
+            className="text-gray-400 hover:text-gray-900 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
           >
             <EllipsisVertical size={16} />
           </button>

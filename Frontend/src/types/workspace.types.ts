@@ -4,10 +4,10 @@ export interface workspace {
     _id: string;
     name: string;
     description?: string;
-    createdBy: string;
+    createdBy?: string | user;
     members: (string | user)[];
     status: 'active' | 'inactive';
-    isGeneral: boolean;
+    isGeneral?: boolean;
     createdAt: string;
     updatedAt: string;
 }

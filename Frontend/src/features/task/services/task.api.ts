@@ -1,5 +1,5 @@
 import api from "@/config/axios"
-import type { ApiResponse, task, TaskResponse, UpdatedTask, workspace } from "@/types"
+import type { ApiResponse, task, TaskResponse, UpdatedTask } from "@/types"
 
 export const taskApi = {
     createTask: async (workspaceId: string, taskDetails: task) => {
@@ -14,8 +14,8 @@ export const taskApi = {
         const res = await api.get("tasks")
         return res.data
     },
-    updateTask: async (workspaceId: workspace['_id'] ,updatedTaskDetails: UpdatedTask) => {
-        const res = await api.patch<ApiResponse<TaskResponse>>(`tasks/${workspaceId}/${updatedTaskDetails._id}`, updatedTaskDetails)
+    updateTask: async (updatedTaskDetails: UpdatedTask) => {
+        const res = await api.patch<ApiResponse<TaskResponse>>(`tasks/${updatedTaskDetails.workspaceId}/${updatedTaskDetails._id}`, updatedTaskDetails)
         return res.data
     }
 }

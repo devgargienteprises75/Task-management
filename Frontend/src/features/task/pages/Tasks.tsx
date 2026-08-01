@@ -4,26 +4,24 @@ import type { task, UpdatedTask } from "@/types";
 import {
   CheckCircle2,
   Clock,
-  Filter,
   FolderKanban,
-  Grid,
-  List,
-  MoreVertical,
   Plus,
   Search,
-  SlidersHorizontal,
   UsersRound,
+  Menu,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import useTask from "../hooks/useTask";
 import AssignTaskModal from "../components/AssignTaskModal";
-import { DragDropProvider, useDroppable } from "@dnd-kit/react";
+import { DragDropProvider } from "@dnd-kit/react";
 import RenderColumn from "../components/RenderColumn";
 import TaskCard from "../components/TaskCard";
 import EditTaskModal from "../components/EditTaskModal";
+import { toggleSidebar } from "@/app/layout.slice";
 
 const Tasks = () => {
+  const dispatch = useDispatch()
 
   const allTask = useSelector((state: RootState) => state.task.allTask)
   const user = useSelector((state: RootState) => state.auth.user)
@@ -47,12 +45,10 @@ const Tasks = () => {
   const submitUpdateTask = async (id: string, status: 'Todo' | 'In-progress' | 'Done') => {
     const taskDetails: UpdatedTask = {
       _id: id,
-      status
+      status,
     }
 
-    const currentTask = allTask.find(t => t._id === id)
-
-    const res = await handleUpdateTask(currentTask?.workspaceId, taskDetails);
+    const res = await handleUpdateTask(taskDetails);
 
     if(res.success){
       setModalOpen(false)
@@ -80,9 +76,16 @@ const Tasks = () => {
       {/* Main Task View */}
       <main className="flex-1 flex flex-col min-w-0">
         {/* Page Top Header */}
-        <header className="px-8 py-5 border-b border-gray-200 bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <header className="px-4 sm:px-8 py-5 border-b border-gray-200 bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#D1F53B] rounded-xl flex items-center justify-center text-gray-900 font-bold shadow-xs">
+            <button
+                onClick={() => dispatch(toggleSidebar())}
+                className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors md:hidden cursor-pointer"
+                aria-label="Toggle sidebar"
+            >
+                <Menu size={20} />
+            </button>
+            <div className="w-10 h-10 bg-[#D1F53B] rounded-xl flex items-center justify-center text-gray-900 font-bold shadow-xs shrink-0">
               <FolderKanban size={22} strokeWidth={2.2} />
             </div>
             <div>
@@ -98,7 +101,7 @@ const Tasks = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 self-stretch md:self-auto justify-end w-full md:w-auto">
             {/* Quick Metrics */}
             <div className="hidden lg:flex items-center gap-4 mr-2 border-r border-gray-200 pr-6">
               <div className="flex items-center gap-2 text-xs">
@@ -119,16 +122,16 @@ const Tasks = () => {
             </div>
 
             {/* Primary Action Button */}
-            {user?.role !== "user" && <button onClick={() => setModalOpen(true)} className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm cursor-pointer">
+            {user?.role !== "user" && <button onClick={() => setModalOpen(true)} className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm cursor-pointer w-full md:w-auto">
               <Plus size={16} strokeWidth={2.5} /> Create Task
             </button>}
           </div>
         </header>
 
-        {modalOpen && <AssignTaskModal modalOpen={modalOpen} setModalOpen={setModalOpen} />}
+        {modalOpen && <AssignTaskModal setModalOpen={setModalOpen} />}
 
         {/* Toolbar: Search, Filters & View Options */}
-        <div className="px-8 py-3.5 border-b border-gray-200 bg-white flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+        <div className="px-4 sm:px-8 py-3.5 border-b border-gray-200 bg-white flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
           {/* Search Box */}
           <div className="flex items-center gap-2.5 bg-gray-50 px-3.5 py-2 rounded-xl border border-gray-200 flex-1 max-w-md focus-within:bg-white focus-within:border-gray-400 transition-colors">
             <Search size={16} className="text-gray-400" />
@@ -165,7 +168,7 @@ const Tasks = () => {
             submitUpdateTask(draggedTaskId, dropTargetId as 'Todo' | 'In-progress' | 'Done')
           }}
         >
-          <div className="flex-1 overflow-auto p-6 lg:p-8">
+          <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
               <RenderColumn title="To Do" count={todoTasks.length} allTask={todoTasks} statusType="Todo" id="Todo" />
               <RenderColumn title="In Progress" count={inProgressTasks.length} allTask={inProgressTasks} statusType="In-progress" id="In-progress" />
@@ -173,7 +176,7 @@ const Tasks = () => {
             </div>
           </div>
         </DragDropProvider> : (
-            <section className="flex-1 overflow-auto bg-[#F9FAFB] p-6 lg:p-8">
+            <section className="flex-1 overflow-auto bg-[#F9FAFB] p-4 sm:p-6 lg:p-8">
             <div className="mx-auto max-w-6xl">
               <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
