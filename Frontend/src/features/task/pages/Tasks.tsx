@@ -31,6 +31,7 @@ const Tasks = () => {
   const [assignedTask, setAssignedTask] = useState<boolean>(false)
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false)
   const [selectedTask, setSelectedTask] = useState<task | null>(null)
+  const [activeTab, setActiveTab] = useState<'Todo' | 'In-progress' | 'Done'>('Todo')
 
   const { handleGetAllTask, handleUpdateTask } = useTask()
 
@@ -158,24 +159,70 @@ const Tasks = () => {
         </div>
 
         {/* Board Content */}
-        {!assignedTask ? <DragDropProvider
-          onDragEnd={(e) => {
-            if(e.canceled) return;
-
-            const dropTargetId = e.operation.target?.id || "";
-            const draggedTaskId = e.operation.source?.id as string
-
-            submitUpdateTask(draggedTaskId, dropTargetId as 'Todo' | 'In-progress' | 'Done')
-          }}
-        >
-          <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-              <RenderColumn title="To Do" count={todoTasks.length} allTask={todoTasks} statusType="Todo" id="Todo" />
-              <RenderColumn title="In Progress" count={inProgressTasks.length} allTask={inProgressTasks} statusType="In-progress" id="In-progress" />
-              <RenderColumn title="Done" count={doneTasks.length} allTask={doneTasks} statusType="Done" id="Done" />
+        {!assignedTask ? (
+          <>
+            {/* Mobile Tab Switcher */}
+            <div className="md:hidden px-4 pt-4 bg-[#F9FAFB]">
+              <div className="flex p-1 bg-gray-100 rounded-xl border border-gray-200/80 gap-1 shadow-inner shadow-gray-200/40">
+                <button
+                  onClick={() => setActiveTab('Todo')}
+                  className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
+                    activeTab === 'Todo'
+                      ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                      : 'text-gray-500 hover:text-gray-800'
+                  }`}
+                >
+                  To Do <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{todoTasks.length}</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('In-progress')}
+                  className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
+                    activeTab === 'In-progress'
+                      ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                      : 'text-gray-500 hover:text-gray-800'
+                  }`}
+                >
+                  In Progress <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{inProgressTasks.length}</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('Done')}
+                  className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
+                    activeTab === 'Done'
+                      ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                      : 'text-gray-500 hover:text-gray-800'
+                  }`}
+                >
+                  Done <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{doneTasks.length}</span>
+                </button>
+              </div>
             </div>
-          </div>
-        </DragDropProvider> : (
+
+            <DragDropProvider
+              onDragEnd={(e) => {
+                if(e.canceled) return;
+
+                const dropTargetId = e.operation.target?.id || "";
+                const draggedTaskId = e.operation.source?.id as string
+
+                submitUpdateTask(draggedTaskId, dropTargetId as 'Todo' | 'In-progress' | 'Done')
+              }}
+            >
+              <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+                  <div className={activeTab === 'Todo' ? 'block' : 'hidden md:block'}>
+                    <RenderColumn title="To Do" count={todoTasks.length} allTask={todoTasks} statusType="Todo" id="Todo" />
+                  </div>
+                  <div className={activeTab === 'In-progress' ? 'block' : 'hidden md:block'}>
+                    <RenderColumn title="In Progress" count={inProgressTasks.length} allTask={inProgressTasks} statusType="In-progress" id="In-progress" />
+                  </div>
+                  <div className={activeTab === 'Done' ? 'block' : 'hidden md:block'}>
+                    <RenderColumn title="Done" count={doneTasks.length} allTask={doneTasks} statusType="Done" id="Done" />
+                  </div>
+                </div>
+              </div>
+            </DragDropProvider>
+          </>
+        ) : (
             <section className="flex-1 overflow-auto bg-[#F9FAFB] p-4 sm:p-6 lg:p-8">
             <div className="mx-auto max-w-6xl">
               <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] sm:flex-row sm:items-center sm:justify-between">
