@@ -1,3 +1,4 @@
+import { useState } from "react"
 import type { RootState } from "@/app/app.store"
 import Sidebar from "@/components/Sidebar"
 import { useSelector, useDispatch } from "react-redux"
@@ -23,6 +24,7 @@ const SpecificWorkspace = () => {
   const { workspaceId } = useParams()
   const { allWorkspaces } = useSelector((state: RootState) => state.workspace)
   const { allTask, isLoading } = useSelector((state: RootState) => state.task)
+  const [activeTab, setActiveTab] = useState<'Todo' | 'In-progress' | 'Done'>('Todo')
 
   // Find the current workspace name from the store, fallback to workspaceId or default
   const currentWorkspace = allWorkspaces.find((w) => w._id === workspaceId)
@@ -202,12 +204,54 @@ const SpecificWorkspace = () => {
           </div>
         </div>
 
+        {/* Mobile Tab Switcher */}
+        <div className="md:hidden px-4 pt-4 bg-[#F9FAFB]">
+          <div className="flex p-1 bg-gray-100 rounded-xl border border-gray-200/80 gap-1 shadow-inner shadow-gray-200/40">
+            <button
+              onClick={() => setActiveTab('Todo')}
+              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
+                activeTab === 'Todo'
+                  ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                  : 'text-gray-500 hover:text-gray-800'
+              }`}
+            >
+              To Do <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{todoTask.length}</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('In-progress')}
+              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
+                activeTab === 'In-progress'
+                  ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                  : 'text-gray-500 hover:text-gray-800'
+              }`}
+            >
+              In Progress <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{inProgressTasks.length}</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('Done')}
+              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
+                activeTab === 'Done'
+                  ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                  : 'text-gray-500 hover:text-gray-800'
+              }`}
+            >
+              Done <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{doneTasks.length}</span>
+            </button>
+          </div>
+        </div>
+
         {/* Kanban Columns Board */}
         <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-            {renderColumn("To Do", todoTask.length, workspaceTask.filter(t => t.status === "Todo"), "todo")}
-            {renderColumn("In Progress", inProgressTasks.length, workspaceTask.filter(t => t.status === "In-progress"), "inprogress")}
-            {renderColumn("Done", doneTasks.length, workspaceTask.filter(t => t.status === "Done"), "done")}
+            <div className={activeTab === 'Todo' ? 'block' : 'hidden md:block'}>
+              {renderColumn("To Do", todoTask.length, workspaceTask.filter(t => t.status === "Todo"), "todo")}
+            </div>
+            <div className={activeTab === 'In-progress' ? 'block' : 'hidden md:block'}>
+              {renderColumn("In Progress", inProgressTasks.length, workspaceTask.filter(t => t.status === "In-progress"), "inprogress")}
+            </div>
+            <div className={activeTab === 'Done' ? 'block' : 'hidden md:block'}>
+              {renderColumn("Done", doneTasks.length, workspaceTask.filter(t => t.status === "Done"), "done")}
+            </div>
           </div>
         </div>
       </main>
