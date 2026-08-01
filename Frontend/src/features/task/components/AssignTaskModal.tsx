@@ -13,12 +13,9 @@ import {
     ChevronDown,
     Loader2,
     CheckCircle2,
-    Circle,
-    Clock,
 } from "lucide-react"
 
 interface AssignTaskModalProps {
-    modalOpen: boolean;
     setModalOpen: Dispatch<SetStateAction<boolean>>
 }
 
@@ -43,28 +40,7 @@ const PRIORITY_OPTIONS = [
     },
 ]
 
-const STATUS_OPTIONS = [
-    {
-        value: "Todo" as const,
-        label: "To Do",
-        Icon: Circle,
-        color: "text-gray-500",
-    },
-    {
-        value: "In-progress" as const,
-        label: "In Progress",
-        Icon: Clock,
-        color: "text-blue-500",
-    },
-    {
-        value: "Done" as const,
-        label: "Done",
-        Icon: CheckCircle2,
-        color: "text-green-500",
-    },
-]
-
-const AssignTaskModal = ({ modalOpen, setModalOpen }: AssignTaskModalProps) => {
+const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
 
     const { allWorkspaces } = useSelector((state: RootState) => state.workspace)
     var generalWorkspace = allWorkspaces.filter(w => w.isGeneral == true)
@@ -86,7 +62,6 @@ const AssignTaskModal = ({ modalOpen, setModalOpen }: AssignTaskModalProps) => {
     
     const { handleCreateTask } = useTask()
     const selectedPriority = PRIORITY_OPTIONS.find((p) => p.value === priority)!
-    const selectedStatus = STATUS_OPTIONS.find((s) => s.value === status)!
     const selectedAssignees = users.filter((u) => assignTo.includes(u._id))
 
     const toggleAssignee = (userId: string) => {

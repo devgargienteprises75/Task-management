@@ -17,7 +17,7 @@ const useAdmin = () => {
                 success: true,
                 message: res.message
             }
-        } catch (err) { 
+        } catch (err: any) { 
             const message = err?.response?.data?.message || err.message
             return {
                 success: false,

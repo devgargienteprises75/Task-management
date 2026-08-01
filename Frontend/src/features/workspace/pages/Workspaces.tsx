@@ -1,20 +1,21 @@
 import type { RootState } from "@/app/app.store"
 import Sidebar from "@/components/Sidebar"
 import type { UpdateWorkspace, user, workspace as WorkspaceType } from "@/types"
-import { Search, Plus } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
-import { useSelector } from "react-redux"
+import { Search, Plus, Menu } from "lucide-react"
+import { useMemo, useState } from "react"
+import { useSelector, useDispatch } from "react-redux"
 import CreateWorkspaceModal from "../components/CreateWorkspaceModal"
 import WorkspaceCard from "../components/WorkspaceCard"
 import WorkspaceList from "../components/WorkspaceList"
 import Loader from "@/components/Loader"
-import useWorkspace from "../hooks/useWorkspace"
 import NotFound from "@/components/NotFound"
 import WorkspaceToolbar from "../components/WorkspaceToolbar"
 import EditWorkspaceModal from "../components/EditWorkspaceModal"
 import DeleteWorkspace from "../components/DeleteWorkspace"
+import { toggleSidebar } from "@/app/layout.slice"
 
 const Workspaces = () => {
+    const dispatch = useDispatch()
 
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
     const [workspaceModal, setWorkspaceModal] = useState<boolean>(false)
@@ -27,13 +28,15 @@ const Workspaces = () => {
     const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string>("")
     const [selectedWorkspace, setSelectedWorkspace] = useState<WorkspaceType | null>(null)
 
-    const { handleGetWorkspaces } = useWorkspace()
     const allWorkspaces = useSelector((state: RootState) => state.workspace.allWorkspaces)
     const isLoading = useSelector((state: RootState) => state.workspace.isLoading)
     const user = useSelector((state: RootState) => state.auth.user)
 
     const usersWorkspaces = allWorkspaces.filter(w => {
-        return w.members.some(member => member?._id === user?._id)
+        return w.members.some(member => {
+            if (typeof member === "string") return member === user?._id;
+            return member._id === user?._id;
+        })
     })
 
     const WorkspaceComponent =
@@ -63,27 +66,34 @@ const Workspaces = () => {
         <div className="flex h-screen bg-[#F9FAFB] font-sans text-gray-900 overflow-hidden">
             {/* Sidebar */}
             <Sidebar />
-            <main className="flex-1 flex flex-col">
+            <main className="flex-1 flex flex-col min-w-0">
                 {/* Header */}
-                <header className="px-8 py-6 border-b border-gray-200 bg-white flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                        <h2 className="text-2xl font-bold tracking-tight">Workspaces</h2>
+                <header className="px-4 sm:px-8 py-4 sm:py-6 border-b border-gray-200 bg-white flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => dispatch(toggleSidebar())}
+                            className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors md:hidden cursor-pointer"
+                            aria-label="Toggle sidebar"
+                        >
+                            <Menu size={20} />
+                        </button>
+                        <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Workspaces</h2>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
-                            <Search size={16} className="text-gray-400" />
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+                        <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200 flex-1 sm:flex-initial">
+                            <Search size={16} className="text-gray-400 shrink-0" />
                             <input
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 type="text"
                                 placeholder="Search workspaces..." 
-                                className="bg-transparent outline-none w-48 text-sm" 
+                                className="bg-transparent outline-none w-full sm:w-48 text-sm" 
                             />
                         </div>
 
                         {/* Primary Accent Button */}
-                        <button onClick={() => setWorkspaceModal(true)} className="flex items-center gap-2 px-4 py-2 bg-[#D1F53B] hover:bg-[#c2e532] text-gray-900 rounded-lg font-semibold text-sm transition-colors shadow-sm cursor-pointer">
+                        <button onClick={() => setWorkspaceModal(true)} className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#D1F53B] hover:bg-[#c2e532] text-gray-900 rounded-xl font-semibold text-sm transition-colors shadow-sm cursor-pointer w-full sm:w-auto">
                             <Plus size={16} strokeWidth={3} /> Create Workspace
                         </button>
                     </div>
@@ -92,7 +102,7 @@ const Workspaces = () => {
                 {workspaceModal && <CreateWorkspaceModal setWorkspaceModal={setWorkspaceModal} />}
 
                 {/* Main Content Area */}
-                <div className="flex-1 overflow-auto p-8">
+                <div className="flex-1 overflow-auto p-4 sm:p-8">
                     {/* Toolbar / Filters (optional space) */}
                     <WorkspaceToolbar layoutStyle={layoutStyle} setLayoutStyle={setLayoutStyle} />
 

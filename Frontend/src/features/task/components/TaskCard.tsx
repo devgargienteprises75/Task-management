@@ -1,6 +1,6 @@
-import type { task, UpdatedTask, user, workspace } from "@/types";
+import type { task, UpdatedTask, user } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
-import { Calendar, Check, MoreVertical, Pause, Play } from "lucide-react";
+import { Calendar, Check, MoreVertical, } from "lucide-react";
 import useTask from "../hooks/useTask";
 import { useState, type Dispatch, type SetStateAction } from "react";
 
@@ -35,7 +35,7 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
   );
 
   const {ref} = useDraggable({
-    id: task._id,
+    id: task._id ?? `task-${task.title}`,
   })
 
   const { handleUpdateTask } = useTask()
@@ -43,11 +43,14 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
   const updateStatus = async (taskId: any, nextStatus: UpdatedTask["status"]) => {
     if (!nextStatus || nextStatus === status) return;
 
-    setStatus(nextStatus);
-    await handleUpdateTask(task.workspaceId, {
+    const taskDetails: UpdatedTask = {
       _id: taskId,
-      status: nextStatus
-    });
+      status: nextStatus,
+      workspaceId: task?.workspaceId
+    }
+
+    setStatus(nextStatus);
+    await handleUpdateTask(taskDetails);
   };
 
   return (

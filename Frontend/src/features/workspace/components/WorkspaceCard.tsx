@@ -2,10 +2,7 @@ import type { user, workspace } from "@/types";
 import { EllipsisVertical, Pencil, Trash2, Users } from "lucide-react";
 import { stringToColor } from "@/lib/colors";
 import { useState, useRef, useEffect, type Dispatch, type SetStateAction } from "react";
-import useWorkspace from "../hooks/useWorkspace";
 import useTask from "@/features/task/hooks/useTask";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/app/app.store";
 import { useNavigate } from "react-router-dom";
 
 interface WorkspaceType {
@@ -92,7 +89,7 @@ const WorkspaceCard = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
                 e.stopPropagation();
                 setIsDropdownOpen(!isDropdownOpen);
               }}
-              className="text-gray-400 hover:text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer p-1 rounded-md hover:bg-gray-100"
+              className="text-gray-400 hover:text-gray-900 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity cursor-pointer p-1 rounded-md hover:bg-gray-100"
             >
               <EllipsisVertical size={16}/>
             </button>
