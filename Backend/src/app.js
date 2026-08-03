@@ -4,9 +4,14 @@ import authRouter from './routes/auth.route.js'
 import workspaceRouter from './routes/workspace.route.js'
 import taskRouter from './routes/task.routes.js'
 import { workspaceModel } from './models/workspace.model.js'
+import cors from 'cors'
 
 const app = express()
 
+app.use(cors({
+    origin: ["http://localhost:5173", "http://localhost:4173"],
+    credentials: true
+}))
 app.use(express.json())
 app.use(cookieParser())
 
