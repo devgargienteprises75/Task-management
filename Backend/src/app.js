@@ -9,7 +9,7 @@ import cors from 'cors'
 const app = express()
 
 app.use(cors({
-    origin: ["http://localhost:5173", "http://localhost:4173"],
+    origin: ["https://task-management-mauve-beta-80.vercel.app/", "http://localhost:5173", "http://localhost:4173"],
     credentials: true
 }))
 app.use(express.json())
