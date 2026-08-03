@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:8000/api",
+    baseURL: "https://task-management-wjl7.onrender.com/api",
     withCredentials: true
 })
 
@@ -11,7 +11,6 @@ api.interceptors.request.use((config) => {
 }, (error) => {
     return Promise.reject(error)
 })
-
 
 // Response Interceptor
 api.interceptors.response.use((response) => {
