@@ -84,7 +84,11 @@ export async function loginController(req, res){
         id: user._id
     }, config.JWT_SECRET, { expiresIn: '7d' })
 
-    res.cookie("token", token)
+    res.cookie("token", token, {
+        sameSite: "none",
+        secure: true,
+        httpOnly: true
+    })
 
     res.status(200).json({
         message: "User logged in successfully",
