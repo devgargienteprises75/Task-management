@@ -3,128 +3,50 @@ import type { RootState } from "@/app/app.store"
 import Sidebar from "@/components/Sidebar"
 import { useSelector, useDispatch } from "react-redux"
 import { useParams, Link } from "react-router-dom"
-import { 
-  Plus, 
-  Search, 
-  Filter, 
+import {
+  Plus,
+  Search,
+  Filter,
   ArrowLeft,
   Users,
   Settings,
   Grid,
   List,
-  FilterIcon,
   Menu
 } from "lucide-react"
-import  Loader from "@/components/Loader"
-import type { task } from "@/types"
+import type { UpdatedTask } from "@/types"
 import { toggleSidebar } from "@/app/layout.slice"
+import { DragDropProvider } from "@dnd-kit/react"
+import RenderColumn from "@/features/task/components/RenderColumn"
+import useTask from "@/features/task/hooks/useTask"
 
 const SpecificWorkspace = () => {
   const dispatch = useDispatch()
   const { workspaceId } = useParams()
   const { allWorkspaces } = useSelector((state: RootState) => state.workspace)
-  const { allTask, isLoading } = useSelector((state: RootState) => state.task)
+  const { allTask } = useSelector((state: RootState) => state.task)
   const [activeTab, setActiveTab] = useState<'Todo' | 'In-progress' | 'Done'>('Todo')
+  const { handleUpdateTask } = useTask()
 
-  // Find the current workspace name from the store, fallback to workspaceId or default
+  // Find the current workspace name from the store
   const currentWorkspace = allWorkspaces.find((w) => w._id === workspaceId)
   const workspaceName = currentWorkspace ? currentWorkspace.name : "Team Workspace"
   const workspaceDesc = currentWorkspace?.description || "Collaborative space for managing daily tasks, sprints, and issues."
   const workspaceTask = allTask.filter(t => t.workspaceId === workspaceId)
 
-  // Priority color helper
-  const getPriorityStyles = (priority: "High" | "Medium" | "Low") => {
-    switch (priority) {
-      case "High":
-        return "bg-rose-50 text-rose-600 border border-rose-100"
-      case "Medium":
-        return "bg-amber-50 text-amber-600 border border-amber-100"
-      case "Low":
-        return "bg-emerald-50 text-emerald-600 border border-emerald-100"
-      default:
-        return "bg-gray-50 text-gray-600 border border-gray-100"
-    }
-  }
-
-  // Category badge color helper
-  // const getCategoryStyles = (category: string) => {
-  //   switch (category) {
-  //     case "Design":
-  //       return "bg-purple-50 text-purple-600"
-  //     case "Backend":
-  //       return "bg-blue-50 text-blue-600"
-  //     case "Frontend":
-  //       return "bg-indigo-50 text-indigo-600"
-  //     case "Database":
-  //       return "bg-cyan-50 text-cyan-600"
-  //     case "Research":
-  //       return "bg-pink-50 text-pink-600"
-  //     default:
-  //       return "bg-gray-100 text-gray-700"
-  //   }
-  // }
-
   const todoTask = workspaceTask.filter(t => t.status === "Todo")
   const inProgressTasks = workspaceTask.filter(t => t.status === "In-progress")
   const doneTasks = workspaceTask.filter(t => t.status === "Done")
 
-  const renderColumn = (title: string, count: number, workspaceTask: task[], columnType: "todo" | "inprogress" | "done") => {
-    return (
-      <div className="w-full flex flex-col bg-gray-50/50 p-4 rounded-2xl border border-gray-100 min-h-[300px] md:min-h-[600px]">
-        {/* Column Header */}
-        <div className="flex justify-between items-center mb-4 px-1">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-gray-800 text-sm">{title}</span>
-            <span className="text-xs bg-gray-200/70 text-gray-600 px-2 py-0.5 rounded-full font-bold">
-              {count}
-            </span>
-          </div>
-          <button className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
-            <FilterIcon size={16} />
-          </button>
-        </div>
-            
-        {/* Task Cards Container */}
-        <div className="flex-1 flex flex-col gap-3.5 overflow-y-auto">
-          {isLoading ? <Loader /> : workspaceTask?.map((task) => {
-            return (
-              <div 
-                key={task._id}
-                className={`bg-white p-4 rounded-xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)] hover:translate-y-[-2px] transition-all duration-300 group cursor-pointer ${
-                  columnType === "done" ? "opacity-85 hover:opacity-100" : ""
-                }`}
-              >
-                {/* Badge Header */}
-                <div className="flex justify-between items-start mb-3">
-                  <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md ${getPriorityStyles(task.priority)}`}>
-                    {task.priority} Priority
-                  </span>
-                  {/* <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${getCategoryStyles(task.category)}`}>
-                    {task.category}
-                  </span> */}
-                </div>
-
-                {/* Title & Description */}
-                <h4 className="font-bold text-[14px] text-gray-900 mb-1.5 leading-snug group-hover:text-gray-800 transition-colors">
-                  {task.title}
-                </h4>
-                <p className="text-gray-500 text-xs line-clamp-2 mb-4 leading-relaxed">
-                  {task.description}
-                </p>
-
-                {/* Card Footer: Due Date & Team Members */}
-              </div>
-            )
-          })}
-
-          {/* Inline Add Task Button */}
-          <button className="flex items-center justify-center gap-2 py-3 rounded-xl border border-dashed border-gray-200 text-gray-400 hover:text-gray-800 hover:border-gray-400 hover:bg-gray-50/50 text-xs font-semibold transition-all duration-200 mt-1 cursor-pointer">
-            <Plus size={14} /> Add new task
-          </button>
-        </div>
-      </div>
-    )
+  const submitUpdateTask = async (id: string, status: 'Todo' | 'In-progress' | 'Done') => {
+    const taskDetails: UpdatedTask = {
+      _id: id,
+      status,
+      workspaceId,
+    }
+    await handleUpdateTask(taskDetails)
   }
+
 
   return (
     <div className="flex h-screen bg-[#F9FAFB] font-sans text-gray-900 overflow-hidden">
@@ -163,9 +85,11 @@ const SpecificWorkspace = () => {
             <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors border border-gray-200">
               <Settings size={16} />
             </button>
-            
+
             {/* Primary Accent Button */}
-            <button className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white hover:bg-gray-800 rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm cursor-pointer ml-2">
+            <button
+              className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white hover:bg-gray-800 rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm cursor-pointer ml-2"
+            >
               <Plus size={16} strokeWidth={2.5} /> Create Task
             </button>
           </div>
@@ -209,31 +133,28 @@ const SpecificWorkspace = () => {
           <div className="flex p-1 bg-gray-100 rounded-xl border border-gray-200/80 gap-1 shadow-inner shadow-gray-200/40">
             <button
               onClick={() => setActiveTab('Todo')}
-              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
-                activeTab === 'Todo'
+              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'Todo'
                   ? 'bg-white text-gray-900 shadow-sm font-extrabold'
                   : 'text-gray-500 hover:text-gray-800'
-              }`}
+                }`}
             >
               To Do <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{todoTask.length}</span>
             </button>
             <button
               onClick={() => setActiveTab('In-progress')}
-              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
-                activeTab === 'In-progress'
+              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'In-progress'
                   ? 'bg-white text-gray-900 shadow-sm font-extrabold'
                   : 'text-gray-500 hover:text-gray-800'
-              }`}
+                }`}
             >
               In Progress <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{inProgressTasks.length}</span>
             </button>
             <button
               onClick={() => setActiveTab('Done')}
-              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
-                activeTab === 'Done'
+              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'Done'
                   ? 'bg-white text-gray-900 shadow-sm font-extrabold'
                   : 'text-gray-500 hover:text-gray-800'
-              }`}
+                }`}
             >
               Done <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{doneTasks.length}</span>
             </button>
@@ -241,19 +162,28 @@ const SpecificWorkspace = () => {
         </div>
 
         {/* Kanban Columns Board */}
-        <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-            <div className={activeTab === 'Todo' ? 'block' : 'hidden md:block'}>
-              {renderColumn("To Do", todoTask.length, workspaceTask.filter(t => t.status === "Todo"), "todo")}
-            </div>
-            <div className={activeTab === 'In-progress' ? 'block' : 'hidden md:block'}>
-              {renderColumn("In Progress", inProgressTasks.length, workspaceTask.filter(t => t.status === "In-progress"), "inprogress")}
-            </div>
-            <div className={activeTab === 'Done' ? 'block' : 'hidden md:block'}>
-              {renderColumn("Done", doneTasks.length, workspaceTask.filter(t => t.status === "Done"), "done")}
+        <DragDropProvider
+          onDragEnd={(e) => {
+            if (e.canceled) return
+            const dropTargetId = e.operation.target?.id || ""
+            const draggedTaskId = e.operation.source?.id as string
+            submitUpdateTask(draggedTaskId, dropTargetId as 'Todo' | 'In-progress' | 'Done')
+          }}
+        >
+          <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+              <div className={activeTab === 'Todo' ? 'block' : 'hidden md:block'}>
+                <RenderColumn title="To Do" count={todoTask.length} allTask={todoTask} statusType="Todo" id="Todo" />
+              </div>
+              <div className={activeTab === 'In-progress' ? 'block' : 'hidden md:block'}>
+                <RenderColumn title="In Progress" count={inProgressTasks.length} allTask={inProgressTasks} statusType="In-progress" id="In-progress" />
+              </div>
+              <div className={activeTab === 'Done' ? 'block' : 'hidden md:block'}>
+                <RenderColumn title="Done" count={doneTasks.length} allTask={doneTasks} statusType="Done" id="Done" />
+              </div>
             </div>
           </div>
-        </div>
+        </DragDropProvider>
       </main>
     </div>
   )
