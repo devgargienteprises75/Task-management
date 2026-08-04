@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux"
 import { taskApi } from "../services/task.api"
 import { setAllTask, setDeleteTask, setRestoreTask, setError, setLoading, setTask, setUpdateTask } from "../task.slice"
-import type { task, UpdatedTask } from "@/types"
+import type { task, UpdatedTask, workspace } from "@/types"
 import type { RootState } from "@/app/app.store"
 
 const useTask = () => {
@@ -101,15 +101,16 @@ const useTask = () => {
         }
     }
 
-    const handleDeleteTask = async (workspaceId: string, taskId: string) => {
+    const handleDeleteTask = async (workspaceId: string | workspace, taskId: string) => {
         dispatch(setLoading(true))
+        const workspaceID = typeof workspaceId === 'object' ? workspaceId._id : workspaceId;
 
         const index = allTask.findIndex(t => t._id === taskId)
         const previousTask = allTask[index]
         dispatch(setDeleteTask(taskId))
 
         try {
-            const res = await deleteTask(workspaceId, taskId)
+            const res = await deleteTask(workspaceID, taskId)
             return {
                 success: true,
                 message: res.message

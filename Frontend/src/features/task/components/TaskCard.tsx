@@ -120,7 +120,7 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
                 <button
                   onClick={(e) => {
                     e.stopPropagation(); 
-                    void handleDeleteClick(task?.workspaceId, task?._id)
+                    void handleDeleteClick(task.workspaceId, task._id!)
                   }}
                   className="w-full text-left px-3 py-2 text-[13px] font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer transition-colors"
                 >
