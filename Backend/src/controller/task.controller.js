@@ -279,15 +279,15 @@ export async function deleteTaskController(req, res) {
             })
         }
 
-        const user = await userModel.findById(userId)
-
-        if(user.role === "user" || (user.role === "head" && task.assignTo.equals(user._id))){
+        if(workspaceid.toString() !== task.workspaceId.toString()){
             return res.status(400).json({
-                message: "AssignedTo user cannot access to delete tasks",
+                message: "Task not found in workspace",
                 success: false,
-                err: "AssignedTo user cannot access to delete tasks"
+                err: "Task not found in workspace"
             })
         }
+
+        const user = await userModel.findById(userId)
 
         if(!task.assignBy.equals(userId)){
             return res.status(400).json({

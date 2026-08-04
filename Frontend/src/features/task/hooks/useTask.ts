@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from "react-redux"
 import { taskApi } from "../services/task.api"
-import { setAllTask, setError, setLoading, setTask, setUpdateTask } from "../task.slice"
-import type { task, UpdatedTask } from "@/types"
+import { setAllTask, setDeleteTask, setRestoreTask, setError, setLoading, setTask, setUpdateTask } from "../task.slice"
+import type { task, UpdatedTask, workspace } from "@/types"
 import type { RootState } from "@/app/app.store"
 
 const useTask = () => {
 
-    const { getTasks, createTask, getAllTasks, updateTask } = taskApi
+    const { getTasks, createTask, getAllTasks, updateTask, deleteTask } = taskApi
     const dispatch = useDispatch()
     const allTask = useSelector((state: RootState) => state.task.allTask)
 
@@ -101,11 +101,40 @@ const useTask = () => {
         }
     }
 
+    const handleDeleteTask = async (workspaceId: string | workspace, taskId: string) => {
+        dispatch(setLoading(true))
+        const workspaceID = typeof workspaceId === 'object' ? workspaceId._id : workspaceId;
+
+        const index = allTask.findIndex(t => t._id === taskId)
+        const previousTask = allTask[index]
+        dispatch(setDeleteTask(taskId))
+
+        try {
+            const res = await deleteTask(workspaceID, taskId)
+            return {
+                success: true,
+                message: res.message
+            }
+        } catch (err:any) {
+            // Rollback: restore the task at its original position
+            if (previousTask) dispatch(setRestoreTask({ task: previousTask, index }))
+            const message = err?.response?.data?.message || err.message;
+            dispatch(setError(message))
+            return {
+                success: false,
+                message: message
+            }
+        } finally {
+            dispatch(setLoading(false))
+        }
+    }
+
     return {
         handleGetTask,
         handleGetAllTask,
         handleCreateTask,
-        handleUpdateTask
+        handleUpdateTask,
+        handleDeleteTask
     }
 }
 

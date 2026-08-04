@@ -1,5 +1,5 @@
 import api from "@/config/axios"
-import type { ApiResponse, task, TaskResponse, UpdatedTask } from "@/types"
+import type { ApiResponse, task, TaskResponse, UpdatedTask, workspace } from "@/types"
 
 export const taskApi = {
     createTask: async (workspaceId: string, taskDetails: task) => {
@@ -16,6 +16,11 @@ export const taskApi = {
     },
     updateTask: async (updatedTaskDetails: UpdatedTask) => {
         const res = await api.patch<ApiResponse<TaskResponse>>(`tasks/${updatedTaskDetails.workspaceId}/${updatedTaskDetails._id}`, updatedTaskDetails)
+        return res.data
+    },
+    deleteTask: async (workspaceId: string | workspace, taskId: string) => {
+        const workspaceID = typeof workspaceId === 'object' ? workspaceId._id : workspaceId;
+        const res = await api.delete<ApiResponse<TaskResponse>>(`tasks/${workspaceID}/${taskId}`)
         return res.data
     }
 }

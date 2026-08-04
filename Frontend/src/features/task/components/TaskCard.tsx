@@ -1,8 +1,8 @@
-import type { task, UpdatedTask, user } from "@/types";
+import type { task, UpdatedTask, user, workspace } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
-import { Calendar, Check, MoreVertical, } from "lucide-react";
+import { Calendar, Check, MoreVertical, Pencil, Trash2, } from "lucide-react";
 import useTask from "../hooks/useTask";
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useState, useEffect, useRef, type Dispatch, type SetStateAction } from "react";
 
 interface TaskCardProps {
   task: task;
@@ -29,6 +29,22 @@ const getPriorityStyles = (priority: "High" | "Medium" | "Low") => {
 const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditModalOpen, setSelectedTask }: TaskCardProps) => {
 
   const [status, setStatus] = useState<'Todo' | 'In-progress' | "Done">(task.status)
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [dropdownOpen])
 
   const assignees = taskUsers.filter((u) =>
     (task.assignTo as string[]).includes(u._id)
@@ -38,7 +54,7 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
     id: task._id ?? `task-${task.title}`,
   })
 
-  const { handleUpdateTask } = useTask()
+  const { handleUpdateTask, handleDeleteTask } = useTask()
 
   const updateStatus = async (taskId: any, nextStatus: UpdatedTask["status"]) => {
     if (!nextStatus || nextStatus === status) return;
@@ -53,10 +69,15 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
     await handleUpdateTask(taskDetails);
   };
 
+  const handleDeleteClick = async (workspaceId: string | workspace, taskId: string) => {
+    const workspaceID = typeof workspaceId === 'object' ? workspaceId._id : workspaceId;
+    await handleDeleteTask(workspaceID, taskId);
+  }
+
   return (
     <div
       ref={ref}
-      className={`bg-white p-4 rounded-xl border border-gray-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-200 group cursor-pointer ${
+      className={`relative bg-white p-4 rounded-xl border border-gray-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-200 group cursor-pointer ${
         statusType === "Done" ? "bg-gray-50/40" : ""
       }`}
     >
@@ -72,16 +93,43 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
           </span>
         </div>
         {assignedTask && (
-          <button
-            onClick={() => {
-              setSelectedTask?.(task)
-              setEditModalOpen?.(true)
-            }}
-            className="p-1 hover:bg-gray-200/60 rounded-md text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
-          >
-              <MoreVertical size={16}/>
-          </button>
-          )}
+          <div ref={dropdownRef} className="relative">
+            <button
+              onClick={() => {
+                setSelectedTask?.(task)
+                setDropdownOpen(!dropdownOpen)
+              }}
+              className="p-1 hover:bg-gray-200/60 rounded-md text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+            >
+                <MoreVertical size={16}/>
+            </button>
+
+            {dropdownOpen && (
+              <div className="absolute right-0 mt-1 w-32 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden z-20 py-1">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setDropdownOpen(false)
+                    setEditModalOpen?.(true)
+                  }}
+                  className="w-full text-left px-3 py-2 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer transition-colors"
+                >
+                  <Pencil size={14} className="text-gray-400" /> Edit
+                </button>
+                <div className="h-px bg-gray-100 w-full" />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); 
+                    void handleDeleteClick(task.workspaceId, task._id!)
+                  }}
+                  className="w-full text-left px-3 py-2 text-[13px] font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer transition-colors"
+                >
+                  <Trash2 size={14} className="text-red-500" /> Delete
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Title & Description */}
