@@ -17,5 +17,9 @@ export const taskApi = {
     updateTask: async (updatedTaskDetails: UpdatedTask) => {
         const res = await api.patch<ApiResponse<TaskResponse>>(`tasks/${updatedTaskDetails.workspaceId}/${updatedTaskDetails._id}`, updatedTaskDetails)
         return res.data
+    },
+    deleteTask: async (workspaceId: string, taskId: string) => {
+        const res = await api.delete(`tasks/${workspaceId}/${taskId}`)
+        return res.data
     }
 }

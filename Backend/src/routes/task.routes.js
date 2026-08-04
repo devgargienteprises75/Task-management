@@ -33,7 +33,7 @@ taskRouter.get("/:workspaceid/task-details/:taskid", verifyUser, verifyWorkspace
 taskRouter.patch("/:workspaceid/:taskid", verifyUser, verifyWorkspaceUser, updateTaskController )
 
 // Delete task
-taskRouter.delete("/:workspaceid/delete/:taskid", verifyUser, verifyWorkspaceUser, deleteTaskController)
+taskRouter.delete("/:workspaceid/:taskid", verifyUser, verifyWorkspaceUser, deleteTaskController)
 
 
 // Comments
