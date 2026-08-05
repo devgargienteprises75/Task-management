@@ -30,7 +30,7 @@ const SpecificWorkspace = () => {
   const { allTask } = useSelector((state: RootState) => state.task)
   const [activeTab, setActiveTab] = useState<'Todo' | 'In-progress' | 'Done'>('Todo')
   const [modalOpen, setModalOpen] = useState<boolean>(false)
-  const { handleUpdateTask } = useTask()
+  const { handleUpdateTask, handleGetAllTask } = useTask()
 
   // Find the current workspace name from the store
   const currentWorkspace = allWorkspaces.find((w) => w._id === workspaceId)
@@ -50,6 +50,12 @@ const SpecificWorkspace = () => {
     }
     await handleUpdateTask(taskDetails)
   }
+
+  useEffect(() => {
+    if(!allTask.length){
+      handleGetAllTask()
+    }
+  }, [])
 
   // Socket Connection
   useEffect(() => {
