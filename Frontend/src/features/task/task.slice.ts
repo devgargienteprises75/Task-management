@@ -26,6 +26,12 @@ const taskSlice = createSlice({
             const index = state.allTask.findIndex(t => String(t._id) === String(action.payload))
             if(index !== -1) state.allTask.splice(index, 1)
         },
+        setAddTask: (state, action: PayloadAction<task>) => {
+            const exists = state.allTask.some(t => String(t._id) === String(action.payload._id))
+            if (!exists) {
+                state.allTask.push(action.payload)
+            }
+        },
         setRestoreTask: (state, action: PayloadAction<{ task: task; index: number }>) => {
             state.allTask.splice(action.payload.index, 0, action.payload.task)
         },
@@ -38,5 +44,5 @@ const taskSlice = createSlice({
     }
 })
 
-export const { setTask, setLoading, setAllTask, setError, setUpdateTask, setDeleteTask, setRestoreTask } = taskSlice.actions
+export const { setTask, setLoading, setAllTask, setError, setUpdateTask, setDeleteTask, setRestoreTask, setAddTask } = taskSlice.actions
 export default taskSlice.reducer

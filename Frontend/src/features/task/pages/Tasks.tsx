@@ -19,6 +19,8 @@ import RenderColumn from "../components/RenderColumn";
 import TaskCard from "../components/TaskCard";
 import EditTaskModal from "../components/EditTaskModal";
 import { toggleSidebar } from "@/app/layout.slice";
+import { socket } from "@/lib/socket";
+import { setAddTask, setDeleteTask, setUpdateTask } from "../task.slice";
 
 const Tasks = () => {
   const dispatch = useDispatch()
@@ -40,8 +42,6 @@ const Tasks = () => {
       handleGetAllTask()
     }
   }, [])
-
-  
 
   const submitUpdateTask = async (id: string, status: 'Todo' | 'In-progress' | 'Done') => {
     const taskDetails: UpdatedTask = {
@@ -68,6 +68,42 @@ const Tasks = () => {
   const todoTasks = tasksAssignedToCurrentUser?.filter((t) => t.status === "Todo");
   const inProgressTasks = tasksAssignedToCurrentUser?.filter((t) => t.status === "In-progress");
   const doneTasks = tasksAssignedToCurrentUser?.filter((t) => t.status === "Done");  
+
+  const allWorkspaces = useSelector((state: RootState) => state.workspace.allWorkspaces)
+
+  // Socket Connection
+  useEffect(() => {
+    if(!user) return;
+
+    socket.connect();
+
+    // Iterate through all workspace
+    allWorkspaces?.forEach(workspace => {
+      socket.emit('join_workspace', workspace._id);
+
+      socket.on('task:created', (newTask: task) => {
+        dispatch(setAddTask(newTask))
+      })
+
+      socket.on('task:updated', (updatedTask: task) => {
+        dispatch(setUpdateTask(updatedTask))
+      })
+
+      socket.on('task:deleted', (deletedTaskId: string) => {
+        dispatch(setDeleteTask(deletedTaskId))
+      })
+    })
+
+    return () => {
+      allWorkspaces?.forEach(workspace => {
+        socket.emit('leave_workspace', workspace._id)
+        socket.off('task:created');
+        socket.off('task:updated');
+        socket.off('task:deleted');
+        socket.disconnect();
+      })
+    }
+  }, [user, allWorkspaces, dispatch])
 
   return (
     <div className="flex h-screen bg-[#F9FAFB] font-sans text-gray-900 overflow-hidden">

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { RootState } from "@/app/app.store"
 import Sidebar from "@/components/Sidebar"
 import { useSelector, useDispatch } from "react-redux"
@@ -14,11 +14,14 @@ import {
   List,
   Menu
 } from "lucide-react"
-import type { UpdatedTask } from "@/types"
+import type { task, UpdatedTask } from "@/types"
 import { toggleSidebar } from "@/app/layout.slice"
 import { DragDropProvider } from "@dnd-kit/react"
 import RenderColumn from "@/features/task/components/RenderColumn"
 import useTask from "@/features/task/hooks/useTask"
+import { socket } from "@/lib/socket"
+import { setDeleteTask, setAddTask, setUpdateTask } from "@/features/task/task.slice"
+import AssignTaskModal from "@/features/task/components/AssignTaskModal"
 
 const SpecificWorkspace = () => {
   const dispatch = useDispatch()
@@ -26,6 +29,7 @@ const SpecificWorkspace = () => {
   const { allWorkspaces } = useSelector((state: RootState) => state.workspace)
   const { allTask } = useSelector((state: RootState) => state.task)
   const [activeTab, setActiveTab] = useState<'Todo' | 'In-progress' | 'Done'>('Todo')
+  const [modalOpen, setModalOpen] = useState<boolean>(false)
   const { handleUpdateTask } = useTask()
 
   // Find the current workspace name from the store
@@ -47,6 +51,40 @@ const SpecificWorkspace = () => {
     await handleUpdateTask(taskDetails)
   }
 
+  // Socket Connection
+  useEffect(() => {
+    if(!workspaceId) return;
+
+    // Connect Socket
+    socket.connect();
+
+    // Join room for the workspace
+    socket.emit('join_workspace', workspaceId);
+
+    // Listen for new task creation
+    socket.on('task:created', (newTask: task) => {
+      dispatch(setAddTask(newTask));
+    });
+
+    // Listen for updated task
+    socket.on('task:updated', (updatedTask: task) => {
+      dispatch(setUpdateTask(updatedTask))
+    });
+
+    // Listen for deleted task
+    socket.on('task:deleted', (deletedTaskId: string) => {
+      dispatch(setDeleteTask(deletedTaskId))
+    });
+    
+    return() => {
+      socket.emit('leave_workspace', workspaceId)
+      socket.off('task:created')
+      socket.off('task:updated')
+      socket.off('task:deleted')
+      socket.disconnect();
+    }
+
+  }, [workspaceId, dispatch])
 
   return (
     <div className="flex h-screen bg-[#F9FAFB] font-sans text-gray-900 overflow-hidden">
@@ -88,10 +126,13 @@ const SpecificWorkspace = () => {
 
             {/* Primary Accent Button */}
             <button
+              onClick={() => setModalOpen(true)}
               className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white hover:bg-gray-800 rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm cursor-pointer ml-2"
             >
               <Plus size={16} strokeWidth={2.5} /> Create Task
             </button>
+
+            {modalOpen && <AssignTaskModal setModalOpen={setModalOpen} />}
           </div>
         </header>
 
