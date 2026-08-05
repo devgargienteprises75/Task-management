@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL || (
-    import.meta.env.PROD 
-        ? "https://task-management-mauve-beta-80.vercel.app/api" 
+    import.meta.env.PROD
+        ? "https://task-management-wjl7.onrender.com/api"
         : "http://localhost:8000/api"
 );
 
