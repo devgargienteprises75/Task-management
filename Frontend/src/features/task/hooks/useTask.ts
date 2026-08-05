@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import { taskApi } from "../services/task.api"
-import { setAllTask, setDeleteTask, setRestoreTask, setError, setLoading, setTask, setUpdateTask, setAddTask } from "../task.slice"
+import { setAllTask, setDeleteTask, setRestoreTask, setError, setLoading, setUpdateTask, setAddTask } from "../task.slice"
 import type { task, UpdatedTask, workspace } from "@/types"
 import type { RootState } from "@/app/app.store"
 
