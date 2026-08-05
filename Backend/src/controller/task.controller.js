@@ -3,6 +3,7 @@ import { taskModel } from "../models/task.model.js"
 import { userModel } from "../models/user.model.js"
 import { workspaceModel } from "../models/workspace.model.js"
 import commentModel from "../models/comment.model.js"
+import { io } from "../../server.js"
 
 // Create and assign task
 export async function createTaskController(req, res) {
@@ -53,7 +54,7 @@ export async function createTaskController(req, res) {
             }
         }        
 
-        const task = await taskModel.create({
+        const newTask = await taskModel.create({
             title,
             description,
             workspaceId: workspaceid,
@@ -63,9 +64,12 @@ export async function createTaskController(req, res) {
             dueDate: parsedDueDate
         })
 
+        io.to(`workspace_${workspaceid}`).emit('task:created', newTask)
+
         return res.status(201).json({
             message: "Task assigned successfully",
-            success: true
+            success: true,
+            newTask
         })
 
     } catch (err) {
@@ -127,8 +131,6 @@ export async function getTasksController(req, res) {
         })
     }
 }
-
-// Fetch 
 
 // Fetch task detail
 export async function getTaskDetailController(req, res) {
@@ -225,6 +227,8 @@ export async function updateTaskController(req, res){
                 { runValidators: true, returnDocument: 'after' }
             )
 
+            io.to(`workspace_${workspaceid}`).emit('task:updated', newTask)
+
             return res.status(200).json({
                 message: "Status updated successfully",
                 success: true,
@@ -247,6 +251,8 @@ export async function updateTaskController(req, res){
                     returnDocument: 'after'
                 }
             )
+
+            io.to(`workspace_${workspaceid}`).emit(`task:updated`, newTask)
 
             return res.status(200).json({
                 message: "Task updated successfully",
@@ -298,6 +304,8 @@ export async function deleteTaskController(req, res) {
         }
 
         await taskModel.findByIdAndDelete(task._id)
+
+        io.to(`workspace_${workspaceid}`).emit('task:deleted', task._id)
 
         return res.status(200).json({
             message: "Task deleted successfully",
