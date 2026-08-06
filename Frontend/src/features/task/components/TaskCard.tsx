@@ -26,6 +26,19 @@ const getPriorityStyles = (priority: "High" | "Medium" | "Low") => {
   }
 };
 
+const getStatusStyles = (priority: "Todo" | "In-progress" | "Done") => {
+  switch (priority) {
+    case "Todo":
+      return "bg-blue-100 text-blue-600 border border-blue-100";
+    case "In-progress":
+      return "bg-amber-100 text-amber-600 border border-amber-100";
+    case "Done":
+      return "bg-emerald-100 text-emerald-600 border border-emerald-100";
+    default:
+      return "bg-gray-50 text-gray-600 border border-gray-100";
+  }
+};
+
 const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditModalOpen, setSelectedTask }: TaskCardProps) => {
 
   const [status, setStatus] = useState<'Todo' | 'In-progress' | "Done">(task.status)
@@ -83,14 +96,26 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
     >
       {/* Tags & Priority */}
       <div className="flex justify-between items-center mb-2.5">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span
-            className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${getPriorityStyles(
-              task.priority
-            )}`}
-          >
-            {task.priority}
-          </span>
+        <div className="flex gap-2">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span
+              className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${getPriorityStyles(
+                task.priority
+              )}`}
+            >
+              {task.priority}
+            </span>
+          </div>
+
+          {assignedTask && <div className="flex items-center gap-1.5 flex-wrap">
+            <span
+              className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${getStatusStyles(
+                task.status
+              )}`}
+            >
+              {task.status}
+            </span>
+          </div>}
         </div>
         {assignedTask && (
           <div ref={dropdownRef} className="relative">
