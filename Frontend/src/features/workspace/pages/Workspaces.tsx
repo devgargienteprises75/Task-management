@@ -30,14 +30,18 @@ const Workspaces = () => {
 
     const allWorkspaces = useSelector((state: RootState) => state.workspace.allWorkspaces)
     const isLoading = useSelector((state: RootState) => state.workspace.isLoading)
+    const isAuthLoading = useSelector((state: RootState) => state.auth.isLoading)
     const user = useSelector((state: RootState) => state.auth.user)
 
-    const usersWorkspaces = allWorkspaces.filter(w => {
-        return w.members.some(member => {
-            if (typeof member === "string") return member === user?._id;
-            return member._id === user?._id;
+    const usersWorkspaces = useMemo(() => {
+        if (!user) return []
+        return allWorkspaces.filter(w => {
+            return w.members.some(member => {
+                if (typeof member === "string") return member === user._id;
+                return member._id === user._id;
+            })
         })
-    })
+    }, [allWorkspaces, user])
 
     const WorkspaceComponent =
         layoutStyle === "grid"
@@ -106,7 +110,7 @@ const Workspaces = () => {
                     {/* Toolbar / Filters (optional space) */}
                     <WorkspaceToolbar layoutStyle={layoutStyle} setLayoutStyle={setLayoutStyle} />
 
-                    {isLoading ? <Loader /> : (filterWorkspace.length > 0 ? <div className={layoutStyle === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col gap-4"}>
+                    {(isLoading || isAuthLoading) ? <Loader /> : (filterWorkspace.length > 0 ? <div className={layoutStyle === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col gap-4"}>
                         {filterWorkspace?.map((workspace: WorkspaceType) => (
                             <>
                                 <WorkspaceComponent 
