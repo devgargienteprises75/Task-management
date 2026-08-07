@@ -1,6 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from "react"
 import useTask from "../../task/hooks/useTask"
-import type { task, user, workspace } from "@/types"
+import type { task, user } from "@/types"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/app/app.store"
 import { cn } from "@/lib/cn"
