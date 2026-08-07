@@ -2,6 +2,8 @@ import type { user, workspace } from '@/types'
 import { EllipsisVertical, Pencil, Trash2, Users } from 'lucide-react'
 import { stringToColor } from '@/lib/colors'
 import { useState, useRef, useEffect, type Dispatch, type SetStateAction } from 'react';
+import useTask from '@/features/task/hooks/useTask';
+import { useNavigate } from 'react-router-dom';
 
 interface WorkspaceType {
   workspace: workspace;
@@ -50,8 +52,16 @@ const WorkspaceList = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
     setIsDropdownOpen(false);
   };
 
+  const { handleGetTask } = useTask()
+  const navigate = useNavigate()
+
+  const getTasks = async (workspaceId: string) => {
+    await handleGetTask(workspaceId)
+    navigate(`/workspaces/${workspace._id}`)
+  }
+
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between group gap-4 relative">
+    <div onClick={() => getTasks(workspace._id)} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between group gap-4 relative">
       <div className="flex items-center gap-4 flex-1 w-full">
         <div
           className="w-12 h-12 rounded-lg flex items-center justify-center text-lg font-bold text-gray-900 shrink-0"

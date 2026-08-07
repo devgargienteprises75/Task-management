@@ -57,7 +57,7 @@ const WorkspaceCard = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
 
   const getTasks = async (workspaceId: string) => {
     await handleGetTask(workspaceId)
-    navigate(`/${workspace._id}/tasks`)
+    navigate(`/workspaces/${workspace._id}`)
   }
 
   return (

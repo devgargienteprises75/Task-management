@@ -25,7 +25,7 @@ export const routes = createBrowserRouter([
         </Protected>
     },
     {
-        path: "/:workspaceId/tasks",
+        path: "/workspaces/:workspaceId",
         element: <Protected>
             <SpecificWorkspace />
         </Protected>

@@ -1,7 +1,7 @@
 import type { task, UpdatedTask, user, workspace } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
 import { Calendar, Check, MoreVertical, Pencil, Trash2, } from "lucide-react";
-import useTask from "../hooks/useTask";
+import useTask from "../../task/hooks/useTask";
 import { useState, useEffect, useRef, type Dispatch, type SetStateAction } from "react";
 
 interface TaskCardProps {
@@ -63,7 +63,7 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
     (task.assignTo as string[]).includes(u._id)
   );
 
-  const {ref} = useDraggable({
+  const { ref } = useDraggable({
     id: task._id ?? `task-${task.title}`,
   })
 
@@ -90,9 +90,8 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
   return (
     <div
       ref={ref}
-      className={`relative bg-white p-4 rounded-xl border border-gray-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-200 group cursor-pointer ${
-        statusType === "Done" ? "bg-gray-50/40" : ""
-      }`}
+      className={`relative bg-white p-4 rounded-xl border border-gray-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-200 group cursor-pointer ${statusType === "Done" ? "bg-gray-50/40" : ""
+        }`}
     >
       {/* Tags & Priority */}
       <div className="flex justify-between items-center mb-2.5">
@@ -126,7 +125,7 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
               }}
               className="p-1 hover:bg-gray-200/60 rounded-md text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
             >
-                <MoreVertical size={16}/>
+              <MoreVertical size={16} />
             </button>
 
             {dropdownOpen && (
@@ -144,7 +143,7 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
                 <div className="h-px bg-gray-100 w-full" />
                 <button
                   onClick={(e) => {
-                    e.stopPropagation(); 
+                    e.stopPropagation();
                     void handleDeleteClick(task.workspaceId, task._id!)
                   }}
                   className="w-full text-left px-3 py-2 text-[13px] font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer transition-colors"
@@ -159,9 +158,8 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
 
       {/* Title & Description */}
       <h4
-        className={`font-bold text-[14px] leading-snug mb-1.5 text-gray-900 group-hover:text-gray-700 ${
-          statusType === "Done" ? "line-through text-gray-500" : ""
-        }`}
+        className={`font-bold text-[14px] leading-snug mb-1.5 text-gray-900 group-hover:text-gray-700 ${statusType === "Done" ? "line-through text-gray-500" : ""
+          }`}
       >
         {task.title}
       </h4>
@@ -178,11 +176,10 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
               e.stopPropagation();
               void updateStatus(task._id, status === "Todo" ? "In-progress" : "Todo");
             }}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-bold transition-all duration-200 cursor-pointer ${
-              status === "Todo"
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-bold transition-all duration-200 cursor-pointer ${status === "Todo"
                 ? "bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md"
                 : "bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100"
-            }`}
+              }`}
           >
             {status === "Todo" ? "Start work" : "Put on hold"}
           </button>
