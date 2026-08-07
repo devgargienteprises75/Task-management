@@ -1,6 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from "react"
 import useTask from "../../task/hooks/useTask"
-import type { task, user } from "@/types"
+import type { task, user, workspace } from "@/types"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/app/app.store"
 import { cn } from "@/lib/cn"
@@ -50,7 +50,7 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
 
     const [title, setTitle] = useState<string>("")
     const [description, setDescription] = useState<string>("")
-    const [workspaceId, setWorkspaceId] = useState<string>(pathname === "/tasks" ? generalWorkspace[0]._id : param.workspaceId)
+    const [workspaceId, setWorkspaceId] = useState<string>(pathname === "/tasks" ? generalWorkspace[0]._id : param.workspaceId || "")
     const [assignTo, setAssignTo] = useState<string[]>([])
     const [dueDate, setDueDate] = useState<string>("")
     const [status, setStatus] = useState<"Todo" | "In-progress" | "Done">("Todo")
@@ -260,30 +260,35 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                                             No users available
                                         </p>
                                     ) : (
-                                        workspaceUser?.map((u: user) => {
-                                            const checked = assignTo.includes(u._id)
+                                        workspaceUser?.map((u: string | user) => {
+                                            const isUserObj = typeof u !== "string";
+                                            const userId = isUserObj ? u._id : u;
+
+                                            const username = isUserObj ? u.username : "User"
+
+                                            const checked = assignTo.includes(userId);
                                             return (
                                                 <label
-                                                    key={u._id}
-                                                    htmlFor={`assignee-${u._id}`}
+                                                    key={userId}
+                                                    htmlFor={`assignee-${userId}`}
                                                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group"
                                                 >
                                                     <input
                                                         type="checkbox"
-                                                        id={`assignee-${u._id}`}
+                                                        id={`assignee-${userId}`}
                                                         checked={checked}
-                                                        onChange={() => toggleAssignee(u._id)}
+                                                        onChange={() => toggleAssignee(userId)}
                                                         className="w-4 h-4 rounded border-gray-300 cursor-pointer accent-[#D1F53B]"
                                                     />
                                                     <span className="w-6 h-6 rounded-full bg-[#D1F53B]/30 flex items-center justify-center text-xs font-bold text-gray-700">
-                                                        {u.username.charAt(0).toUpperCase()}
+                                                        {username.charAt(0).toUpperCase()}
                                                     </span>
                                                     <div className="flex-1 min-w-0">
                                                         <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900 truncate">
-                                                            {u.username}
+                                                            {username}
                                                         </p>
                                                         <p className="text-xs text-gray-400 truncate">
-                                                            {u.email}
+                                                            {isUserObj ? u.email : "User"}
                                                         </p>
                                                     </div>
                                                 </label>
