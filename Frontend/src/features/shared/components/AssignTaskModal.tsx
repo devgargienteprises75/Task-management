@@ -1,6 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from "react"
 import useTask from "../../task/hooks/useTask"
-import type { task } from "@/types"
+import type { task, user } from "@/types"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/app/app.store"
 import { cn } from "@/lib/cn"
@@ -45,10 +45,12 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
 
     const { allWorkspaces } = useSelector((state: RootState) => state.workspace)
     var generalWorkspace = allWorkspaces.filter(w => w.isGeneral == true)
+    const { pathname } = useLocation()
+    const param = useParams()
 
     const [title, setTitle] = useState<string>("")
     const [description, setDescription] = useState<string>("")
-    const [workspaceId, setWorkspaceId] = useState<string>(generalWorkspace[0]._id)
+    const [workspaceId, setWorkspaceId] = useState<string>(pathname === "/tasks" ? generalWorkspace[0]._id : param.workspaceId)
     const [assignTo, setAssignTo] = useState<string[]>([])
     const [dueDate, setDueDate] = useState<string>("")
     const [status, setStatus] = useState<"Todo" | "In-progress" | "Done">("Todo")
@@ -70,6 +72,9 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
             prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
         )
     }
+
+    const workspaceUser = allWorkspaces.find(w => w._id === workspaceId)?.members;
+    console.log(workspaceUser)
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -104,9 +109,6 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
         setStatus("Todo")
         setPriority("Medium")
     }
-    
-    const { pathname } = useLocation()
-    const param = useParams()
     
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm px-4">
@@ -253,12 +255,12 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
 
                             {assignDropdownOpen && (
                                 <div className="absolute z-50 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-xl p-2 space-y-0.5 max-h-[200px] overflow-y-auto">
-                                    {users.length === 0 ? (
+                                    {workspaceUser?.length === 0 ? (
                                         <p className="text-sm text-gray-400 px-3 py-3 text-center">
                                             No users available
                                         </p>
                                     ) : (
-                                        users.map((u) => {
+                                        workspaceUser?.map((u: user) => {
                                             const checked = assignTo.includes(u._id)
                                             return (
                                                 <label
