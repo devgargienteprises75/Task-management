@@ -1,5 +1,5 @@
 import { useState, type Dispatch, type SetStateAction } from "react"
-import useTask from "../hooks/useTask"
+import useTask from "../../task/hooks/useTask"
 import type { task } from "@/types"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/app/app.store"
@@ -14,6 +14,7 @@ import {
     Loader2,
     CheckCircle2,
 } from "lucide-react"
+import { useLocation, useParams } from "react-router-dom"
 
 interface AssignTaskModalProps {
     setModalOpen: Dispatch<SetStateAction<boolean>>
@@ -59,7 +60,7 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
 
     const { user } = useSelector((state: RootState) => state.auth)
     const { users } = useSelector((state: RootState) => state.admin)
-    
+
     const { handleCreateTask } = useTask()
     const selectedPriority = PRIORITY_OPTIONS.find((p) => p.value === priority)!
     const selectedAssignees = users.filter((u) => assignTo.includes(u._id))
@@ -103,7 +104,10 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
         setStatus("Todo")
         setPriority("Medium")
     }
-
+    
+    const { pathname } = useLocation()
+    const param = useParams()
+    
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm px-4">
             <div
@@ -187,10 +191,12 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                                     !workspaceId && "text-gray-400"
                                 )}
                             >
-                                <option value="" disabled>
-                                    Select a workspace...
-                                </option>
-                                {allWorkspaces.map((ws) => (
+                                {pathname === "/tasks" ?
+                                    <option value="" disabled> Select a workspace... </option> :
+                                    <option value={workspaceId} disabled>
+                                        {pathname === "/tasks" ? "Select a workspace..." : allWorkspaces.find(w => w._id === param.workspaceId)?.name}
+                                    </option>}
+                                {pathname === "/tasks" && allWorkspaces.map((ws) => (
                                     <option key={ws._id} value={ws._id}>
                                         {ws.name}
                                     </option>
@@ -327,17 +333,17 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
 
                         {/* Due Date */}
                         <div>
-                        <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                            <Calendar size={14} className="text-gray-400" />
-                            Due Date
-                        </label>
-                        <input
-                            type="date"
-                            value={dueDate}
-                            onChange={(e) => setDueDate(e.target.value)}
-                            className={cn(
-                                "block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-[15px] text-gray-900 transition-all",
-                                "focus:border-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900"
+                            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                                <Calendar size={14} className="text-gray-400" />
+                                Due Date
+                            </label>
+                            <input
+                                type="date"
+                                value={dueDate}
+                                onChange={(e) => setDueDate(e.target.value)}
+                                className={cn(
+                                    "block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-[15px] text-gray-900 transition-all",
+                                    "focus:border-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900"
                                 )}
                             />
                         </div>

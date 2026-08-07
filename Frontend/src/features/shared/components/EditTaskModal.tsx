@@ -4,7 +4,7 @@ import type { task, UpdatedTask, user } from "@/types";
 import { AlignLeft, Calendar, CheckCircle2, ChevronDown, Flag, Loader2, Pencil, Users, X } from "lucide-react";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { useSelector } from "react-redux";
-import useTask from "../hooks/useTask";
+import useTask from "../../task/hooks/useTask";
 
 interface EditTaskModalProps {
   selectedTask: task;

@@ -1,9 +1,9 @@
-import type { task } from "@/types";
 import { useDroppable } from "@dnd-kit/react";
 import { MoreVertical, Plus } from "lucide-react";
 import TaskCard from "./TaskCard";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/app.store";
+import type { task } from "@/types";
 
 interface RenderColumnProps {
     id: string,
@@ -36,7 +36,7 @@ const RenderColumn = ({ id, title, count, allTask, statusType }: RenderColumnPro
         id,
     })
     const users = useSelector((state: RootState) => state.admin.users)
-    
+
     return (
         <div
             ref={ref}

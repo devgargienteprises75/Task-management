@@ -17,11 +17,11 @@ import {
 import type { task, UpdatedTask } from "@/types"
 import { toggleSidebar } from "@/app/layout.slice"
 import { DragDropProvider } from "@dnd-kit/react"
-import RenderColumn from "@/features/task/components/RenderColumn"
+import RenderColumn from "@/features/shared/components/RenderColumn"
 import useTask from "@/features/task/hooks/useTask"
 import { socket } from "@/lib/socket"
 import { setDeleteTask, setAddTask, setUpdateTask } from "@/features/task/task.slice"
-import AssignTaskModal from "@/features/task/components/AssignTaskModal"
+import AssignTaskModal from "@/features/shared/components/AssignTaskModal"
 
 const SpecificWorkspace = () => {
   const dispatch = useDispatch()
@@ -52,14 +52,14 @@ const SpecificWorkspace = () => {
   }
 
   useEffect(() => {
-    if(!allTask.length){
+    if (!allTask.length) {
       handleGetAllTask()
     }
   }, [])
 
   // Socket Connection
   useEffect(() => {
-    if(!workspaceId) return;
+    if (!workspaceId) return;
 
     // Connect Socket
     socket.connect();
@@ -81,8 +81,8 @@ const SpecificWorkspace = () => {
     socket.on('task:deleted', (deletedTaskId: string) => {
       dispatch(setDeleteTask(deletedTaskId))
     });
-    
-    return() => {
+
+    return () => {
       socket.emit('leave_workspace', workspaceId)
       socket.off('task:created')
       socket.off('task:updated')
@@ -181,8 +181,8 @@ const SpecificWorkspace = () => {
             <button
               onClick={() => setActiveTab('Todo')}
               className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'Todo'
-                  ? 'bg-white text-gray-900 shadow-sm font-extrabold'
-                  : 'text-gray-500 hover:text-gray-800'
+                ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                : 'text-gray-500 hover:text-gray-800'
                 }`}
             >
               To Do <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{todoTask.length}</span>
@@ -190,8 +190,8 @@ const SpecificWorkspace = () => {
             <button
               onClick={() => setActiveTab('In-progress')}
               className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'In-progress'
-                  ? 'bg-white text-gray-900 shadow-sm font-extrabold'
-                  : 'text-gray-500 hover:text-gray-800'
+                ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                : 'text-gray-500 hover:text-gray-800'
                 }`}
             >
               In Progress <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{inProgressTasks.length}</span>
@@ -199,8 +199,8 @@ const SpecificWorkspace = () => {
             <button
               onClick={() => setActiveTab('Done')}
               className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'Done'
-                  ? 'bg-white text-gray-900 shadow-sm font-extrabold'
-                  : 'text-gray-500 hover:text-gray-800'
+                ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                : 'text-gray-500 hover:text-gray-800'
                 }`}
             >
               Done <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{doneTasks.length}</span>

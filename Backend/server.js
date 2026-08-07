@@ -4,6 +4,7 @@ import connectToDb from "./src/config/database.js";
 import { config } from "./src/config/config.js";
 import http from 'http'
 import { Server } from "socket.io";
+import webpush from 'web-push';
 
 const PORT = config.PORT || 8000
 

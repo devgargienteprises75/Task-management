@@ -13,11 +13,11 @@ import {
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import useTask from "../hooks/useTask";
-import AssignTaskModal from "../components/AssignTaskModal";
+import AssignTaskModal from "../../shared/components/AssignTaskModal";
 import { DragDropProvider } from "@dnd-kit/react";
-import RenderColumn from "../components/RenderColumn";
-import TaskCard from "../components/TaskCard";
-import EditTaskModal from "../components/EditTaskModal";
+import RenderColumn from "../../shared/components/RenderColumn";
+import TaskCard from "../../shared/components/TaskCard";
+import EditTaskModal from "../../shared/components/EditTaskModal";
 import { toggleSidebar } from "@/app/layout.slice";
 import { socket } from "@/lib/socket";
 import { setAddTask, setDeleteTask, setUpdateTask } from "../task.slice";
@@ -38,7 +38,7 @@ const Tasks = () => {
   const { handleGetAllTask, handleUpdateTask } = useTask()
 
   useEffect(() => {
-    if(!allTask.length){
+    if (!allTask.length) {
       handleGetAllTask()
     }
   }, [])
@@ -51,7 +51,7 @@ const Tasks = () => {
 
     const res = await handleUpdateTask(taskDetails);
 
-    if(res.success){
+    if (res.success) {
       setModalOpen(false)
     }
   }
@@ -67,13 +67,13 @@ const Tasks = () => {
 
   const todoTasks = tasksAssignedToCurrentUser?.filter((t) => t.status === "Todo");
   const inProgressTasks = tasksAssignedToCurrentUser?.filter((t) => t.status === "In-progress");
-  const doneTasks = tasksAssignedToCurrentUser?.filter((t) => t.status === "Done");  
+  const doneTasks = tasksAssignedToCurrentUser?.filter((t) => t.status === "Done");
 
   const allWorkspaces = useSelector((state: RootState) => state.workspace.allWorkspaces)
 
   // Socket Connection
   useEffect(() => {
-    if(!user) return;
+    if (!user) return;
 
     socket.connect();
 
@@ -116,11 +116,11 @@ const Tasks = () => {
         <header className="px-4 sm:px-8 py-5 border-b border-gray-200 bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex items-center gap-3">
             <button
-                onClick={() => dispatch(toggleSidebar())}
-                className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors md:hidden cursor-pointer"
-                aria-label="Toggle sidebar"
+              onClick={() => dispatch(toggleSidebar())}
+              className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors md:hidden cursor-pointer"
+              aria-label="Toggle sidebar"
             >
-                <Menu size={20} />
+              <Menu size={20} />
             </button>
             <div className="w-10 h-10 bg-[#D1F53B] rounded-xl flex items-center justify-center text-gray-900 font-bold shadow-xs shrink-0">
               <FolderKanban size={22} strokeWidth={2.2} />
@@ -181,7 +181,7 @@ const Tasks = () => {
 
           {/* Controls & Switcher */}
           <div className="flex items-center gap-2.5 justify-end">
-            
+
 
             <div className="h-4 w-[1px] bg-gray-200 mx-0.5" />
 
@@ -202,31 +202,28 @@ const Tasks = () => {
               <div className="flex p-1 bg-gray-100 rounded-xl border border-gray-200/80 gap-1 shadow-inner shadow-gray-200/40">
                 <button
                   onClick={() => setActiveTab('Todo')}
-                  className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
-                    activeTab === 'Todo'
-                      ? 'bg-white text-gray-900 shadow-sm font-extrabold'
-                      : 'text-gray-500 hover:text-gray-800'
-                  }`}
+                  className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'Todo'
+                    ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                    : 'text-gray-500 hover:text-gray-800'
+                    }`}
                 >
                   To Do <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{todoTasks.length}</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('In-progress')}
-                  className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
-                    activeTab === 'In-progress'
-                      ? 'bg-white text-gray-900 shadow-sm font-extrabold'
-                      : 'text-gray-500 hover:text-gray-800'
-                  }`}
+                  className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'In-progress'
+                    ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                    : 'text-gray-500 hover:text-gray-800'
+                    }`}
                 >
                   In Progress <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{inProgressTasks.length}</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('Done')}
-                  className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
-                    activeTab === 'Done'
-                      ? 'bg-white text-gray-900 shadow-sm font-extrabold'
-                      : 'text-gray-500 hover:text-gray-800'
-                  }`}
+                  className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'Done'
+                    ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                    : 'text-gray-500 hover:text-gray-800'
+                    }`}
                 >
                   Done <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{doneTasks.length}</span>
                 </button>
@@ -235,7 +232,7 @@ const Tasks = () => {
 
             <DragDropProvider
               onDragEnd={(e) => {
-                if(e.canceled) return;
+                if (e.canceled) return;
 
                 const dropTargetId = e.operation.target?.id || "";
                 const draggedTaskId = e.operation.source?.id as string
@@ -259,7 +256,7 @@ const Tasks = () => {
             </DragDropProvider>
           </>
         ) : (
-            <section className="flex-1 overflow-auto bg-[#F9FAFB] p-4 sm:p-6 lg:p-8">
+          <section className="flex-1 overflow-auto bg-[#F9FAFB] p-4 sm:p-6 lg:p-8">
             <div className="mx-auto max-w-6xl">
               <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
@@ -300,7 +297,7 @@ const Tasks = () => {
                 </div>
               )}
             </div>
-            </section>
+          </section>
         )}
 
         {editModalOpen && selectedTask && <EditTaskModal selectedTask={selectedTask} setEditModalOpen={setEditModalOpen} />}
