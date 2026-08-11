@@ -24,6 +24,14 @@ if(!process.env.USER_MAIL){
     throw new Error("USER_MAIL id not defined in Environment variable")
 }
 
+if(!process.env.PUBLIC_VAPID_KEY){
+    throw new Error("PUBLIC_VAPID_KEY id not defined in Environment variable")
+}
+
+if(!process.env.PRIVATE_VAPID_KEY){
+    throw new Error("PRIVATE_VAPID_KEY id not defined in Environment variable")
+}
+
 export const config = {
     PORT:process.env.PORT,
     MONGO_URI:process.env.MONGO_URI,
@@ -31,5 +39,7 @@ export const config = {
     REFRESH_TOKEN:process.env.REFRESH_TOKEN,
     CLIENT_ID:process.env.CLIENT_ID,
     CLIENT_SECRET:process.env.CLIENT_SECRET,
-    USER_MAIL:process.env.USER_MAIL
+    USER_MAIL:process.env.USER_MAIL,
+    PUBLIC_VAPID_KEY:process.env.PUBLIC_VAPID_KEY,
+    PRIVATE_VAPID_KEY:process.env.PRIVATE_VAPID_KEY
 }

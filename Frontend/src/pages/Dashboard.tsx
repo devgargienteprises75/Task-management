@@ -2,6 +2,7 @@ import Sidebar from "@/components/Sidebar"
 import { Calendar, Plus, Menu } from "lucide-react"
 import { useDispatch } from "react-redux"
 import { toggleSidebar } from "@/app/layout.slice"
+import { enableNotification } from "@/lib/helper"
 
 const Dashboard = () => {
   const dispatch = useDispatch()
@@ -38,7 +39,9 @@ const Dashboard = () => {
         {/* Kanban Board */}
         <div className="flex-1 overflow-x-auto p-4 sm:p-8">
             <div className="flex gap-6 min-w-max">
-                
+                <button onClick={() => enableNotification()}>
+                    Enable Notification
+                </button>
                 {/* Column 1: To Do */}
                 <div className="w-[320px] flex flex-col gap-4">
                     <div className="flex justify-between items-center text-gray-500 font-medium text-sm mb-2">
