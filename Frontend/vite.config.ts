@@ -7,10 +7,17 @@ import { VitePWA } from "vite-plugin-pwa";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(), 
+    react(),
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
+      strategies: "injectManifest",
+      srcDir: "public",
+      filename: "sw.js",
+      devOptions: {
+        enabled: true,   // ← Makes SW work in `npm run dev` (off by default with injectManifest)
+        type: "module",  // ← Required when using ES module syntax in SW
+      },
       manifest: {
         id: "/",
         name: "Todo",

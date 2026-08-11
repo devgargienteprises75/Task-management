@@ -21,12 +21,9 @@ export const io = new Server(server, {
 
 // Socket Connection Listener & Rooms
 io.on('connection', (socket) => {
-    console.log(`User Connected: ${socket.id}`);
-
     // Join workspace room
     socket.on('join_workspace', (worksapceId) => {
         socket.join(`workspace_${worksapceId}`);
-        console.log(`User ${socket.id} joined workspace_${worksapceId}`);
     })
 
     socket.on('leave_workspace', (workspaceId) => {

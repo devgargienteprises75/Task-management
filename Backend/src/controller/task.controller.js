@@ -4,6 +4,7 @@ import { userModel } from "../models/user.model.js"
 import { workspaceModel } from "../models/workspace.model.js"
 import commentModel from "../models/comment.model.js"
 import { io } from "../../server.js"
+import { sendPushToUser } from "../services/push.service.js"
 
 // Create and assign task
 export async function createTaskController(req, res) {
@@ -65,6 +66,16 @@ export async function createTaskController(req, res) {
         })
 
         io.to(`workspace_${workspaceid}`).emit('task:created', newTask)
+
+        await Promise.allSettled(
+            assignToId.map(assignedUserId => 
+                sendPushToUser(assignedUserId.toString(), {
+                    title: "New Task Assigned",
+                    body: `You have been assigned ${title}`,
+                    url: `/workspace/${workspaceid}/task/${newTask._id}`
+                })
+            )
+        )
 
         return res.status(201).json({
             message: "Task assigned successfully",
