@@ -51,7 +51,7 @@ export async function enableNotification(): Promise<void>{
     });
 }
 
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
+function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
   // Pad the string to a multiple of 4 (base64 requirement)
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
 
