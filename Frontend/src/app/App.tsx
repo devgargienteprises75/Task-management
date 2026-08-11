@@ -23,13 +23,11 @@ const App = () => {
     if(user){
       handleGetUsers()
       handleGetWorkspaces()
-      // Ask for notification permission once the user is confirmed logged in.
-      // If already granted → silently re-subscribes (or finds existing subscription).
-      // If denied → shows the alert message.
-      // If not asked yet → shows the browser permission prompt.
-      enableNotification()
+      // Run in background — never let a notification error block or crash this effect
+      enableNotification().catch(err => console.warn('Push notification setup failed:', err))
     }
   }, [user])
+
 
 
   return (

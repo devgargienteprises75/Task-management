@@ -2,11 +2,15 @@ import axios from "axios";
 
 async function regSw(): Promise<ServiceWorkerRegistration | undefined> {
     if ('serviceWorker' in navigator) {
-        // Use .ready instead of .register() — main.tsx already registers the SW.
-        // Calling register() again triggers an update check → skipWaiting() →
-        // autoUpdate reloads the page → permission popup disappears.
-        // .ready simply waits for the existing active SW and returns it silently.
-        const registration = await navigator.serviceWorker.ready
+        // Race .ready against a timeout — in dev, hot reloads can leave the SW
+        // stuck in "waiting" state, causing .ready to hang forever.
+        const timeoutPromise = new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('SW ready timed out')), 5000)
+        )
+        const registration = await Promise.race([
+            navigator.serviceWorker.ready,
+            timeoutPromise
+        ])
         return registration
     }
     console.warn('Service workers are not supported in this browser')
