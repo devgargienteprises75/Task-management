@@ -1,8 +1,14 @@
+// Required by vite-plugin-pwa's injectManifest strategy.
+// At build time, this token gets replaced with the list of all your app's
+// files to cache for offline support. In dev mode it's just an empty array.
+const manifest = self.__WB_MANIFEST
+
 // Fires when the service worker is installed for the first time
 self.addEventListener("install", (e) => {
     // Skip waiting forces this SW to become active immediately
     self.skipWaiting();
 })
+
 
 // Fires when the service worker is activated
 self.addEventListener('activate', (e) => {
