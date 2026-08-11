@@ -11,13 +11,13 @@ export async function createTaskController(req, res) {
     try {
         const { workspaceid } = req.params
         const userId = req.userId
-        const { title, description, assignTo, priority, dueDate} = req.body
-        
+        const { title, description, assignTo, priority, dueDate } = req.body
+
         const assignToId = assignTo.map((id) => {
             return new mongoose.Types.ObjectId(id)
         })
-        
-        if(!title || !description || !assignToId){
+
+        if (!title || !description || !assignToId) {
             return res.status(400).json({
                 message: "Required missing fields",
                 success: false,
@@ -27,10 +27,10 @@ export async function createTaskController(req, res) {
 
         let parsedDueDate;
 
-        if(dueDate != undefined && dueDate != null && dueDate != ""){
+        if (dueDate != undefined && dueDate != null && dueDate != "") {
             const dueDateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
-            if(!dueDateRegex.test(dueDate)){
+            if (!dueDateRegex.test(dueDate)) {
                 return res.status(400).json({
                     message: "dueDate must be in YYYY-MM-DD format",
                     success: false,
@@ -41,19 +41,19 @@ export async function createTaskController(req, res) {
             const [year, month, day] = dueDate.split("-").map(Number)
             parsedDueDate = new Date(Date.UTC(year, month - 1, day))
 
-            const isRealDate = 
+            const isRealDate =
                 parsedDueDate.getUTCFullYear() === year &&
                 parsedDueDate.getUTCMonth() === month - 1 &&
                 parsedDueDate.getUTCDate() === day
 
-            if(!isRealDate){
+            if (!isRealDate) {
                 return res.status(400).json({
                     message: "Invalid dueDate",
                     success: false,
                     err: "invalid dueDate"
                 })
             }
-        }        
+        }
 
         const newTask = await taskModel.create({
             title,
@@ -68,11 +68,11 @@ export async function createTaskController(req, res) {
         io.to(`workspace_${workspaceid}`).emit('task:created', newTask)
 
         await Promise.allSettled(
-            assignToId.map(assignedUserId => 
+            assignToId.map(assignedUserId =>
                 sendPushToUser(assignedUserId.toString(), {
                     title: "New Task Assigned",
                     body: `You have been assigned ${title}`,
-                    url: `/workspace/${workspaceid}/task/${newTask._id}`
+                    url: `/workspaces/${workspaceid}`
                 })
             )
         )
@@ -93,12 +93,12 @@ export async function createTaskController(req, res) {
 }
 
 // Fetch all tasks of user
-export async function getAllTasksController(req, res){
+export async function getAllTasksController(req, res) {
     try {
         const userId = req.userId
 
         const tasks = await taskModel.find()
-        if(!tasks){
+        if (!tasks) {
             return res.status(404).json({
                 message: "No tasks found",
                 success: false,
@@ -127,7 +127,7 @@ export async function getTasksController(req, res) {
         const userId = req.userId
 
         const tasks = await taskModel.find({ workspaceId: workspaceid })
-        
+
         return res.status(200).json({
             message: "Fetched tasks successfully",
             success: true,
@@ -148,7 +148,7 @@ export async function getTaskDetailController(req, res) {
     try {
         const { workspaceid, taskid } = req.params;
 
-        if(!taskid){
+        if (!taskid) {
             return res.status(400).json({
                 message: "Missing task Id",
                 success: false,
@@ -157,7 +157,7 @@ export async function getTaskDetailController(req, res) {
         }
 
         const task = await taskModel.findById(taskid)
-        if(!task){
+        if (!task) {
             return res.status(404).json({
                 message: "Task not found",
                 success: false,
@@ -170,7 +170,7 @@ export async function getTaskDetailController(req, res) {
             success: true,
             task
         })
-        
+
     } catch (err) {
         return res.status(400).json({
             message: "Unexpected error",
@@ -181,31 +181,31 @@ export async function getTaskDetailController(req, res) {
 }
 
 // Update Task
-export async function updateTaskController(req, res){
+export async function updateTaskController(req, res) {
     const userId = req.userId
     const { workspaceid, taskid } = req.params
     const { newTitle, newDescription, assignTo, status, priority, dueDate } = req.body
-    
+
     try {
-        if(!userId){
+        if (!userId) {
             return res.status(400).json({
                 message: "User Id missing",
                 success: false,
                 err: "User Id missing"
             })
         }
-    
-        const user = await userModel.findById(userId)   
-        if(!user){
+
+        const user = await userModel.findById(userId)
+        if (!user) {
             return res.status(404).json({
                 message: "User not found",
                 success: false,
                 err: "User not found"
             })
         }
-        
+
         const workspace = await workspaceModel.findById(workspaceid)
-        if(!workspace){
+        if (!workspace) {
             return res.status(404).json({
                 message: "Workspace not found",
                 success: false,
@@ -218,7 +218,7 @@ export async function updateTaskController(req, res){
             workspaceId: workspace._id
         })
 
-        if(!task){
+        if (!task) {
             return res.status(404).json({
                 message: "Task not found",
                 success: false,
@@ -231,7 +231,7 @@ export async function updateTaskController(req, res){
             return id.toString() === userId
         })
 
-        if(isAssigned){
+        if (isAssigned) {
             const newTask = await taskModel.findByIdAndUpdate(
                 task._id,
                 { $set: { status } },
@@ -247,16 +247,18 @@ export async function updateTaskController(req, res){
             })
         }
 
-        if(user.role === "admin" || user.role === "head"){
+        if (user.role === "admin" || user.role === "head") {
             const newTask = await taskModel.findByIdAndUpdate(
                 task._id,
-                { $set: {
-                    title: newTitle || task.title,
-                    description: newDescription || task.description,
-                    assignTo: assignToId || task.assignTo,
-                    priority: priority || task.priority,
-                    dueDate: dueDate || task.dueDate
-                }},
+                {
+                    $set: {
+                        title: newTitle || task.title,
+                        description: newDescription || task.description,
+                        assignTo: assignToId || task.assignTo,
+                        priority: priority || task.priority,
+                        dueDate: dueDate || task.dueDate
+                    }
+                },
                 {
                     runValidators: true,
                     returnDocument: 'after'
@@ -288,7 +290,7 @@ export async function deleteTaskController(req, res) {
         const userId = req.userId
 
         const task = await taskModel.findById(taskid)
-        if(!task){
+        if (!task) {
             return res.status(404).json({
                 message: "Task not found",
                 success: false,
@@ -296,7 +298,7 @@ export async function deleteTaskController(req, res) {
             })
         }
 
-        if(workspaceid.toString() !== task.workspaceId.toString()){
+        if (workspaceid.toString() !== task.workspaceId.toString()) {
             return res.status(400).json({
                 message: "Task not found in workspace",
                 success: false,
@@ -306,7 +308,7 @@ export async function deleteTaskController(req, res) {
 
         const user = await userModel.findById(userId)
 
-        if(!task.assignBy.equals(userId)){
+        if (!task.assignBy.equals(userId)) {
             return res.status(400).json({
                 message: "Task only deleted by assigned head",
                 success: false,
@@ -338,17 +340,17 @@ export async function addCommentsController(req, res) {
         const userId = req.userId
         const { taskid, workspaceid } = req.params
         const { text } = req.body
-    
-        if(!taskid){
+
+        if (!taskid) {
             return res.status(400).json({
                 message: "Task Id Missing",
                 success: false,
                 err: "Task Id Missing"
             })
         }
-    
+
         const task = await taskModel.findById(taskid)
-        if(!task){
+        if (!task) {
             return res.status(404).json({
                 message: "Task not found",
                 success: false,
@@ -356,16 +358,16 @@ export async function addCommentsController(req, res) {
             })
         }
 
-        if(task.workspaceId.toString() !== workspaceid){
+        if (task.workspaceId.toString() !== workspaceid) {
             return res.status(403).json({
                 message: "Task not from the selected workspace",
                 success: false,
                 err: "Task not from the selected workspace"
             })
         }
-    
+
         const user = await userModel.findById(userId)
-        if(!user){
+        if (!user) {
             return res.status(404).json({
                 message: "User not found",
                 success: false,
@@ -373,14 +375,14 @@ export async function addCommentsController(req, res) {
             })
         }
 
-        if(!text){
+        if (!text) {
             return res.status(400).json({
                 message: "Text is required",
                 success: false,
                 err: "Text is required"
             })
         }
-    
+
         const comment = await commentModel.create({
             taskId: task._id,
             user: user._id,
@@ -409,7 +411,7 @@ export async function getCommentsList(req, res) {
         const { taskid, workspaceid } = req.params
 
         const task = await taskModel.findById(taskid)
-        if(!task){
+        if (!task) {
             return res.status(404).json({
                 message: "Task not found",
                 success: false,
@@ -417,7 +419,7 @@ export async function getCommentsList(req, res) {
             })
         }
 
-        if(task.workspaceId.toString() !== workspaceid){
+        if (task.workspaceId.toString() !== workspaceid) {
             return res.status(403).json({
                 message: "Task not from the selected workspace",
                 success: false,
@@ -452,7 +454,7 @@ export async function deleteCommentController(req, res) {
         const { commentid } = req.params
 
         const comment = await commentModel.findById(commentid)
-        if(!comment){
+        if (!comment) {
             return res.status(404).json({
                 message: "Comment not found",
                 success: false,
@@ -461,7 +463,7 @@ export async function deleteCommentController(req, res) {
         }
 
         const user = await userModel.findById(userId)
-        if(!user){
+        if (!user) {
             return res.status(404).json({
                 message: "User not found",
                 success: false,
@@ -469,8 +471,8 @@ export async function deleteCommentController(req, res) {
             })
         }
 
-        if(user.role === "user" || user.role === "head"){
-            if(!comment.user.equals(user._id)){
+        if (user.role === "user" || user.role === "head") {
+            if (!comment.user.equals(user._id)) {
                 return res.status(403).json({
                     message: "User can delete only their comment",
                     success: false,
@@ -480,7 +482,7 @@ export async function deleteCommentController(req, res) {
         }
 
         const deletedComment = await commentModel.findByIdAndDelete(commentid)
-        
+
         return res.status(200).json({
             message: "Comment deleted successfully",
             success: true,
