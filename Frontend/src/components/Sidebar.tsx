@@ -71,14 +71,14 @@ const Sidebar = () => {
                     </button>
                 </div>
                 <nav className="flex-1 px-4 space-y-1">
-                    <button 
+                    {/* <button 
                         onClick={() => handleNavigate("/")}
                         className="flex w-full items-center gap-3 px-4 py-2.5 text-gray-500 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-100 cursor-pointer"
                     >
                         <Calendar size={18} /> Dashboard
-                    </button>
+                    </button> */}
                     <button 
-                        onClick={() => handleNavigate("/tasks")}
+                        onClick={() => handleNavigate("/")}
                         className="flex w-full items-center gap-3 px-4 py-2.5 text-gray-900 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-100 cursor-pointer">
                         <LayoutList size={18} /> Task List
                     </button>
