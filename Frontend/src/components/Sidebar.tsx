@@ -1,7 +1,7 @@
 import type { RootState } from "@/app/app.store";
 import useAdmin from "@/features/admin/hooks/useAdmin";
-import { Folder, LayoutList, Plus, User, X } from "lucide-react"
-import { useEffect } from "react";
+import { Folder, LayoutList, Plus, User, X, Settings, LogOut, ChevronUp } from "lucide-react"
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/cn";
@@ -17,6 +17,19 @@ const Sidebar = () => {
     const { handleGetUsers } = useAdmin()
     const { handleLogout } = useAuth()
     const navigate = useNavigate()
+
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     useEffect(() => {
         if(user?.role === 'admin' || user?.role === 'head'){
@@ -102,11 +115,46 @@ const Sidebar = () => {
                     <button onClick={getWorkspace} className="flex w-full items-center gap-3 px-4 py-2.5 text-gray-900 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-100 cursor-pointer">
                         <Folder size={18} /> Workspaces
                     </button>
-
-                    <button onClick={handleLogoutSubmit}>
-                        Logout
-                    </button>
                 </nav>
+
+                <div className="px-4 mt-auto pt-4 relative" ref={dropdownRef}>
+                    {isDropdownOpen && (
+                        <div className="absolute bottom-full left-4 right-4 mb-2 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50">
+                            <button
+                                onClick={() => {
+                                    setIsDropdownOpen(false);
+                                    handleNavigate("/account-setting");
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                            >
+                                <Settings size={16} /> Account Settings
+                            </button>
+                            <button
+                                onClick={(e) => {
+                                    setIsDropdownOpen(false);
+                                    handleLogoutSubmit(e);
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors border-t border-gray-50 cursor-pointer"
+                            >
+                                <LogOut size={16} /> Logout
+                            </button>
+                        </div>
+                    )}
+                    
+                    <button 
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
+                    >
+                        <div className="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-semibold shrink-0">
+                            {user?.username?.charAt(0).toUpperCase() || 'U'}
+                        </div>
+                        <div className="flex-1 text-left min-w-0">
+                            <p className="text-sm font-bold text-gray-900 truncate">{user?.username || 'User'}</p>
+                            <p className="text-xs text-gray-500 truncate font-medium">{user?.email || 'user@example.com'}</p>
+                        </div>
+                        <ChevronUp size={18} className={cn("text-gray-400 transition-transform", isDropdownOpen && "rotate-180")} />
+                    </button>
+                </div>
             </aside>
         </>
     )

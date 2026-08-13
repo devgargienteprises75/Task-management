@@ -6,6 +6,7 @@ import Users from "@/features/admin/pages/Users";
 import Workspaces from "@/features/workspace/pages/Workspaces";
 import SpecificWorkspace from "@/features/workspace/pages/SpecificWorkspace";
 import Tasks from "@/features/task/pages/Tasks";
+import AccountSetting from "@/pages/AccountSetting";
 
 export const routes = createBrowserRouter([
     {
@@ -40,6 +41,12 @@ export const routes = createBrowserRouter([
         path: "/users",
         element: <Protected>
             <Users />
+        </Protected>
+    },
+    {
+        path: "/account-setting",
+        element: <Protected>
+            <AccountSetting />
         </Protected>
     }
 ])
