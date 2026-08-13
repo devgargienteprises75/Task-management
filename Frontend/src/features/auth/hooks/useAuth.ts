@@ -1,12 +1,12 @@
 import { useDispatch } from "react-redux"
-import { loginSuccess, setError, setLoading } from "../auth.slice"
+import { loginSuccess, logoutSuccess, setError, setLoading } from "../auth.slice"
 import { authApi } from "../services/auth.api"
 import type { LoginCredentials } from "@/types"
 
 const useAuth = () => {
 
     const dispatch = useDispatch()
-    const { login, getMe } = authApi
+    const { login, getMe, logout } = authApi
 
     const handleLogin = async (credential: LoginCredentials) => {
         dispatch(setLoading(true))
@@ -45,9 +45,32 @@ const useAuth = () => {
         }
     }
 
+    const handleLogout = async () => {
+        dispatch(setLoading(true))
+
+        try {
+            const res = await logout();
+            dispatch(logoutSuccess())
+            return {
+                success: true,
+                message: res.message,
+            }
+        } catch (err: any) {
+            const message = err?.response?.data?.message || err.message
+            dispatch(setError(message))
+            return {
+                success: false,
+                message
+            }
+        } finally {
+            dispatch(setLoading(false))
+        }
+    }
+
     return {
         handleLogin,
-        handleGetMe
+        handleGetMe,
+        handleLogout
     }
 }
 

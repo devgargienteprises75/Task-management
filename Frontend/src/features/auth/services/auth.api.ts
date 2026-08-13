@@ -9,5 +9,9 @@ export const authApi = {
     getMe: async () => {
         const res = await api.get<ApiResponse<AuthResponse>>("/auth/get-me")
         return res.data
-    }
+    },
+    logout: async () => {
+        const res = await api.post<ApiResponse<string>>("/auth/logout");
+        return res.data
+    },
 }

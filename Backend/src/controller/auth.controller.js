@@ -4,6 +4,7 @@ import sendEmail from "../services/email.service.js"
 import bcrypt from "bcryptjs"
 import { config } from "../config/config.js"
 import { workspaceModel } from "../models/workspace.model.js"
+import { redis } from "../config/cache.js"
 
 // Add User controller
 export async function addUserController(req, res) {
@@ -433,6 +434,34 @@ export async function deleteUserController(req, res) {
     } catch (err) {
         return res.status(400).json({
             message: "Failed to delete user",
+            success: false,
+            err: err.message
+        })
+    }
+}
+
+export async function logoutController(req, res) {
+    try {
+        const { token } = req.cookies
+
+        if(!token){
+            return res.status(400).json({
+                message: "Token not found",
+                success: false,
+                err: "Token not found"
+            })
+        }
+        res.clearCookie("token")
+        await redis.set(token, 'blacklisted', 'EX', 7 * 24 * 60 * 60)
+        
+        return res.status(200).json({
+            message: "User logged out",
+            success: true
+        })
+
+    } catch (err) {
+        return res.status(400).json({
+            message: "Unexpected error",
             success: false,
             err: err.message
         })

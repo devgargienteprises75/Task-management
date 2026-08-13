@@ -32,6 +32,18 @@ if(!process.env.PRIVATE_VAPID_KEY){
     throw new Error("PRIVATE_VAPID_KEY id not defined in Environment variable")
 }
 
+if(!process.env.REDIS_HOST){
+    throw new Error("REDIS_HOST id not defined in Environment variable")
+}
+
+if(!process.env.REDIS_PORT){
+    throw new Error("REDIS_PORT id not defined in Environment variable")
+}
+
+if(!process.env.REDIS_PASSWORD){
+    throw new Error("REDIS_PASSWORD id not defined in Environment variable")
+}
+
 export const config = {
     PORT:process.env.PORT,
     MONGO_URI:process.env.MONGO_URI,
@@ -41,5 +53,8 @@ export const config = {
     CLIENT_SECRET:process.env.CLIENT_SECRET,
     USER_MAIL:process.env.USER_MAIL,
     PUBLIC_VAPID_KEY:process.env.PUBLIC_VAPID_KEY,
-    PRIVATE_VAPID_KEY:process.env.PRIVATE_VAPID_KEY
+    PRIVATE_VAPID_KEY:process.env.PRIVATE_VAPID_KEY,
+    REDIS_HOST:process.env.REDIS_HOST,
+    REDIS_PORT:process.env.REDIS_PORT,
+    REDIS_PASSWORD:process.env.REDIS_PASSWORD
 }

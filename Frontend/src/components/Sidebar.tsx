@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/cn";
 import { setSidebarOpen } from "@/app/layout.slice";
+import useAuth from "@/features/auth/hooks/useAuth";
 
 const Sidebar = () => {
 
@@ -14,6 +15,7 @@ const Sidebar = () => {
     const dispatch = useDispatch()
 
     const { handleGetUsers } = useAdmin()
+    const { handleLogout } = useAuth()
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -30,6 +32,11 @@ const Sidebar = () => {
     const handleNavigate = (path: string) => {
         navigate(path)
         dispatch(setSidebarOpen(false))
+    }
+
+    const handleLogoutSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        await handleLogout()
     }
 
     return (
@@ -94,6 +101,10 @@ const Sidebar = () => {
 
                     <button onClick={getWorkspace} className="flex w-full items-center gap-3 px-4 py-2.5 text-gray-900 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-100 cursor-pointer">
                         <Folder size={18} /> Workspaces
+                    </button>
+
+                    <button onClick={handleLogoutSubmit}>
+                        Logout
                     </button>
                 </nav>
             </aside>

@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { config } from '../config/config.js';
+import { redis } from '../config/cache.js';
 
 export async function verifyUser(req, res, next) {
     const { token } = req.cookies
@@ -9,6 +10,15 @@ export async function verifyUser(req, res, next) {
             message: "Token missing, user not logged in",
             success: false,
             err: "Token missing"
+        })
+    }
+
+    const isBlacklisted = await redis.get(token)
+    if(isBlacklisted){
+        return res.status(401).json({
+            message: "Token blacklisted, please login again",
+            success: false,
+            err: "Token blacklisted"
         })
     }
 
