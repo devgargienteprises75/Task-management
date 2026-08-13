@@ -55,6 +55,8 @@ export async function createTaskController(req, res) {
             }
         }
 
+        const user = await userModel.findById(userId)
+
         const newTask = await taskModel.create({
             title,
             description,
@@ -71,7 +73,7 @@ export async function createTaskController(req, res) {
             assignToId.map(assignedUserId =>
                 sendPushToUser(assignedUserId.toString(), {
                     title: "New Task Assigned",
-                    body: `You have been assigned ${title}`,
+                    body: `You have been assigned a new task by ${user?.username} : ${title}`,
                     url: `/workspaces/${workspaceid}`
                 })
             )
