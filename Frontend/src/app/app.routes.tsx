@@ -1,7 +1,7 @@
 import Login from "@/features/auth/pages/Login";
 import { createBrowserRouter } from "react-router-dom";
 import Protected from "./Protected";
-import Dashboard from "@/pages/Dashboard";
+// import Dashboard from "@/pages/Dashboard";
 import Users from "@/features/admin/pages/Users";
 import Workspaces from "@/features/workspace/pages/Workspaces";
 import SpecificWorkspace from "@/features/workspace/pages/SpecificWorkspace";
@@ -11,7 +11,7 @@ export const routes = createBrowserRouter([
     {
         path: "/",
         element: <Protected>
-            <Dashboard />
+            <Tasks />
         </Protected>
     },
     {
@@ -30,12 +30,12 @@ export const routes = createBrowserRouter([
             <SpecificWorkspace />
         </Protected>
     },
-    {
-        path: "/tasks",
-        element: <Protected>
-            <Tasks />
-        </Protected>
-    },
+    // {
+    //     path: "/tasks",
+    //     element: <Protected>
+    //         <Tasks />
+    //     </Protected>
+    // },
     {
         path: "/users",
         element: <Protected>
