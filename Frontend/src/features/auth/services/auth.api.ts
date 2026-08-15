@@ -9,5 +9,13 @@ export const authApi = {
     getMe: async () => {
         const res = await api.get<ApiResponse<AuthResponse>>("/auth/get-me")
         return res.data
+    },
+    logout: async () => {
+        const res = await api.post<ApiResponse<string>>("/auth/logout");
+        return res.data
+    },
+    editUser: async (id: string, username: string) => {
+        const res = await api.patch<ApiResponse<AuthResponse>>(`/auth/edit/user/${id}`, { username })
+        return res.data
     }
 }

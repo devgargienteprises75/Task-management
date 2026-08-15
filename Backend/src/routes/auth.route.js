@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { addUserValidation, resetPasswordValidation } from "../validation/auth.validation.js";
-import { addUserController, deleteUserController, forgetPasswordController, getMeController, getUserController, loginController, resetPasswordController, updateUserController } from "../controller/auth.controller.js";
+import { addUserController, deleteUserController, editUserController, forgetPasswordController, getMeController, getUserController, loginController, logoutController, resetPasswordController, updateUserController } from "../controller/auth.controller.js";
 import { verifyUser } from "../middleware/auth.middleware.js";
 import { verifyAdmin } from "../middleware/admin.middleware.js";
 
@@ -10,6 +10,7 @@ const authRouter = Router()
 authRouter.post("/add-user", verifyUser, addUserValidation, addUserController)
 authRouter.post("/login", loginController)
 authRouter.get("/get-me", verifyUser, getMeController)
+authRouter.post("/logout", verifyUser, logoutController)
 
 // Forget Paassword routes
 authRouter.post("/forget-password", forgetPasswordController)
@@ -19,5 +20,6 @@ authRouter.patch("/reset-password", resetPasswordValidation, resetPasswordContro
 authRouter.get('/users', verifyUser, getUserController)
 authRouter.patch('/user/:id', verifyAdmin, updateUserController)
 authRouter.delete('/user/:id', verifyAdmin, deleteUserController)
+authRouter.patch('/edit/user/:id', verifyUser, editUserController)
 
 export default authRouter;
