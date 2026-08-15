@@ -14,4 +14,8 @@ export const authApi = {
         const res = await api.post<ApiResponse<string>>("/auth/logout");
         return res.data
     },
+    editUser: async (id: string, username: string) => {
+        const res = await api.patch<ApiResponse<AuthResponse>>(`/auth/edit/user/${id}`, { username })
+        return res.data
+    }
 }

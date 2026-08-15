@@ -1,9 +1,23 @@
 import { User, Mail, Lock, Camera } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/app.store";
+import { useState } from "react";
+import useAuth from "@/features/auth/hooks/useAuth";
 
 export const AccountSetting = () => {
     const { user } = useSelector((state: RootState) => state.auth);
+
+    const [ username, setUsername ] = useState<string | undefined>(user?.username)
+    const [ email, setEmail ] = useState<string | undefined>(user?.email)
+
+    const { handleEditUser } = useAuth()
+
+    const handleSubmit = async () => {
+        await handleEditUser(user?._id, username)
+
+        setUsername(user?.username)
+        setEmail(user?.email)
+    }
 
     return (
         <div className="flex-1 overflow-auto bg-[#F9FAFB] p-6 lg:p-10 h-screen">
@@ -38,9 +52,10 @@ export const AccountSetting = () => {
                                     </label>
                                     <input 
                                         type="text" 
-                                        defaultValue={user?.username || ''}
+                                        value={username || ''}
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
                                         placeholder="Enter your full name"
+                                        onChange={(e) => setUsername(e.target.value)}
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -49,7 +64,7 @@ export const AccountSetting = () => {
                                     </label>
                                     <input 
                                         type="email" 
-                                        defaultValue={user?.email || ''}
+                                        value={email || ''}
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all bg-gray-50"
                                         placeholder="Enter your email"
                                         disabled
@@ -83,10 +98,7 @@ export const AccountSetting = () => {
                             </div>
 
                             <div className="flex justify-end gap-3 pt-6 border-t border-gray-100">
-                                <button type="button" className="px-6 py-3 rounded-xl font-semibold text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">
-                                    Cancel
-                                </button>
-                                <button type="submit" className="px-6 py-3 rounded-xl font-bold bg-[#D1F53B] text-gray-900 hover:bg-[#c2e532] transition-colors shadow-sm cursor-pointer">
+                                <button onClick={handleSubmit} type="submit" className="px-6 py-3 rounded-xl font-bold bg-[#D1F53B] text-gray-900 hover:bg-[#c2e532] transition-colors shadow-sm cursor-pointer">
                                     Save Changes
                                 </button>
                             </div>

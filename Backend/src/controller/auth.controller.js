@@ -467,3 +467,37 @@ export async function logoutController(req, res) {
         })
     }
 }
+
+export async function editUserController(req, res){
+    try {
+        const { id } = req.params
+        const { username } = req.body
+
+        const user = await userModel.findById(id)
+        if(!user){
+            return res.status(404).json({
+                message: "User not found",
+                success: false,
+                err: "User not found"
+            })
+        }
+
+        const updatedUser = await userModel.findByIdAndUpdate(
+            user._id,
+            { $set: { username: username } },
+            { returnDocument: 'after', runValidators: true }
+        )
+
+        return res.status(200).json({
+            message: "User updated successfully",
+            success: true,
+            user: updatedUser
+        })
+    } catch (err) {
+        return res.status(400).json({
+            message: "Failed to update user",
+            success: false,
+            err: err.message
+        })
+    }
+}

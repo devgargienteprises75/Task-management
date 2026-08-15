@@ -6,7 +6,7 @@ import type { LoginCredentials } from "@/types"
 const useAuth = () => {
 
     const dispatch = useDispatch()
-    const { login, getMe, logout } = authApi
+    const { login, getMe, logout, editUser } = authApi
 
     const handleLogin = async (credential: LoginCredentials) => {
         dispatch(setLoading(true))
@@ -67,10 +67,33 @@ const useAuth = () => {
         }
     }
 
+    const handleEditUser = async (id: string, username: string) => {
+        dispatch(setLoading(true))
+
+        try {
+            const res = await editUser(id, username)
+            dispatch(loginSuccess(res.user))
+            return {
+                success: true,
+                message: res.message
+            }
+        } catch (err: any) {
+            const message = err?.response?.data?.message || err.message
+            dispatch(setError(message))
+            return {
+                success: false,
+                message
+            } 
+        } finally {
+            dispatch(setLoading(false))
+        }
+    }
+
     return {
         handleLogin,
         handleGetMe,
-        handleLogout
+        handleLogout,
+        handleEditUser
     }
 }
 
