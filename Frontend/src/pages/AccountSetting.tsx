@@ -7,16 +7,18 @@ import useAuth from "@/features/auth/hooks/useAuth";
 export const AccountSetting = () => {
     const { user } = useSelector((state: RootState) => state.auth);
 
-    const [ username, setUsername ] = useState<string>(user?.username)
-    const [ email, setEmail ] = useState<string>(user?.email)
+    const [ username, setUsername ] = useState<string | undefined>(user?.username)
+    const [ email, setEmail ] = useState<string | undefined>(user?.email)
 
     const { handleEditUser } = useAuth()
 
     const handleSubmit = async () => {
-        await handleEditUser(user?._id, username)
+        if (!user || !user._id || !username) return;
 
-        setUsername(user?.username)
-        setEmail(user?.email)
+        await handleEditUser(user._id, username)
+
+        setUsername(user.username)
+        setEmail(user.email)
     }
 
     return (
