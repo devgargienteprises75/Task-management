@@ -7,8 +7,8 @@ import useAuth from "@/features/auth/hooks/useAuth";
 export const AccountSetting = () => {
     const { user } = useSelector((state: RootState) => state.auth);
 
-    const [ username, setUsername ] = useState<string | undefined>(user?.username)
-    const [ email, setEmail ] = useState<string | undefined>(user?.email)
+    const [ username, setUsername ] = useState<string>(user?.username)
+    const [ email, setEmail ] = useState<string>(user?.email)
 
     const { handleEditUser } = useAuth()
 
