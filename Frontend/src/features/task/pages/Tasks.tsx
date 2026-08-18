@@ -34,6 +34,7 @@ const Tasks = () => {
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false)
   const [selectedTask, setSelectedTask] = useState<task | null>(null)
   const [activeTab, setActiveTab] = useState<'Todo' | 'In-progress' | 'Done'>('Todo')
+  const [query, setQuery] = useState<string>("")
 
   const { handleGetAllTask, handleUpdateTask } = useTask()
 
@@ -59,10 +60,16 @@ const Tasks = () => {
   const tasksAssignedByCurrentUser = allTask.filter((task) => {
     const assignedById = typeof task.assignBy === "string" ? task.assignBy : task.assignBy?._id;
     return assignedById === user?._id;
-  });
+  }).filter(task => {
+    return query ? task.title.toLowerCase().includes(query.toLowerCase()) ||
+    task.assignTo.some(user => typeof user !== "string" && user.username.toLowerCase().includes(query.toLowerCase())) : true
+  })
 
   const tasksAssignedToCurrentUser = allTask.filter(task => {
     return task.assignTo.some(userId => userId === user?._id)
+  }).filter(task => {
+    return task.title.toLowerCase().includes(query.toLowerCase()) ||
+    task.assignTo.some(user => typeof user !== "string" && user.username.toLowerCase().includes(query.toLowerCase()))
   })
 
   const todoTasks = tasksAssignedToCurrentUser?.filter((t) => t.status === "Todo");
@@ -174,6 +181,8 @@ const Tasks = () => {
             <Search size={16} className="text-gray-400" />
             <input
               type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               placeholder="Search tasks by title, category or assignee..."
               className="bg-transparent outline-none w-full text-xs text-gray-800 placeholder-gray-400"
             />
@@ -181,8 +190,6 @@ const Tasks = () => {
 
           {/* Controls & Switcher */}
           <div className="flex items-center gap-2.5 justify-end">
-
-
             <div className="h-4 w-[1px] bg-gray-200 mx-0.5" />
 
             {/* View Switcher */}
