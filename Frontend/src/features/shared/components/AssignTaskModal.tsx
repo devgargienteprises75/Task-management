@@ -74,7 +74,6 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
     }
 
     const workspaceUser = allWorkspaces.find(w => w._id === workspaceId)?.members;
-    console.log(workspaceUser)
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -193,12 +192,12 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                                     !workspaceId && "text-gray-400"
                                 )}
                             >
-                                {pathname === "/tasks" ?
+                                {pathname === "/" ?
                                     <option value="" disabled> Select a workspace... </option> :
                                     <option value={workspaceId} disabled>
-                                        {pathname === "/tasks" ? "Select a workspace..." : allWorkspaces.find(w => w._id === param.workspaceId)?.name}
+                                        {pathname === "/" ? "Select a workspace..." : allWorkspaces.find(w => w._id === param.workspaceId)?.name}
                                     </option>}
-                                {pathname === "/tasks" && allWorkspaces.map((ws) => (
+                                {pathname === "/" && allWorkspaces.map((ws) => (
                                     <option key={ws._id} value={ws._id}>
                                         {ws.name}
                                     </option>

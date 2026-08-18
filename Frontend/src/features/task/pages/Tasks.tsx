@@ -181,8 +181,6 @@ const Tasks = () => {
 
           {/* Controls & Switcher */}
           <div className="flex items-center gap-2.5 justify-end">
-
-
             <div className="h-4 w-[1px] bg-gray-200 mx-0.5" />
 
             {/* View Switcher */}
