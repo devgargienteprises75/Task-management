@@ -36,6 +36,9 @@ const RenderColumn = ({ id, title, count, allTask, statusType }: RenderColumnPro
         id,
     })
     const users = useSelector((state: RootState) => state.admin.users)
+    console.log(allTask);
+
+    const sortedTask = [...allTask].sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
     return (
         <div
@@ -59,7 +62,7 @@ const RenderColumn = ({ id, title, count, allTask, statusType }: RenderColumnPro
 
             {/* Task Cards Stack */}
             <div className="flex-1 flex flex-col gap-3.5 overflow-y-auto pr-0.5">
-                {allTask?.map((task) => (
+                {sortedTask?.map((task) => (
                     <TaskCard
                         key={task._id}
                         task={task}
