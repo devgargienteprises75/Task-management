@@ -61,15 +61,36 @@ const Tasks = () => {
     const assignedById = typeof task.assignBy === "string" ? task.assignBy : task.assignBy?._id;
     return assignedById === user?._id;
   }).filter(task => {
-    return query ? task.title.toLowerCase().includes(query.toLowerCase()) ||
-    task.assignTo.some(user => typeof user !== "string" && user.username.toLowerCase().includes(query.toLowerCase())) : true
+    if(!query) return true
+    const lowerQuery = query.toLowerCase();
+
+    const mathesTitle = task.title.toLowerCase().includes(lowerQuery)
+    const matchesAssignee = task.assignTo.some(assignee => {
+      // If assignee is string ID, find the user object from Redux users
+      const targetUser = typeof assignee === "string" ?
+        users?.find(u => u._id === assignee) : assignee
+
+        return targetUser?.username?.toLowerCase().includes(lowerQuery)
+    })
+
+    return mathesTitle || matchesAssignee
+    
   })
+
+  console.log(tasksAssignedByCurrentUser);
 
   const tasksAssignedToCurrentUser = allTask.filter(task => {
     return task.assignTo.some(userId => userId === user?._id)
   }).filter(task => {
-    return task.title.toLowerCase().includes(query.toLowerCase()) ||
-    task.assignTo.some(user => typeof user !== "string" && user.username.toLowerCase().includes(query.toLowerCase()))
+    if (!query) return true;
+    const lowerQuery = query.toLowerCase();
+
+    const matchesTitle = task.title.toLowerCase().includes(lowerQuery)
+    const matchesAssignee = typeof task.assignBy === "string" ?
+      users.find(u => u._id === task.assignBy)?.username?.toLowerCase().includes(lowerQuery) : 
+      task.assignBy?.username?.toLowerCase().includes(lowerQuery)
+
+    return matchesTitle || matchesAssignee
   })
 
   const todoTasks = tasksAssignedToCurrentUser?.filter((t) => t.status === "Todo");
