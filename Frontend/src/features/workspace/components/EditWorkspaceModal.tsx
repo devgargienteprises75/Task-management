@@ -32,8 +32,6 @@ const EditWorkspaceModal = ({ workspace, isMenuOpen, setModalOption, workspaceDe
     }
 
     const normalizedMemberIds = workspaceDetail.newMemberList.map(getMemberId)
-
-    // Find actual user objects so we can display their names in the badges
     const selectedUsers = users.filter(u => normalizedMemberIds.includes(u._id))
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -55,114 +53,112 @@ const EditWorkspaceModal = ({ workspace, isMenuOpen, setModalOption, workspaceDe
     }
 
     return (
-         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100/00 px-4 backdrop-blur-[2px]">
-            <div className="w-full max-w-md overflow-visible rounded-2xl border border-gray-100 bg-white shadow-xl">
-                <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/50 px-6 py-5">
-                    <h3 className="text-lg font-bold text-gray-900">Edit Workspace</h3>
+         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 px-4 backdrop-blur-xs">
+            <div className="w-full max-w-md overflow-visible rounded-xl border border-zinc-200 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+                <div className="flex items-center justify-between border-b border-zinc-100 bg-zinc-50/50 px-5 py-3.5 rounded-t-xl">
+                    <h3 className="text-sm font-semibold text-zinc-900">Edit workspace</h3>
                     <button
                         type="button"
                         onClick={() => {
                             setModalOption('')
                         }}
-                        className="cursor-pointer text-gray-400 transition-colors hover:text-gray-900"
+                        className="cursor-pointer text-zinc-400 transition-colors hover:text-zinc-700"
                         aria-label="Close edit workspace modal"
                     >
-                        <X size={18} />
+                        <X size={16} />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4 p-6">
+                <form onSubmit={handleSubmit} className="space-y-3.5 p-5">
                     <div>
-                        <label className="mb-1.5 block text-sm font-medium text-gray-700">Workspace Name</label>
+                        <label className="mb-1 block text-xs font-medium text-zinc-700">Workspace name</label>
                         <input
                             type="text"
                             value={workspaceDetail.newName}
                             onChange={(e) => setNewName(e.target.value)}
                             className={cn(
-                                "block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-[15px] text-gray-900 transition-all",
-                                "placeholder:text-gray-400",
-                                "focus:border-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900"
+                                "block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 transition-all",
+                                "placeholder:text-zinc-400",
+                                "focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
                             )}
                         />
                     </div>
 
                     <div>
-                        <label className="mb-1.5 flex items-center gap-2 text-sm font-medium text-gray-700">
-                            <FileText size={15} className="text-gray-400" />
+                        <label className="mb-1 flex items-center gap-1.5 text-xs font-medium text-zinc-700">
+                            <FileText size={13} className="text-zinc-400" />
                             Description
                         </label>
                         <textarea
                             value={workspaceDetail.newDescription}
                             onChange={(e) => setNewDescription(e.target.value)}
-                            rows={4}
+                            rows={3}
                             className={cn(
-                                "block w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-[15px] leading-6 text-gray-900 transition-all",
-                                "placeholder:text-gray-400",
-                                "focus:border-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900"
+                                "block w-full resize-none rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs leading-5 text-zinc-900 transition-all",
+                                "placeholder:text-zinc-400",
+                                "focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
                             )}
                         />
                     </div>
 
                     <div>
-                        <label className="mb-1.5 flex items-center gap-2 text-sm font-medium text-gray-700">
-                            <Users size={15} className="text-gray-400" />
-                            Update Members
+                        <label className="mb-1 flex items-center gap-1.5 text-xs font-medium text-zinc-700">
+                            <Users size={13} className="text-zinc-400" />
+                            Members
                         </label>
                         <div className="relative">
                             <div
                                 onClick={() => setSelectBoxOpen(!selectBoxOpen)}
                                 className={cn(
-                                    "rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 cursor-pointer min-h-[50px] flex items-center",
-                                    selectBoxOpen ? "border-gray-900 bg-white ring-1 ring-gray-900" : "border-gray-200 hover:border-gray-300"
+                                    "rounded-lg border border-zinc-200 bg-white px-3 py-2 cursor-pointer min-h-[38px] flex items-center",
+                                    selectBoxOpen ? "border-black ring-1 ring-black" : "hover:border-zinc-300"
                                 )}>
-                                <div className="flex flex-wrap gap-2 w-full pr-24">
+                                <div className="flex flex-wrap gap-1.5 w-full pr-14">
                                     {selectedUsers.length > 0 ? (
                                         selectedUsers.map((u) => (
                                             <span
                                                 key={u._id}
-                                                className={cn(
-                                                    "inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700"
-                                                )}
+                                                className="inline-flex items-center rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-[10px] font-medium text-zinc-700"
                                             >
                                                 {u.username}
                                             </span>
                                         ))
                                     ) : (
-                                        <span className="text-sm text-gray-500">No members assigned</span>
+                                        <span className="text-xs text-zinc-400">No members assigned</span>
                                     )}
                                 </div>
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
-                                    <span className="text-gray-500 text-sm">Change</span>
-                                    <ChevronRight size={16} className={`text-gray-400 transition-transform duration-300 ${selectBoxOpen ? 'rotate-90' : ''}`} />
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
+                                    <span className="text-zinc-400 text-xs">Edit</span>
+                                    <ChevronRight size={13} className={`text-zinc-400 transition-transform duration-150 ${selectBoxOpen ? 'rotate-90' : ''}`} />
                                 </div>
                             </div>
 
                             {selectBoxOpen && (
-                                <div className="absolute top-full left-0 right-0 mt-1 w-full z-50 max-h-[200px] overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-xl space-y-1">
-                                    {users.map((user) => {
-                                        const isChecked = normalizedMemberIds.includes(user._id);
+                                <div className="absolute top-full left-0 right-0 mt-1 w-full z-50 max-h-[160px] overflow-y-auto rounded-lg border border-zinc-200 bg-white p-1 shadow-lg space-y-0.5">
+                                    {users.map((u) => {
+                                        const isChecked = normalizedMemberIds.includes(u._id);
                                         return (
                                             <label
-                                                key={user._id}
-                                                htmlFor={user._id}
-                                                className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group"
+                                                key={u._id}
+                                                htmlFor={u._id}
+                                                className="flex items-center gap-2 px-2.5 py-1.5 rounded hover:bg-zinc-50 cursor-pointer transition-colors"
                                             >
                                                 <input
                                                     onChange={() => {
                                                         const currentIds = workspaceDetail.newMemberList.map(getMemberId);
                                                         if (!isChecked) {
-                                                            setNewMemberList([...currentIds, user._id])
+                                                            setNewMemberList([...currentIds, u._id])
                                                         } else {
-                                                            setNewMemberList(currentIds.filter(id => id !== user._id))
+                                                            setNewMemberList(currentIds.filter(id => id !== u._id))
                                                         }
                                                     }}
                                                     checked={isChecked}
                                                     type="checkbox"
-                                                    id={user._id}
-                                                    className="w-4 h-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900 cursor-pointer accent-[#D1F53B]"
+                                                    id={u._id}
+                                                    className="w-3.5 h-3.5 rounded border-zinc-300 accent-black cursor-pointer"
                                                 />
-                                                <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                                                    {user.username}
+                                                <span className="text-xs font-medium text-zinc-700">
+                                                    {u.username}
                                                 </span>
                                             </label>
                                         )
@@ -172,10 +168,10 @@ const EditWorkspaceModal = ({ workspace, isMenuOpen, setModalOption, workspaceDe
                         </div>
                     </div>
 
-                    <div className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
-                        <div className="flex items-center justify-between text-sm">
-                            <span className="font-medium text-gray-600">Status</span>
-                            <span className={cn("inline-flex items-center rounded-md px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide", workspace.status === "active" ? "bg-green-50 text-green-600" : "bg-gray-100 text-gray-500")}>{workspace.status}</span>
+                    <div className="rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2">
+                        <div className="flex items-center justify-between text-xs">
+                            <span className="font-medium text-zinc-600">Status</span>
+                            <span className={cn("inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide", workspace.status === "active" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-zinc-100 text-zinc-600 border border-zinc-200")}>{workspace.status}</span>
                         </div>
                     </div>
 
@@ -183,20 +179,18 @@ const EditWorkspaceModal = ({ workspace, isMenuOpen, setModalOption, workspaceDe
                         type="submit"
                         disabled={isSubmitting}
                         className={cn(
-                            "mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-3.5 text-[15px] font-bold text-white transition-all duration-200 ease-in-out cursor-pointer",
-                            "hover:bg-gray-800 hover:shadow-lg",
-                            "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900",
-                            "active:scale-[0.98]",
+                            "mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg bg-black px-4 py-2.5 text-xs font-medium text-white transition-colors cursor-pointer shadow-xs",
+                            "hover:bg-zinc-800",
                             isSubmitting && "opacity-80 cursor-not-allowed"
                         )}
                     >
                         {isSubmitting ? (
                             <>
-                                <Loader2 size={17} className="animate-spin" />
-                                Saving Changes...
+                                <Loader2 size={14} className="animate-spin" />
+                                Saving...
                             </>
                         ) : (
-                            "Save Changes"
+                            "Save changes"
                         )}
                     </button>
                 </form>

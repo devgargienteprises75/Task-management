@@ -1,7 +1,7 @@
 import type { RootState } from "@/app/app.store"
 import Sidebar from "@/components/Sidebar"
 import type { UpdateWorkspace, user, workspace as WorkspaceType } from "@/types"
-import { Search, Plus, Menu } from "lucide-react"
+import { Search, Plus, Menu, Folder } from "lucide-react"
 import { useMemo, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import CreateWorkspaceModal from "../components/CreateWorkspaceModal"
@@ -67,38 +67,46 @@ const Workspaces = () => {
     }
 
     return (
-        <div className="flex h-screen bg-[#F9FAFB] font-sans text-gray-900 overflow-hidden">
+        <div className="flex h-screen bg-[#FAFAFA] font-sans text-zinc-900 overflow-hidden">
             {/* Sidebar */}
             <Sidebar />
             <main className="flex-1 flex flex-col min-w-0">
                 {/* Header */}
-                <header className="px-4 sm:px-8 py-4 sm:py-6 border-b border-gray-200 bg-white flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                <header className="px-4 sm:px-8 py-3.5 border-b border-zinc-200/80 bg-white flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => dispatch(toggleSidebar())}
-                            className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors md:hidden cursor-pointer"
+                            className="p-1.5 hover:bg-zinc-100 rounded-lg text-zinc-500 hover:text-zinc-800 transition-colors md:hidden cursor-pointer"
                             aria-label="Toggle sidebar"
                         >
-                            <Menu size={20} />
+                            <Menu size={18} />
                         </button>
-                        <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Workspaces</h2>
+                        <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center text-white font-medium shadow-2xs shrink-0">
+                            <Folder size={16} strokeWidth={2} />
+                        </div>
+                        <div>
+                            <h2 className="text-base font-semibold tracking-tight text-zinc-900">Workspaces</h2>
+                        </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
-                        <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200 flex-1 sm:flex-initial">
-                            <Search size={16} className="text-gray-400 shrink-0" />
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full sm:w-auto">
+                        <div className="flex items-center gap-2 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-200 flex-1 sm:flex-initial focus-within:bg-white focus-within:border-zinc-400 transition-colors">
+                            <Search size={14} className="text-zinc-400 shrink-0" />
                             <input
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 type="text"
                                 placeholder="Search workspaces..." 
-                                className="bg-transparent outline-none w-full sm:w-48 text-sm" 
+                                className="bg-transparent outline-none w-full sm:w-44 text-xs text-zinc-900 placeholder-zinc-400" 
                             />
                         </div>
 
                         {/* Primary Accent Button */}
-                        <button onClick={() => setWorkspaceModal(true)} className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#D1F53B] hover:bg-[#c2e532] text-gray-900 rounded-xl font-semibold text-sm transition-colors shadow-sm cursor-pointer w-full sm:w-auto">
-                            <Plus size={16} strokeWidth={3} /> Create Workspace
+                        <button 
+                            onClick={() => setWorkspaceModal(true)} 
+                            className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-black text-white hover:bg-zinc-800 rounded-lg font-medium text-xs transition-colors shadow-xs cursor-pointer w-full sm:w-auto active:scale-98"
+                        >
+                            <Plus size={14} strokeWidth={2.5} /> Create workspace
                         </button>
                     </div>
                 </header>
@@ -106,18 +114,19 @@ const Workspaces = () => {
                 {workspaceModal && <CreateWorkspaceModal setWorkspaceModal={setWorkspaceModal} />}
 
                 {/* Main Content Area */}
-                <div className="flex-1 overflow-auto p-4 sm:p-8">
-                    {/* Toolbar / Filters (optional space) */}
+                <div className="flex-1 overflow-auto p-4 sm:p-6 bg-[#FAFAFA]">
+                    {/* Toolbar */}
                     <WorkspaceToolbar layoutStyle={layoutStyle} setLayoutStyle={setLayoutStyle} />
 
                     {(isLoading || isAuthLoading) ? (
                         <div className="flex-1 flex items-center justify-center min-h-[400px]">
                             <Loader size="lg" text="Loading workspaces..." />
                         </div>
-                    ) : (filterWorkspace.length > 0 ? <div className={layoutStyle === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col gap-4"}>
-                        {filterWorkspace?.map((workspace: WorkspaceType) => (
-                            <>
+                    ) : (filterWorkspace.length > 0 ? (
+                        <div className={layoutStyle === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" : "flex flex-col gap-2.5"}>
+                            {filterWorkspace?.map((workspace: WorkspaceType) => (
                                 <WorkspaceComponent 
+                                    key={workspace._id}
                                     workspace={workspace} 
                                     setIsMenuOpen={setIsMenuOpen}
                                     modalOption={modalOption} 
@@ -128,9 +137,11 @@ const Workspaces = () => {
                                     setNewDescription={setNewDescription}
                                     setNewMemberList={setNewMemberList}
                                 />
-                            </>
-                        ))}
-                    </div> : <NotFound heading="Workspaces" />)}
+                            ))}
+                        </div>
+                    ) : (
+                        <NotFound heading="Workspaces" />
+                    ))}
                 </div>
 
                 {modalOption === 'edit' && selectedWorkspace && (

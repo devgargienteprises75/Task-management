@@ -1,6 +1,5 @@
 import type { user, workspace } from "@/types";
-import { EllipsisVertical, Pencil, Trash2, Users } from "lucide-react";
-import { stringToColor } from "@/lib/colors";
+import { MoreHorizontal, Pencil, Trash2, Users } from "lucide-react";
 import { useState, useRef, useEffect, type Dispatch, type SetStateAction } from "react";
 import useTask from "@/features/task/hooks/useTask";
 import { useNavigate } from "react-router-dom";
@@ -64,21 +63,18 @@ const WorkspaceCard = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
     <div
       key={workspace._id}
       onClick={() => getTasks(workspace._id)}
-      className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all cursor-pointer flex flex-col h-full group relative"
+      className="bg-white p-4 rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] border border-zinc-200 hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:border-zinc-300 transition-all duration-150 cursor-pointer flex flex-col h-full group relative"
     >
-      <div className="flex justify-between items-start mb-4">
-        <div
-          className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold`}
-          style={{ backgroundColor: stringToColor(workspace?.name || "") + '50' }}
-        >
+      <div className="flex justify-between items-start mb-3">
+        <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white flex items-center justify-center text-xs font-semibold">
           {workspace?.name?.charAt(0).toUpperCase()}
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <span
-            className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold tracking-wide uppercase ${
+            className={`inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-medium tracking-wide uppercase ${
               workspace?.status === "active"
-                ? "bg-green-50 text-green-600"
-                : "bg-gray-100 text-gray-500"
+                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                : "bg-zinc-100 text-zinc-600 border border-zinc-200"
             }`}
           >
             {workspace?.status}
@@ -89,25 +85,25 @@ const WorkspaceCard = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
                 e.stopPropagation();
                 setIsDropdownOpen(!isDropdownOpen);
               }}
-              className="text-gray-400 hover:text-gray-900 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity cursor-pointer p-1 rounded-md hover:bg-gray-100"
+              className="text-zinc-400 hover:text-zinc-700 p-1 rounded hover:bg-zinc-100 transition-colors"
             >
-              <EllipsisVertical size={16}/>
+              <MoreHorizontal size={14}/>
             </button>
 
             {isDropdownOpen && (
-              <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden z-20 py-1">
+              <div className="absolute right-0 top-full mt-1 w-28 bg-white rounded-lg shadow-[0_4px_20px_-4px_rgba(0,0,0,0.12)] border border-zinc-200 overflow-hidden z-20 py-1">
                 <button
                   onClick={handleEditClick}
-                  className="w-full text-left px-3 py-2 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer transition-colors"
+                  className="w-full text-left px-2.5 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-50 flex items-center gap-1.5 cursor-pointer transition-colors"
                 >
-                  <Pencil size={14} className="text-gray-400" /> Edit
+                  <Pencil size={12} className="text-zinc-400" /> Edit
                 </button>
-                <div className="h-px bg-gray-100 w-full" />
+                <div className="h-px bg-zinc-100 w-full" />
                 <button
                   onClick={handleDeleteClick}
-                  className="w-full text-left px-3 py-2 text-[13px] font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer transition-colors"
+                  className="w-full text-left px-2.5 py-1 text-[11px] font-medium text-rose-600 hover:bg-rose-50 flex items-center gap-1.5 cursor-pointer transition-colors"
                 >
-                  <Trash2 size={14} className="text-red-500" /> Delete
+                  <Trash2 size={12} className="text-rose-500" /> Delete
                 </button>
               </div>
             )}
@@ -115,30 +111,23 @@ const WorkspaceCard = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
         </div>
       </div>
 
-      <h3 className="font-bold text-lg mb-2 text-gray-900 group-hover:text-blue-600 transition-colors">
+      <h3 className="font-semibold text-sm mb-1 text-zinc-900">
         {workspace?.name}
       </h3>
-      <p className="text-sm text-gray-500 mb-6 flex-1 line-clamp-2 leading-relaxed">
+      <p className="text-xs text-zinc-500 mb-4 flex-1 line-clamp-2 leading-relaxed font-normal">
         {workspace?.description}
       </p>
 
-      <div className="flex justify-between items-center mt-auto pt-4 border-t border-gray-50">
-        <div className="flex -space-x-2">
-          <div className="w-8 h-8 rounded-full border-2 border-white bg-blue-200"></div>
-          <div className="w-8 h-8 rounded-full border-2 border-white bg-purple-200"></div>
-          <div className="w-8 h-8 rounded-full border-2 border-white bg-yellow-200 flex items-center justify-center text-[10px] font-bold text-gray-700">
-            +
-            {workspace?.members?.length > 2
-              ? workspace?.members?.length - 2
-              : 0}
+      <div className="flex justify-between items-center mt-auto pt-2.5 border-t border-zinc-100">
+        <div className="flex -space-x-1">
+          <div className="w-5 h-5 rounded-full border border-white bg-zinc-800 text-white flex items-center justify-center text-[8px] font-medium">
+            {workspace?.name?.charAt(0) || 'W'}
           </div>
         </div>
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 bg-gray-50 px-2 py-1 rounded-md">
-          <Users size={12} /> {workspace?.members?.length}
+        <div className="flex items-center gap-1 text-[11px] font-medium text-zinc-500">
+          <Users size={11} /> {workspace?.members?.length}
         </div>
       </div>
-
-      {/* Workspace Edit Modal */}
     </div>
   );
 };

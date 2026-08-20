@@ -12,7 +12,8 @@ import {
   Settings,
   Grid,
   List,
-  Menu
+  Menu,
+  Folder
 } from "lucide-react"
 import type { task, UpdatedTask } from "@/types"
 import { toggleSidebar } from "@/app/layout.slice"
@@ -95,49 +96,48 @@ const SpecificWorkspace = () => {
   }, [workspaceId, dispatch])
 
   return (
-    <div className="flex h-screen bg-[#F9FAFB] font-sans text-gray-900 overflow-hidden">
+    <div className="flex h-screen bg-[#FAFAFA] font-sans text-zinc-900 overflow-hidden">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Board Container */}
       <main className="flex-1 flex flex-col min-w-0">
         {/* Workspace Header */}
-        <header className="px-4 sm:px-8 py-5 border-b border-gray-200 bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center gap-3">
+        <header className="px-4 sm:px-8 py-3.5 border-b border-zinc-200/80 bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2.5">
               <button
                 onClick={() => dispatch(toggleSidebar())}
-                className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors md:hidden cursor-pointer"
+                className="p-1.5 hover:bg-zinc-100 rounded-lg text-zinc-500 hover:text-zinc-800 transition-colors md:hidden cursor-pointer"
                 aria-label="Toggle sidebar"
               >
-                <Menu size={20} />
+                <Menu size={18} />
               </button>
-              <Link to="/workspaces" className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors">
-                <ArrowLeft size={16} />
+              <Link to="/workspaces" className="p-1 hover:bg-zinc-100 rounded text-zinc-400 hover:text-zinc-700 transition-colors">
+                <ArrowLeft size={15} />
               </Link>
-              <div className="w-7 h-7 bg-amber-400 rounded-lg flex items-center justify-center text-white font-extrabold text-sm shadow-sm">
-                W
+              <div className="w-6 h-6 bg-zinc-900 rounded flex items-center justify-center text-white text-xs font-semibold">
+                <Folder size={12} />
               </div>
-              <h2 className="text-xl font-bold tracking-tight text-gray-900">{workspaceName}</h2>
+              <h2 className="text-base font-semibold tracking-tight text-zinc-900">{workspaceName}</h2>
             </div>
-            <p className="text-xs text-gray-500 ml-10 sm:ml-14 max-w-xl line-clamp-1">{workspaceDesc}</p>
+            <p className="text-[11px] text-zinc-400 ml-8 max-w-xl line-clamp-1">{workspaceDesc}</p>
           </div>
 
-          <div className="flex items-center gap-3 self-stretch md:self-auto justify-end">
-            {/* Share / Settings buttons */}
-            <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors border border-gray-200">
-              <Users size={16} />
+          <div className="flex items-center gap-2.5 self-stretch md:self-auto justify-end">
+            <button className="p-1.5 hover:bg-zinc-100 rounded-lg text-zinc-500 hover:text-zinc-800 transition-colors border border-zinc-200">
+              <Users size={14} />
             </button>
-            <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors border border-gray-200">
-              <Settings size={16} />
+            <button className="p-1.5 hover:bg-zinc-100 rounded-lg text-zinc-500 hover:text-zinc-800 transition-colors border border-zinc-200">
+              <Settings size={14} />
             </button>
 
-            {/* Primary Accent Button */}
+            {/* Primary Action Button */}
             <button
               onClick={() => setModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white hover:bg-gray-800 rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm cursor-pointer ml-2"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-black text-white hover:bg-zinc-800 rounded-lg font-medium text-xs transition-colors shadow-xs cursor-pointer active:scale-98"
             >
-              <Plus size={16} strokeWidth={2.5} /> Create Task
+              <Plus size={14} strokeWidth={2.5} /> Create task
             </button>
 
             {modalOpen && <AssignTaskModal setModalOpen={setModalOpen} />}
@@ -145,33 +145,33 @@ const SpecificWorkspace = () => {
         </header>
 
         {/* Toolbar & Filters */}
-        <div className="px-4 sm:px-8 py-4 border-b border-gray-150 bg-white flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3.5">
+        <div className="px-4 sm:px-8 py-2.5 border-b border-zinc-200/80 bg-white flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2.5">
           {/* Left Controls: Search */}
-          <div className="flex items-center gap-2.5 bg-gray-50 px-3.5 py-2 rounded-xl border border-gray-200 flex-1 max-w-md">
-            <Search size={15} className="text-gray-400" />
+          <div className="flex items-center gap-2 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-200 flex-1 max-w-sm">
+            <Search size={14} className="text-zinc-400" />
             <input
               type="text"
-              placeholder="Search tasks, descriptions..."
-              className="bg-transparent outline-none w-full text-xs text-gray-700 placeholder-gray-400"
+              placeholder="Search tasks..."
+              className="bg-transparent outline-none w-full text-xs text-zinc-900 placeholder-zinc-400"
               disabled
             />
           </div>
 
           {/* Right Controls: Filters & Views */}
           <div className="flex items-center gap-2 justify-end">
-            <button className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 bg-white hover:bg-gray-50 transition-colors">
-              <Filter size={13} />
+            <button className="flex items-center gap-1.5 px-2.5 py-1.5 border border-zinc-200 rounded-lg text-xs font-medium text-zinc-600 bg-white hover:bg-zinc-50 transition-colors">
+              <Filter size={12} />
               <span>Filter</span>
             </button>
 
-            <div className="h-4 w-[1px] bg-gray-200 mx-1"></div>
+            <div className="h-4 w-[1px] bg-zinc-200 mx-0.5"></div>
 
-            <div className="flex bg-gray-100 p-1 rounded-xl border border-gray-200">
-              <button className="p-1.5 bg-white text-gray-800 rounded-lg shadow-sm">
-                <Grid size={14} />
+            <div className="flex bg-zinc-100 p-0.5 rounded-lg border border-zinc-200">
+              <button className="p-1 bg-white text-zinc-900 rounded shadow-xs">
+                <Grid size={13} />
               </button>
-              <button className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg">
-                <List size={14} />
+              <button className="p-1 text-zinc-400 hover:text-zinc-600 rounded">
+                <List size={13} />
               </button>
             </div>
           </div>
@@ -185,34 +185,37 @@ const SpecificWorkspace = () => {
         ) : (
           <>
             {/* Mobile Tab Switcher */}
-            <div className="md:hidden px-4 pt-4 bg-[#F9FAFB]">
-              <div className="flex p-1 bg-gray-100 rounded-xl border border-gray-200/80 gap-1 shadow-inner shadow-gray-200/40">
+            <div className="md:hidden px-4 pt-4 bg-[#FAFAFA]">
+              <div className="flex p-0.5 bg-zinc-100 rounded-lg border border-zinc-200 gap-1">
                 <button
                   onClick={() => setActiveTab('Todo')}
-                  className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'Todo'
-                    ? 'bg-white text-gray-900 shadow-sm font-extrabold'
-                    : 'text-gray-500 hover:text-gray-800'
-                    }`}
+                  className={`flex-1 py-1.5 text-center text-xs font-medium rounded-md transition-all cursor-pointer ${
+                    activeTab === 'Todo'
+                      ? 'bg-white text-zinc-900 shadow-xs font-semibold'
+                      : 'text-zinc-500 hover:text-zinc-800'
+                  }`}
                 >
-                  To Do <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{todoTask.length}</span>
+                  To Do <span className="ml-1 bg-zinc-200 px-1 py-0.2 rounded text-[10px] text-zinc-600">{todoTask.length}</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('In-progress')}
-                  className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'In-progress'
-                    ? 'bg-white text-gray-900 shadow-sm font-extrabold'
-                    : 'text-gray-500 hover:text-gray-800'
-                    }`}
+                  className={`flex-1 py-1.5 text-center text-xs font-medium rounded-md transition-all cursor-pointer ${
+                    activeTab === 'In-progress'
+                      ? 'bg-white text-zinc-900 shadow-xs font-semibold'
+                      : 'text-zinc-500 hover:text-zinc-800'
+                  }`}
                 >
-                  In Progress <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{inProgressTasks.length}</span>
+                  In Progress <span className="ml-1 bg-zinc-200 px-1 py-0.2 rounded text-[10px] text-zinc-600">{inProgressTasks.length}</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('Done')}
-                  className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'Done'
-                    ? 'bg-white text-gray-900 shadow-sm font-extrabold'
-                    : 'text-gray-500 hover:text-gray-800'
-                    }`}
+                  className={`flex-1 py-1.5 text-center text-xs font-medium rounded-md transition-all cursor-pointer ${
+                    activeTab === 'Done'
+                      ? 'bg-white text-zinc-900 shadow-xs font-semibold'
+                      : 'text-zinc-500 hover:text-zinc-800'
+                  }`}
                 >
-                  Done <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{doneTasks.length}</span>
+                  Done <span className="ml-1 bg-zinc-200 px-1 py-0.2 rounded text-[10px] text-zinc-600">{doneTasks.length}</span>
                 </button>
               </div>
             </div>
@@ -226,8 +229,8 @@ const SpecificWorkspace = () => {
                 submitUpdateTask(draggedTaskId, dropTargetId as 'Todo' | 'In-progress' | 'Done')
               }}
             >
-              <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+              <div className="flex-1 overflow-auto p-4 sm:p-6 bg-[#FAFAFA]">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-start">
                   <div className={activeTab === 'Todo' ? 'block' : 'hidden md:block'}>
                     <RenderColumn title="To Do" count={todoTask.length} allTask={todoTask} statusType="Todo" id="Todo" />
                   </div>

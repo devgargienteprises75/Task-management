@@ -8,22 +8,22 @@ interface LayoutType {
 
 const WorkspaceToolbar = ({ layoutStyle, setLayoutStyle }: LayoutType) => {
     return (
-        <div className="flex justify-end items-end mb-6">
-            <div className="relative flex items-center bg-gray-100 p-1 rounded-lg w-fit shadow-inner">
+        <div className="flex justify-end items-end mb-4">
+            <div className="relative flex items-center bg-zinc-100 p-0.5 rounded-lg w-fit border border-zinc-200">
                 <div
-                    className={`absolute left-1 top-1 bottom-1 w-[32px] bg-white rounded-md shadow-sm border border-gray-200/60 transition-transform duration-300 ease-in-out ${layoutStyle === 'grid' ? 'translate-x-0' : 'translate-x-full'}`}
+                    className={`absolute left-0.5 top-0.5 bottom-0.5 w-[28px] bg-white rounded-md shadow-xs transition-transform duration-200 ease-in-out ${layoutStyle === 'grid' ? 'translate-x-0' : 'translate-x-full'}`}
                 ></div>
                 <button
                     onClick={() => setLayoutStyle('grid')}
-                    className={`relative z-10 w-[32px] h-[32px] flex justify-center items-center transition-colors duration-300 cursor-pointer ${layoutStyle === 'grid' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-700'}`}
+                    className={`relative z-10 w-[28px] h-[26px] flex justify-center items-center transition-colors duration-200 cursor-pointer ${layoutStyle === 'grid' ? 'text-zinc-900 font-semibold' : 'text-zinc-400 hover:text-zinc-700'}`}
                 >
-                    <LayoutGrid size={16} />
+                    <LayoutGrid size={13} />
                 </button>
                 <button
                     onClick={() => setLayoutStyle('list')}
-                    className={`relative z-10 w-[32px] h-[32px] flex justify-center items-center transition-colors duration-300 cursor-pointer ${layoutStyle === 'list' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-700'}`}
+                    className={`relative z-10 w-[28px] h-[26px] flex justify-center items-center transition-colors duration-200 cursor-pointer ${layoutStyle === 'list' ? 'text-zinc-900 font-semibold' : 'text-zinc-400 hover:text-zinc-700'}`}
                 >
-                    <LayoutList size={16} />
+                    <LayoutList size={13} />
                 </button>
             </div>
         </div>

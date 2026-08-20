@@ -29,28 +29,27 @@ const DeleteWorkspace = ({ isMenuOpen, setIsMenuOpen, workspace }: DeleteOptionP
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 px-4 backdrop-blur-sm">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
-        <div className="p-6">
-          <div className="flex items-center justify-center w-14 h-14 rounded-full bg-red-50 mb-5 mx-auto border-[6px] border-red-50/50">
-            <AlertTriangle className="text-red-600" size={24} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 px-4 backdrop-blur-xs">
+      <div className="w-full max-w-sm overflow-hidden rounded-xl bg-white border border-zinc-200 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+        <div className="p-5">
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-rose-50 mb-3 mx-auto border border-rose-100">
+            <AlertTriangle className="text-rose-600" size={18} />
           </div>
           
-          <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
+          <h3 className="text-sm font-semibold text-zinc-900 text-center mb-1">
             Delete Workspace
           </h3>
           
-          <p className="text-[15px] leading-relaxed text-gray-500 text-center mb-8">
-            Are you sure you want to delete <span className="font-semibold text-gray-800">"{workspace?.name || 'this workspace'}"</span>? All of its data, tasks, and member associations will be permanently removed. This action cannot be undone.
+          <p className="text-xs leading-relaxed text-zinc-500 text-center mb-5 font-normal">
+            Are you sure you want to delete <span className="font-semibold text-zinc-800">"{workspace?.name || 'this workspace'}"</span>? All data and tasks will be permanently removed.
           </p>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setIsMenuOpen(false)}
               className={cn(
-                "flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3.5 text-[15px] font-bold text-gray-700 transition-all cursor-pointer",
-                "hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900",
-                "focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-1"
+                "flex-1 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-700 transition-colors cursor-pointer",
+                "hover:bg-zinc-50"
               )}
             >
               Cancel
@@ -59,16 +58,14 @@ const DeleteWorkspace = ({ isMenuOpen, setIsMenuOpen, workspace }: DeleteOptionP
               onClick={handleSubmit}
               disabled={isDeleting}
               className={cn(
-                "flex-1 flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3.5 text-[15px] font-bold text-white transition-all cursor-pointer",
-                "hover:bg-red-700 hover:shadow-lg hover:shadow-red-600/20",
-                "focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-1",
-                "active:scale-[0.98]",
+                "flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-xs font-medium text-white transition-colors cursor-pointer",
+                "hover:bg-rose-700 shadow-xs",
                 isDeleting && "opacity-80 cursor-not-allowed"
               )}
             >
               {isDeleting ? (
                 <>
-                  <Loader2 size={17} className="animate-spin" />
+                  <Loader2 size={13} className="animate-spin" />
                   Deleting...
                 </>
               ) : (

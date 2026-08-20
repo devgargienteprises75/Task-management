@@ -1,11 +1,10 @@
 import { useState } from "react"
 import useAuth from "../hooks/useAuth"
 import { cn } from "@/lib/cn";
-import { CalendarClock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, CheckSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [showPassword, setShowPassword] = useState(false)
@@ -34,91 +33,80 @@ const Login = () => {
     }
 
     return (
-        <div className="flex min-h-screen bg-[#FEFEFE]">
-            {/* Left Column - Form */}
-            <div className="flex w-full flex-col justify-center px-8 sm:px-12 lg:w-1/2 lg:px-24 xl:px-32">
-                {/* Logo */}
-                <div className="logo flex items-center gap-2 absolute top-8 left-8">
-                    <CalendarClock className="text-gray-900" />
-                    <h1 className="font-bold text-2xl text-gray-900 tracking-tight">ToDo</h1>
-                </div>
-                
-                <div className="mx-auto w-full max-w-md">
-                    <div className="mb-10">
-                        <h2 className="text-4xl font-bold tracking-tight text-gray-900 mb-2">
-                            Welcome Back
-                        </h2>
-                        <p className="text-[15px] text-gray-500 font-medium">
-                            Sign in to continue to your workspace
-                        </p>
+        <div className="flex min-h-screen bg-[#FAFAFA] text-zinc-900 items-center justify-center p-4">
+            <div className="w-full max-w-sm">
+                {/* Brand */}
+                <div className="flex flex-col items-center mb-8">
+                    <div className="w-9 h-9 rounded-xl bg-zinc-900 text-white flex items-center justify-center shadow-xs mb-3">
+                        <CheckSquare size={18} strokeWidth={2.5} />
                     </div>
-                    <form onSubmit={handleSubmit} className="space-y-5">
+                    <h1 className="font-semibold text-lg text-zinc-900 tracking-tight">Sign in to Workspace</h1>
+                    <p className="text-xs text-zinc-500 mt-1">Manage your team and track projects</p>
+                </div>
+
+                <div className="bg-white p-6 rounded-xl border border-zinc-200 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+                    <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
+                            <label className="block text-xs font-medium text-zinc-700 mb-1">Email</label>
                             <input
                                 type="email"
                                 id="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className={cn(
-                                    "block w-full rounded-[14px] border border-gray-200 bg-gray-50 px-5 py-3.5 text-[15px] text-gray-900 transition-all",
-                                    "placeholder:text-gray-400 placeholder:font-medium",
-                                    "focus:border-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900"
+                                    "block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 transition-all",
+                                    "placeholder:text-zinc-400",
+                                    "focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
                                 )}
-                                placeholder="Email address"
+                                placeholder="name@company.com"
                                 required
                             />
                         </div>
-                        <div className="relative">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                id="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className={cn(
-                                    "block w-full rounded-[14px] border border-gray-200 bg-gray-50 px-5 py-3.5 text-[15px] text-gray-900 transition-all",
-                                    "placeholder:text-gray-400 placeholder:font-medium",
-                                    "focus:border-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900"
-                                )}
-                                placeholder="Password"
-                                required
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)} 
-                                className="absolute inset-y-0 right-0 flex items-center pr-5 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
-                            >
-                                {showPassword ? (<EyeOff size={20} />) : (<Eye size={20} />)}
-                            </button>
+                        <div>
+                            <label className="block text-xs font-medium text-zinc-700 mb-1">Password</label>
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    id="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className={cn(
+                                        "block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 pr-9 text-xs text-zinc-900 transition-all",
+                                        "placeholder:text-zinc-400",
+                                        "focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                    )}
+                                    placeholder="••••••••"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)} 
+                                    className="absolute inset-y-0 right-0 flex items-center pr-2.5 text-zinc-400 hover:text-zinc-700 transition-colors cursor-pointer"
+                                >
+                                    {showPassword ? (<EyeOff size={15} />) : (<Eye size={15} />)}
+                                </button>
+                            </div>
                         </div>
  
                         <button
                             type="submit"
                             disabled={isSubmitting}
                             className={cn(
-                                "mt-8 flex w-full items-center justify-center gap-2 rounded-[14px] bg-[#D1F53B] px-4 py-4 text-[16px] font-bold text-gray-900 transition-all duration-200 ease-in-out",
-                                "hover:bg-[#c2e532] hover:shadow-lg hover:shadow-[#D1F53B]/20",
-                                "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900",
-                                "active:scale-[0.98]",
+                                "mt-5 flex w-full items-center justify-center gap-1.5 rounded-lg bg-black px-4 py-2.5 text-xs font-medium text-white transition-colors cursor-pointer shadow-xs",
+                                "hover:bg-zinc-800 active:scale-[0.98]",
                                 isSubmitting && "opacity-80 cursor-not-allowed"
                             )}
                         >
                             {isSubmitting ? (
                                 <>
-                                    <Loader2 size={20} className="animate-spin" />
+                                    <Loader2 size={14} className="animate-spin" />
                                     Signing in...
                                 </>
                             ) : (
-                                "Sign in"
+                                "Continue"
                             )}
                         </button>
                     </form>
-                </div>
-            </div>
-            {/* Right Column - Image Placeholder */}
-            <div className="hidden lg:block lg:w-1/2 p-4 pl-0">
-                <div className="relative h-full w-full overflow-hidden rounded-[32px] bg-gray-100 flex items-center justify-center">
-                   {/* Replace with a minimal graphic or leave as a clean gray canvas */}
-                   <p className="text-gray-400 font-medium tracking-widest uppercase">Workspace Illustration</p>
                 </div>
             </div>
         </div>

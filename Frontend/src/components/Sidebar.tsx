@@ -1,18 +1,18 @@
 import type { RootState } from "@/app/app.store";
 import useAdmin from "@/features/admin/hooks/useAdmin";
-import { Folder, LayoutList, Plus, User, X, Settings, LogOut, ChevronUp } from "lucide-react"
+import { Folder, LayoutList, User, X, Settings, LogOut, ChevronUp, CheckSquare } from "lucide-react"
 import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux"
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/cn";
 import { setSidebarOpen } from "@/app/layout.slice";
 import useAuth from "@/features/auth/hooks/useAuth";
 
 const Sidebar = () => {
-
     const { user } = useSelector((state: RootState) => state.auth)
     const sidebarOpen = useSelector((state: RootState) => state.layout.sidebarOpen)
     const dispatch = useDispatch()
+    const location = useLocation()
 
     const { handleGetUsers } = useAdmin()
     const { handleLogout } = useAuth()
@@ -32,15 +32,10 @@ const Sidebar = () => {
     }, []);
 
     useEffect(() => {
-        if(user?.role === 'admin' || user?.role === 'head'){
+        if (user?.role === 'admin' || user?.role === 'head') {
             handleGetUsers()
         }
     }, [user])
-    
-    const getWorkspace = async () => {
-        navigate("/workspaces")
-        dispatch(setSidebarOpen(false))
-    }
 
     const handleNavigate = (path: string) => {
         navigate(path)
@@ -52,107 +47,156 @@ const Sidebar = () => {
         await handleLogout()
     }
 
+    const isPathActive = (path: string) => {
+        if (path === "/" && location.pathname === "/") return true;
+        if (path !== "/" && location.pathname.startsWith(path)) return true;
+        return false;
+    }
+
     return (
         <>
-            {/* Mobile Sidebar Backdrop Overlay */}
+            {/* Mobile Sidebar Backdrop */}
             {sidebarOpen && (
                 <div 
                     onClick={() => dispatch(setSidebarOpen(false))}
-                    className="fixed inset-0 z-40 bg-gray-900/40 backdrop-blur-xs md:hidden"
+                    className="fixed inset-0 z-40 bg-black/20 backdrop-blur-xs md:hidden"
                 />
             )}
 
             <aside className={cn(
-                "fixed inset-y-0 left-0 z-50 w-64 bg-[#FCFCFC] border-r border-gray-200 flex flex-col pt-8 pb-4 transition-transform duration-300 ease-in-out md:static md:translate-x-0 shrink-0",
+                "fixed inset-y-0 left-0 z-50 w-60 bg-[#FAFAFA] border-r border-zinc-200/80 flex flex-col pt-5 pb-4 transition-transform duration-200 ease-in-out md:static md:translate-x-0 shrink-0 select-none",
                 sidebarOpen ? "translate-x-0" : "-translate-x-full"
             )}>
-                <div className="px-6 mb-8 flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 bg-gray-900 rounded grid grid-cols-2 gap-[2px] p-1">
-                            <div className="bg-white rounded-[1px]"></div>
-                            <div className="bg-white rounded-[1px]"></div>
-                            <div className="bg-white rounded-[1px]"></div>
-                            <div className="bg-white rounded-[1px]"></div>
+                {/* Brand Header */}
+                <div className="px-4 mb-6 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-7 h-7 rounded-lg bg-zinc-900 text-white flex items-center justify-center shadow-xs">
+                            <CheckSquare size={15} strokeWidth={2.5} />
                         </div>
-                        <h1 className="font-bold text-xl tracking-tight">ToDo</h1>
+                        <div className="flex items-center gap-1.5">
+                            <span className="font-semibold text-sm text-zinc-900 tracking-tight">Workspace</span>
+                            <span className="text-[10px] bg-zinc-100 text-zinc-600 px-1.5 py-0.5 rounded font-mono border border-zinc-200">v1.0</span>
+                        </div>
                     </div>
                     <button
                         onClick={() => dispatch(setSidebarOpen(false))}
-                        className="p-1 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors md:hidden cursor-pointer"
+                        className="p-1 hover:bg-zinc-200/60 rounded text-zinc-500 hover:text-zinc-800 transition-colors md:hidden cursor-pointer"
                         aria-label="Close sidebar"
                     >
-                        <X size={18} />
+                        <X size={16} />
                     </button>
                 </div>
-                <div className="px-6 mb-8">
-                    <button className="w-full flex items-center justify-center gap-2 bg-[#D1F53B] text-gray-900 font-bold py-3 rounded-xl hover:bg-[#c2e532] transition-colors shadow-sm cursor-pointer">
-                        <Plus size={18} strokeWidth={3} />
-                        Create new Project
-                    </button>
+
+                {/* Navigation Sections */}
+                <div className="flex-1 px-3 space-y-6 overflow-y-auto">
+                    {/* General Section */}
+                    <div>
+                        <p className="px-2.5 mb-1 text-[11px] font-medium text-zinc-400">
+                            Workspace
+                        </p>
+                        <nav className="space-y-0.5">
+                            <button 
+                                onClick={() => handleNavigate("/")}
+                                className={cn(
+                                    "flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer text-left",
+                                    isPathActive("/")
+                                        ? "bg-zinc-200/80 text-zinc-900 font-semibold"
+                                        : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200/40"
+                                )}
+                            >
+                                <LayoutList size={15} className={isPathActive("/") ? "text-zinc-900" : "text-zinc-500"} />
+                                <span>Tasks</span>
+                            </button>
+
+                            <button 
+                                onClick={() => handleNavigate("/workspaces")}
+                                className={cn(
+                                    "flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer text-left",
+                                    isPathActive("/workspaces")
+                                        ? "bg-zinc-200/80 text-zinc-900 font-semibold"
+                                        : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200/40"
+                                )}
+                            >
+                                <Folder size={15} className={isPathActive("/workspaces") ? "text-zinc-900" : "text-zinc-500"} />
+                                <span>Workspaces</span>
+                            </button>
+
+                            {user?.role === "admin" && (
+                                <button
+                                    onClick={() => handleNavigate("/users")}
+                                    className={cn(
+                                        "flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer text-left",
+                                        isPathActive("/users")
+                                            ? "bg-zinc-200/80 text-zinc-900 font-semibold"
+                                            : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200/40"
+                                    )}
+                                >
+                                    <User size={15} className={isPathActive("/users") ? "text-zinc-900" : "text-zinc-500"} />
+                                    <span>Team Members</span>
+                                </button>
+                            )}
+                        </nav>
+                    </div>
+
+                    {/* Settings Section */}
+                    <div>
+                        <p className="px-2.5 mb-1 text-[11px] font-medium text-zinc-400">
+                            Settings
+                        </p>
+                        <nav className="space-y-0.5">
+                            <button 
+                                onClick={() => handleNavigate("/account-setting")}
+                                className={cn(
+                                    "flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer text-left",
+                                    isPathActive("/account-setting")
+                                        ? "bg-zinc-200/80 text-zinc-900 font-semibold"
+                                        : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200/40"
+                                )}
+                            >
+                                <Settings size={15} className={isPathActive("/account-setting") ? "text-zinc-900" : "text-zinc-500"} />
+                                <span>Preferences</span>
+                            </button>
+                        </nav>
+                    </div>
                 </div>
-                <nav className="flex-1 px-4 space-y-1">
-                    {/* <button 
-                        onClick={() => handleNavigate("/")}
-                        className="flex w-full items-center gap-3 px-4 py-2.5 text-gray-500 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-100 cursor-pointer"
-                    >
-                        <Calendar size={18} /> Dashboard
-                    </button> */}
-                    <button 
-                        onClick={() => handleNavigate("/")}
-                        className="flex w-full items-center gap-3 px-4 py-2.5 text-gray-900 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-100 cursor-pointer">
-                        <LayoutList size={18} /> Task List
-                    </button>
 
-                    {user?.role === "admin" &&
-                        <button
-                            onClick={() => handleNavigate("/users")}
-                            className="flex w-full items-center gap-3 px-4 py-2.5 text-gray-900 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-100 cursor-pointer"
-                        >
-                            <User /> User list
-                        </button>
-                    }
-
-                    <button onClick={getWorkspace} className="flex w-full items-center gap-3 px-4 py-2.5 text-gray-900 font-medium rounded-lg hover:text-gray-900 hover:bg-gray-100 cursor-pointer">
-                        <Folder size={18} /> Workspaces
-                    </button>
-                </nav>
-
-                <div className="px-4 mt-auto pt-4 relative" ref={dropdownRef}>
+                {/* Footer User Profile */}
+                <div className="px-3 mt-auto pt-3 border-t border-zinc-200/80 relative" ref={dropdownRef}>
                     {isDropdownOpen && (
-                        <div className="absolute bottom-full left-4 right-4 mb-2 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50">
+                        <div className="absolute bottom-full left-3 right-3 mb-1.5 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.12)] border border-zinc-200 overflow-hidden z-50 py-1">
                             <button
                                 onClick={() => {
                                     setIsDropdownOpen(false);
                                     handleNavigate("/account-setting");
                                 }}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 transition-colors cursor-pointer"
                             >
-                                <Settings size={16} /> Account Settings
+                                <Settings size={13} className="text-zinc-400" /> Account Settings
                             </button>
                             <button
                                 onClick={(e) => {
                                     setIsDropdownOpen(false);
                                     handleLogoutSubmit(e);
                                 }}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors border-t border-gray-50 cursor-pointer"
+                                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 transition-colors border-t border-zinc-100 cursor-pointer"
                             >
-                                <LogOut size={16} /> Logout
+                                <LogOut size={13} className="text-rose-500" /> Logout
                             </button>
                         </div>
                     )}
                     
                     <button 
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
+                        className="w-full flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-zinc-200/50 transition-colors cursor-pointer text-left"
                     >
-                        <div className="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-semibold shrink-0">
+                        <div className="w-7 h-7 rounded-md bg-zinc-900 text-white flex items-center justify-center text-xs font-semibold shrink-0">
                             {user?.username?.charAt(0).toUpperCase() || 'U'}
                         </div>
-                        <div className="flex-1 text-left min-w-0">
-                            <p className="text-sm font-bold text-gray-900 truncate">{user?.username || 'User'}</p>
-                            <p className="text-xs text-gray-500 truncate font-medium">{user?.email || 'user@example.com'}</p>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-xs font-semibold text-zinc-900 truncate leading-none">{user?.username || 'User'}</p>
+                            <p className="text-[11px] text-zinc-400 truncate mt-0.5">{user?.email || 'user@example.com'}</p>
                         </div>
-                        <ChevronUp size={18} className={cn("text-gray-400 transition-transform", isDropdownOpen && "rotate-180")} />
+                        <ChevronUp size={14} className={cn("text-zinc-400 transition-transform duration-200", isDropdownOpen && "rotate-180")} />
                     </button>
                 </div>
             </aside>
