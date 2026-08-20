@@ -1,7 +1,7 @@
 import { useState } from "react"
 import useAuth from "../hooks/useAuth"
 import { cn } from "@/lib/cn";
-import { CalendarClock, Eye, EyeOff } from "lucide-react";
+import { CalendarClock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -9,6 +9,7 @@ const Login = () => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [showPassword, setShowPassword] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const credentials = {
         email,
@@ -20,12 +21,16 @@ const Login = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        setIsSubmitting(true)
 
-        await handleLogin(credentials)
-        navigate("/")
-
-        setEmail('')
-        setPassword('')
+        try {
+            await handleLogin(credentials)
+            navigate("/")
+            setEmail('')
+            setPassword('')
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     return (
@@ -88,14 +93,23 @@ const Login = () => {
  
                         <button
                             type="submit"
+                            disabled={isSubmitting}
                             className={cn(
-                                "mt-8 flex w-full justify-center rounded-[14px] bg-[#D1F53B] px-4 py-4 text-[16px] font-bold text-gray-900 transition-all duration-200 ease-in-out",
+                                "mt-8 flex w-full items-center justify-center gap-2 rounded-[14px] bg-[#D1F53B] px-4 py-4 text-[16px] font-bold text-gray-900 transition-all duration-200 ease-in-out",
                                 "hover:bg-[#c2e532] hover:shadow-lg hover:shadow-[#D1F53B]/20",
                                 "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900",
-                                "active:scale-[0.98]"
+                                "active:scale-[0.98]",
+                                isSubmitting && "opacity-80 cursor-not-allowed"
                             )}
                         >
-                            Sign in
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 size={20} className="animate-spin" />
+                                    Signing in...
+                                </>
+                            ) : (
+                                "Sign in"
+                            )}
                         </button>
                     </form>
                 </div>

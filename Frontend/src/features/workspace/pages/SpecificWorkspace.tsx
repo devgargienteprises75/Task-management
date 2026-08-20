@@ -23,11 +23,13 @@ import { socket } from "@/lib/socket"
 import { setDeleteTask, setAddTask, setUpdateTask } from "@/features/task/task.slice"
 import AssignTaskModal from "@/features/shared/components/AssignTaskModal"
 
+import Loader from "@/components/Loader"
+
 const SpecificWorkspace = () => {
   const dispatch = useDispatch()
   const { workspaceId } = useParams()
-  const { allWorkspaces } = useSelector((state: RootState) => state.workspace)
-  const { allTask } = useSelector((state: RootState) => state.task)
+  const { allWorkspaces, isLoading: isWorkspaceLoading } = useSelector((state: RootState) => state.workspace)
+  const { allTask, isLoading: isTaskLoading } = useSelector((state: RootState) => state.task)
   const [activeTab, setActiveTab] = useState<'Todo' | 'In-progress' | 'Done'>('Todo')
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const { handleUpdateTask, handleGetAllTask } = useTask()
@@ -175,62 +177,71 @@ const SpecificWorkspace = () => {
           </div>
         </div>
 
-        {/* Mobile Tab Switcher */}
-        <div className="md:hidden px-4 pt-4 bg-[#F9FAFB]">
-          <div className="flex p-1 bg-gray-100 rounded-xl border border-gray-200/80 gap-1 shadow-inner shadow-gray-200/40">
-            <button
-              onClick={() => setActiveTab('Todo')}
-              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'Todo'
-                ? 'bg-white text-gray-900 shadow-sm font-extrabold'
-                : 'text-gray-500 hover:text-gray-800'
-                }`}
-            >
-              To Do <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{todoTask.length}</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('In-progress')}
-              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'In-progress'
-                ? 'bg-white text-gray-900 shadow-sm font-extrabold'
-                : 'text-gray-500 hover:text-gray-800'
-                }`}
-            >
-              In Progress <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{inProgressTasks.length}</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('Done')}
-              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'Done'
-                ? 'bg-white text-gray-900 shadow-sm font-extrabold'
-                : 'text-gray-500 hover:text-gray-800'
-                }`}
-            >
-              Done <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{doneTasks.length}</span>
-            </button>
+        {/* Board Content */}
+        {(isTaskLoading && !workspaceTask.length) || isWorkspaceLoading ? (
+          <div className="flex-1 flex items-center justify-center min-h-[400px]">
+            <Loader size="lg" text="Loading workspace tasks..." />
           </div>
-        </div>
-
-        {/* Kanban Columns Board */}
-        <DragDropProvider
-          onDragEnd={(e) => {
-            if (e.canceled) return
-            const dropTargetId = e.operation.target?.id || ""
-            const draggedTaskId = e.operation.source?.id as string
-            submitUpdateTask(draggedTaskId, dropTargetId as 'Todo' | 'In-progress' | 'Done')
-          }}
-        >
-          <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-              <div className={activeTab === 'Todo' ? 'block' : 'hidden md:block'}>
-                <RenderColumn title="To Do" count={todoTask.length} allTask={todoTask} statusType="Todo" id="Todo" />
-              </div>
-              <div className={activeTab === 'In-progress' ? 'block' : 'hidden md:block'}>
-                <RenderColumn title="In Progress" count={inProgressTasks.length} allTask={inProgressTasks} statusType="In-progress" id="In-progress" />
-              </div>
-              <div className={activeTab === 'Done' ? 'block' : 'hidden md:block'}>
-                <RenderColumn title="Done" count={doneTasks.length} allTask={doneTasks} statusType="Done" id="Done" />
+        ) : (
+          <>
+            {/* Mobile Tab Switcher */}
+            <div className="md:hidden px-4 pt-4 bg-[#F9FAFB]">
+              <div className="flex p-1 bg-gray-100 rounded-xl border border-gray-200/80 gap-1 shadow-inner shadow-gray-200/40">
+                <button
+                  onClick={() => setActiveTab('Todo')}
+                  className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'Todo'
+                    ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                    : 'text-gray-500 hover:text-gray-800'
+                    }`}
+                >
+                  To Do <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{todoTask.length}</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('In-progress')}
+                  className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'In-progress'
+                    ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                    : 'text-gray-500 hover:text-gray-800'
+                    }`}
+                >
+                  In Progress <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{inProgressTasks.length}</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('Done')}
+                  className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'Done'
+                    ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                    : 'text-gray-500 hover:text-gray-800'
+                    }`}
+                >
+                  Done <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{doneTasks.length}</span>
+                </button>
               </div>
             </div>
-          </div>
-        </DragDropProvider>
+
+            {/* Kanban Columns Board */}
+            <DragDropProvider
+              onDragEnd={(e) => {
+                if (e.canceled) return
+                const dropTargetId = e.operation.target?.id || ""
+                const draggedTaskId = e.operation.source?.id as string
+                submitUpdateTask(draggedTaskId, dropTargetId as 'Todo' | 'In-progress' | 'Done')
+              }}
+            >
+              <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+                  <div className={activeTab === 'Todo' ? 'block' : 'hidden md:block'}>
+                    <RenderColumn title="To Do" count={todoTask.length} allTask={todoTask} statusType="Todo" id="Todo" />
+                  </div>
+                  <div className={activeTab === 'In-progress' ? 'block' : 'hidden md:block'}>
+                    <RenderColumn title="In Progress" count={inProgressTasks.length} allTask={inProgressTasks} statusType="In-progress" id="In-progress" />
+                  </div>
+                  <div className={activeTab === 'Done' ? 'block' : 'hidden md:block'}>
+                    <RenderColumn title="Done" count={doneTasks.length} allTask={doneTasks} statusType="Done" id="Done" />
+                  </div>
+                </div>
+              </div>
+            </DragDropProvider>
+          </>
+        )}
       </main>
     </div>
   )

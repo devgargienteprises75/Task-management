@@ -110,7 +110,11 @@ const Workspaces = () => {
                     {/* Toolbar / Filters (optional space) */}
                     <WorkspaceToolbar layoutStyle={layoutStyle} setLayoutStyle={setLayoutStyle} />
 
-                    {(isLoading || isAuthLoading) ? <Loader /> : (filterWorkspace.length > 0 ? <div className={layoutStyle === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col gap-4"}>
+                    {(isLoading || isAuthLoading) ? (
+                        <div className="flex-1 flex items-center justify-center min-h-[400px]">
+                            <Loader size="lg" text="Loading workspaces..." />
+                        </div>
+                    ) : (filterWorkspace.length > 0 ? <div className={layoutStyle === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col gap-4"}>
                         {filterWorkspace?.map((workspace: WorkspaceType) => (
                             <>
                                 <WorkspaceComponent 

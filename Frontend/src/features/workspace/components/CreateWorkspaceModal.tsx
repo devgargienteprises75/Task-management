@@ -2,7 +2,7 @@ import type { RootState } from "@/app/app.store";
 import { cn } from "@/lib/cn"
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Loader2 } from "lucide-react";
 import useWorkspace from "../hooks/useWorkspace";
 import type { user, workspace } from "@/types";
 
@@ -16,6 +16,7 @@ const CreateWorkspaceModal = ({ setWorkspaceModal }: CreateWorkspaceModalProps) 
     const [workspaceName, setWorkspaceName] = useState<string>("")
     const [description, setDescription] = useState<string>("")
     const [members, setMembers] = useState<user[]>([])
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const { users } = useSelector((state: RootState) => state.admin)
     const user = useSelector((state: RootState) => state.auth.user)
 
@@ -34,12 +35,17 @@ const CreateWorkspaceModal = ({ setWorkspaceModal }: CreateWorkspaceModalProps) 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        await handleCreateWorkspace(workspaceDetails)
+        setIsSubmitting(true)
+        try {
+            await handleCreateWorkspace(workspaceDetails)
 
-        setWorkspaceModal(false)
-        setWorkspaceName("")
-        setDescription("")
-        setMembers([])
+            setWorkspaceModal(false)
+            setWorkspaceName("")
+            setDescription("")
+            setMembers([])
+        } finally {
+            setIsSubmitting(false)
+        }
     }
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm px-4">
@@ -128,14 +134,23 @@ const CreateWorkspaceModal = ({ setWorkspaceModal }: CreateWorkspaceModalProps) 
 
                     <button
                         type="submit"
+                        disabled={isSubmitting}
                         className={cn(
-                            "mt-6 flex w-full justify-center rounded-xl bg-[#D1F53B] px-4 py-3.5 text-[15px] font-bold text-gray-900 transition-all duration-200 ease-in-out cursor-pointer",
+                            "mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#D1F53B] px-4 py-3.5 text-[15px] font-bold text-gray-900 transition-all duration-200 ease-in-out cursor-pointer",
                             "hover:bg-[#c2e532] hover:shadow-lg hover:shadow-[#D1F53B]/20",
                             "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900",
-                            "active:scale-[0.98]"
+                            "active:scale-[0.98]",
+                            isSubmitting && "opacity-80 cursor-not-allowed"
                         )}
                     >
-                        Create Workspace
+                        {isSubmitting ? (
+                            <>
+                                <Loader2 size={17} className="animate-spin" />
+                                Creating Workspace...
+                            </>
+                        ) : (
+                            "Create Workspace"
+                        )}
                     </button>
                 </form>
             </div>

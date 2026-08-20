@@ -1,7 +1,7 @@
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { workspace } from "@/types";
-import type { Dispatch, SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import useWorkspace from "../hooks/useWorkspace";
 
 interface DeleteOptionProps {
@@ -13,13 +13,19 @@ interface DeleteOptionProps {
 const DeleteWorkspace = ({ isMenuOpen, setIsMenuOpen, workspace }: DeleteOptionProps) => {
   if (!isMenuOpen) return null;
 
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const { handleDeleteWorkspace } = useWorkspace()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsDeleting(true)
 
-    await handleDeleteWorkspace(workspace?._id ?? "")
-    setIsMenuOpen(false)
+    try {
+      await handleDeleteWorkspace(workspace?._id ?? "")
+      setIsMenuOpen(false)
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   return (
@@ -51,14 +57,23 @@ const DeleteWorkspace = ({ isMenuOpen, setIsMenuOpen, workspace }: DeleteOptionP
             </button>
             <button
               onClick={handleSubmit}
+              disabled={isDeleting}
               className={cn(
-                "flex-1 rounded-xl bg-red-600 px-4 py-3.5 text-[15px] font-bold text-white transition-all cursor-pointer",
+                "flex-1 flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3.5 text-[15px] font-bold text-white transition-all cursor-pointer",
                 "hover:bg-red-700 hover:shadow-lg hover:shadow-red-600/20",
                 "focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-1",
-                "active:scale-[0.98]"
+                "active:scale-[0.98]",
+                isDeleting && "opacity-80 cursor-not-allowed"
               )}
             >
-              Delete
+              {isDeleting ? (
+                <>
+                  <Loader2 size={17} className="animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
             </button>
           </div>
         </div>

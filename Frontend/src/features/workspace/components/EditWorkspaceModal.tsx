@@ -1,5 +1,5 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
-import { ChevronRight, FileText, Users, X } from "lucide-react";
+import { ChevronRight, FileText, Users, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { UpdateWorkspace, user, workspace } from "@/types";
 import { useSelector } from "react-redux";
@@ -22,6 +22,7 @@ const EditWorkspaceModal = ({ workspace, isMenuOpen, setModalOption, workspaceDe
     if (!isMenuOpen) return null
 
     const [selectBoxOpen, setSelectBoxOpen] = useState<boolean>(false)
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
     const users = useSelector((state: RootState) => state.admin.users)
     const { handleEditWorkspace } = useWorkspace()
@@ -37,15 +38,20 @@ const EditWorkspaceModal = ({ workspace, isMenuOpen, setModalOption, workspaceDe
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        await handleEditWorkspace({
-            ...workspaceDetail,
-            newMemberList: workspaceDetail.newMemberList.map(getMemberId)
-        })
-        setModalOption('')
+        setIsSubmitting(true)
+        try {
+            await handleEditWorkspace({
+                ...workspaceDetail,
+                newMemberList: workspaceDetail.newMemberList.map(getMemberId)
+            })
+            setModalOption('')
 
-        setNewName(workspace.name)
-        setNewDescription(workspace.description ?? "")
-        setNewMemberList(workspace.members)
+            setNewName(workspace.name)
+            setNewDescription(workspace.description ?? "")
+            setNewMemberList(workspace.members)
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     return (
@@ -175,14 +181,23 @@ const EditWorkspaceModal = ({ workspace, isMenuOpen, setModalOption, workspaceDe
 
                     <button
                         type="submit"
+                        disabled={isSubmitting}
                         className={cn(
-                            "mt-2 flex w-full justify-center rounded-xl bg-gray-900 px-4 py-3.5 text-[15px] font-bold text-white transition-all duration-200 ease-in-out cursor-pointer",
+                            "mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-3.5 text-[15px] font-bold text-white transition-all duration-200 ease-in-out cursor-pointer",
                             "hover:bg-gray-800 hover:shadow-lg",
                             "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900",
-                            "active:scale-[0.98]"
+                            "active:scale-[0.98]",
+                            isSubmitting && "opacity-80 cursor-not-allowed"
                         )}
                     >
-                        Save Changes
+                        {isSubmitting ? (
+                            <>
+                                <Loader2 size={17} className="animate-spin" />
+                                Saving Changes...
+                            </>
+                        ) : (
+                            "Save Changes"
+                        )}
                     </button>
                 </form>
             </div>

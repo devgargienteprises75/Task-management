@@ -1,6 +1,6 @@
 import type { RootState } from "@/app/app.store"
 import Sidebar from "@/components/Sidebar"
-import { Pencil, Plus, Search, Menu } from "lucide-react"
+import { Pencil, Plus, Search, Menu, Loader2 } from "lucide-react"
 import { useSelector, useDispatch } from "react-redux"
 import type { user as UserType } from "@/types"
 import useAdmin from "../hooks/useAdmin"
@@ -24,6 +24,8 @@ const Users = () => {
     const [currentActiveStatus, setCurrentActiveStatus] = useState<boolean>(true)
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
     const [search, setSearch] = useState<string>("")
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+    const [isUpdating, setIsUpdating] = useState<boolean>(false)
 
     const { users, isLoading } = useSelector((state: RootState) => state.admin)
 
@@ -38,12 +40,17 @@ const Users = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        await handleAddUser(credential)
-        setFormOpen(false)
-        setUsername("")
-        setEmail("")
-        setRole("")
-        setPassword("")
+        setIsSubmitting(true)
+        try {
+            await handleAddUser(credential)
+            setFormOpen(false)
+            setUsername("")
+            setEmail("")
+            setRole("")
+            setPassword("")
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     const userUpdateCredentials: UpdateUserPayload = {
@@ -55,11 +62,16 @@ const Users = () => {
         e.preventDefault()
         if (!selectedUserId) return;
         
-        await handleUpdateUser(selectedUserId, userUpdateCredentials)
-        setUpdateModalOpen(false)
-        setNewRole("user")
-        setCurrentActiveStatus(true)
-        setSelectedUserId(null)
+        setIsUpdating(true)
+        try {
+            await handleUpdateUser(selectedUserId, userUpdateCredentials)
+            setUpdateModalOpen(false)
+            setNewRole("user")
+            setCurrentActiveStatus(true)
+            setSelectedUserId(null)
+        } finally {
+            setIsUpdating(false)
+        }
     }
 
     const filterUser = useMemo(() => {
@@ -190,14 +202,23 @@ const Users = () => {
 
                                 <button
                                     type="submit"
+                                    disabled={isSubmitting}
                                     className={cn(
-                                        "mt-6 flex w-full justify-center rounded-xl bg-[#D1F53B] px-4 py-3.5 text-[15px] font-bold text-gray-900 transition-all duration-200 ease-in-out cursor-pointer",
+                                        "mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#D1F53B] px-4 py-3.5 text-[15px] font-bold text-gray-900 transition-all duration-200 ease-in-out cursor-pointer",
                                         "hover:bg-[#c2e532] hover:shadow-lg hover:shadow-[#D1F53B]/20",
                                         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900",
-                                        "active:scale-[0.98]"
+                                        "active:scale-[0.98]",
+                                        isSubmitting && "opacity-80 cursor-not-allowed"
                                     )}
                                 >
-                                    Create User
+                                    {isSubmitting ? (
+                                        <>
+                                            <Loader2 size={17} className="animate-spin" />
+                                            Creating User...
+                                        </>
+                                    ) : (
+                                        "Create User"
+                                    )}
                                 </button>
                             </form>
                         </div>
@@ -205,7 +226,11 @@ const Users = () => {
                 )}
 
                 {/* Table Area */}
-                {isLoading ? <Loader /> : (filterUser.length > 0 ? <div className="flex-1 overflow-auto p-4 sm:p-8">
+                {isLoading ? (
+                    <div className="flex-1 flex items-center justify-center min-h-[400px]">
+                        <Loader size="lg" text="Loading users..." />
+                    </div>
+                ) : (filterUser.length > 0 ? <div className="flex-1 overflow-auto p-4 sm:p-8">
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse min-w-[600px]">
@@ -303,14 +328,23 @@ const Users = () => {
                         
                                         <button
                                             type="submit"
+                                            disabled={isUpdating}
                                             className={cn(
-                                                "mt-6 flex w-full justify-center rounded-xl bg-gray-900 px-4 py-3.5 text-[15px] font-bold text-white transition-all duration-200 ease-in-out cursor-pointer",
+                                                "mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-3.5 text-[15px] font-bold text-white transition-all duration-200 ease-in-out cursor-pointer",
                                                 "hover:bg-gray-800 hover:shadow-lg",
                                                 "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900",
-                                                "active:scale-[0.98]"
+                                                "active:scale-[0.98]",
+                                                isUpdating && "opacity-80 cursor-not-allowed"
                                             )}
                                         >
-                                            Save Changes
+                                            {isUpdating ? (
+                                                <>
+                                                    <Loader2 size={17} className="animate-spin" />
+                                                    Saving Changes...
+                                                </>
+                                            ) : (
+                                                "Save Changes"
+                                            )}
                                         </button>
                                     </form>
                                 </div>

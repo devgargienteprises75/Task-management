@@ -27,10 +27,14 @@ import { toggleSidebar } from "@/app/layout.slice";
 import { socket } from "@/lib/socket";
 import { setAddTask, setDeleteTask, setUpdateTask } from "../task.slice";
 
+import Loader from "@/components/Loader";
+
 const Tasks = () => {
   const dispatch = useDispatch()
 
   const allTask = useSelector((state: RootState) => state.task.allTask)
+  const isTaskLoading = useSelector((state: RootState) => state.task.isLoading)
+  const isAuthLoading = useSelector((state: RootState) => state.auth.isLoading)
   const user = useSelector((state: RootState) => state.auth.user)
   const users = useSelector((state: RootState) => state.admin.users)
 
@@ -250,7 +254,11 @@ const Tasks = () => {
         </div>
 
         {/* Board Content */}
-        {!assignedTask ? (
+        {(isTaskLoading && !allTask.length) || isAuthLoading ? (
+          <div className="flex-1 flex items-center justify-center min-h-[400px]">
+            <Loader size="lg" text="Loading tasks..." />
+          </div>
+        ) : !assignedTask ? (
           <>
             {/* Mobile Tab Switcher */}
             <div className="md:hidden px-4 pt-4 bg-[#F9FAFB]">
