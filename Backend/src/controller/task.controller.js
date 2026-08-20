@@ -73,7 +73,7 @@ export async function createTaskController(req, res) {
             assignToId.map(assignedUserId =>
                 sendPushToUser(assignedUserId.toString(), {
                     title: "New Task Assigned",
-                    body: `You have been assigned a new task by ${user?.username} : ${title}`,
+                    body: `You have been assigned a new task by ${user?.username.charAt(0).toUpperCase() + user?.username.slice(1)} : ${title}`,
                     url: `/workspaces/${workspaceid}`
                 })
             )
@@ -241,6 +241,12 @@ export async function updateTaskController(req, res) {
             )
 
             io.to(`workspace_${workspaceid}`).emit('task:updated', newTask)
+
+            await sendPushToUser(newTask.assignBy.toString(), {
+                title: "Task Status Updated",
+                body: `Status of task "${newTask.title}" has been updated to "${newTask.status}" by ${user?.username?.charAt(0).toUpperCase() + user?.username?.slice(1)}`,
+                url: `/workspaces/${workspaceid}`
+            })
 
             return res.status(200).json({
                 message: "Status updated successfully",
