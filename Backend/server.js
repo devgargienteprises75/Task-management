@@ -4,7 +4,7 @@ import connectToDb from "./src/config/database.js";
 import { config } from "./src/config/config.js";
 import http from 'http'
 import { Server } from "socket.io";
-import webpush from 'web-push';
+import { initializeCronJobs } from "./src/services/cron.service.js";
 
 const PORT = config.PORT || 8000
 
@@ -39,6 +39,11 @@ io.on('connection', (socket) => {
 connectToDb()
     .then(async () => {
         await initGeneralWorkspace()
+
+        initializeCronJobs()
+        console.log("Cron jobs initialized.");
+        
+
         server.listen(PORT, () => {
             console.log(`Server connecting to port: ${PORT}`);
         })
