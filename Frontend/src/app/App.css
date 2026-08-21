@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-canvas: #FAFAFA;
   --color-surface: #FFFFFF;
@@ -11,6 +13,14 @@
   --color-text-muted: #A1A1AA;
 }
 
+:root {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
 body {
   overflow: hidden;
   background-color: #FAFAFA;
@@ -19,7 +29,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Minimalist Notion/Vercel Scrollbar */
+html.dark body {
+  background-color: #18181B;
+  color: #F4F4F5;
+}
+
+/* Minimalist Zinc Charcoal Scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -34,6 +49,14 @@ body {
   border-radius: 9999px;
 }
 
+html.dark ::-webkit-scrollbar-thumb {
+  background: #3F3F46;
+}
+
 ::-webkit-scrollbar-thumb:hover {
   background: #D4D4D8;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #52525B;
 }

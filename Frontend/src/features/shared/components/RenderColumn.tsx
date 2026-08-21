@@ -15,16 +15,16 @@ interface RenderColumnProps {
 const RenderColumn = ({ id, title, count, allTask, statusType }: RenderColumnProps) => {
     const columnTheme = {
         Todo: {
-            dot: "bg-zinc-400",
-            badge: "bg-zinc-200/70 text-zinc-600",
+            dot: "bg-zinc-400 dark:bg-zinc-400",
+            badge: "bg-zinc-200/70 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-200",
         },
         "In-progress": {
             dot: "bg-blue-500",
-            badge: "bg-blue-100 text-blue-700",
+            badge: "bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300",
         },
         Done: {
             dot: "bg-emerald-500",
-            badge: "bg-emerald-100 text-emerald-700",
+            badge: "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300",
         },
     }[statusType];
 
@@ -38,12 +38,12 @@ const RenderColumn = ({ id, title, count, allTask, statusType }: RenderColumnPro
     return (
         <div
             ref={ref}
-            className="flex flex-col bg-[#F4F4F5]/70 rounded-xl border border-zinc-200/70 p-3 max-h-[300px] md:min-h-[640px]">
+            className="flex flex-col bg-[#F4F4F5]/70 dark:bg-zinc-800/60 rounded-xl border border-zinc-200/70 dark:border-zinc-700/70 p-3 max-h-[300px] md:min-h-[640px] transition-colors">
             {/* Column Header */}
             <div className="flex justify-between items-center mb-3 px-1">
                 <div className="flex items-center gap-2">
                     <span className={`w-2 h-2 rounded-full ${columnTheme.dot}`} />
-                    <h3 className="font-semibold text-zinc-900 text-sm tracking-tight">{title}</h3>
+                    <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm tracking-tight">{title}</h3>
                     <span className={`text-xs px-2 py-0.5 rounded-md font-medium ${columnTheme.badge}`}>
                         {count}
                     </span>

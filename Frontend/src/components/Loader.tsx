@@ -20,12 +20,12 @@ const Loader = ({ className, size = 'md', text, fullScreen = false }: LoaderProp
     <div className={cn("flex flex-col items-center justify-center gap-2.5", className)}>
       <div 
         className={cn(
-          "rounded-full border-zinc-200 border-t-zinc-900 animate-spin",
+          "rounded-full border-zinc-200 dark:border-zinc-800 border-t-zinc-900 dark:border-t-zinc-100 animate-spin",
           sizeClasses[size]
         )}
       />
       {text && (
-        <p className="text-xs font-medium text-zinc-500 tracking-tight">
+        <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 tracking-tight">
           {text}
         </p>
       )}
@@ -34,7 +34,7 @@ const Loader = ({ className, size = 'md', text, fullScreen = false }: LoaderProp
 
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-xs">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 dark:bg-black/80 backdrop-blur-xs">
         {content}
       </div>
     )

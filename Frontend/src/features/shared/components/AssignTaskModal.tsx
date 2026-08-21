@@ -24,19 +24,19 @@ const PRIORITY_OPTIONS = [
     {
         value: "High" as const,
         label: "High",
-        color: "text-rose-700 bg-rose-50 border-rose-200/80",
+        color: "text-rose-700 bg-rose-50 border-rose-200/80 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800/60",
         dot: "bg-rose-500",
     },
     {
         value: "Medium" as const,
         label: "Medium",
-        color: "text-amber-700 bg-amber-50 border-amber-200/80",
+        color: "text-amber-700 bg-amber-50 border-amber-200/80 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800/60",
         dot: "bg-amber-500",
     },
     {
         value: "Low" as const,
         label: "Low",
-        color: "text-zinc-600 bg-zinc-100 border-zinc-200",
+        color: "text-zinc-600 bg-zinc-100 border-zinc-200 dark:bg-zinc-700 dark:text-zinc-300 dark:border-zinc-600",
         dot: "bg-zinc-400",
     },
 ]
@@ -109,18 +109,18 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
     }
     
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-xs px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs px-4">
             <div
-                className="w-full max-w-lg bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-zinc-200 flex flex-col overflow-hidden"
+                className="w-full max-w-lg bg-white dark:bg-zinc-800 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.35)] border border-zinc-200 dark:border-zinc-700 flex flex-col overflow-hidden"
                 style={{ maxHeight: "90vh" }}
             >
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-zinc-100 bg-zinc-50/50 flex items-center justify-between rounded-t-xl shrink-0">
-                    <h3 className="font-semibold text-base text-zinc-900">Create new task</h3>
+                <div className="px-6 py-4 border-b border-zinc-100 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-900/60 flex items-center justify-between rounded-t-xl shrink-0">
+                    <h3 className="font-semibold text-base text-zinc-900 dark:text-white">Create new task</h3>
                     <button
                         type="button"
                         onClick={() => setModalOpen(false)}
-                        className="text-zinc-400 hover:text-zinc-700 transition-colors cursor-pointer p-1 rounded-md hover:bg-zinc-100"
+                        className="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors cursor-pointer p-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-700"
                         aria-label="Close modal"
                     >
                         <X size={18} />
@@ -134,7 +134,7 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                 >
                     {/* Title */}
                     <div>
-                        <label className="block text-sm font-medium text-zinc-700 mb-1.5">
+                        <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
                             Title <span className="text-rose-500">*</span>
                         </label>
                         <input
@@ -142,9 +142,9 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                             onChange={(e) => setTitle(e.target.value)}
                             type="text"
                             className={cn(
-                                "block w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 transition-all",
-                                "placeholder:text-zinc-400",
-                                "focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                "block w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition-all",
+                                "placeholder:text-zinc-400 dark:placeholder:text-zinc-500",
+                                "focus:border-black dark:focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-zinc-400"
                             )}
                             placeholder="e.g. Design landing page mockup"
                             required
@@ -153,8 +153,8 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
 
                     {/* Description */}
                     <div>
-                        <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-zinc-700">
-                            <AlignLeft size={14} className="text-zinc-400" />
+                        <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                            <AlignLeft size={14} className="text-zinc-400 dark:text-zinc-500" />
                             Description
                         </label>
                         <textarea
@@ -162,9 +162,9 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                             onChange={(e) => setDescription(e.target.value)}
                             rows={3}
                             className={cn(
-                                "block w-full resize-none rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 transition-all",
-                                "placeholder:text-zinc-400",
-                                "focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                "block w-full resize-none rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition-all",
+                                "placeholder:text-zinc-400 dark:placeholder:text-zinc-500",
+                                "focus:border-black dark:focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-zinc-400"
                             )}
                             placeholder="Add task details..."
                         />
@@ -172,7 +172,7 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
 
                     {/* Workspace */}
                     <div>
-                        <label className="block text-sm font-medium text-zinc-700 mb-1.5">
+                        <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
                             Workspace <span className="text-rose-500">*</span>
                         </label>
                         <div className="relative">
@@ -181,9 +181,9 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                                 onChange={(e) => setWorkspaceId(e.target.value)}
                                 required
                                 className={cn(
-                                    "block w-full appearance-none rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 pr-8 text-sm text-zinc-900 transition-all",
-                                    "focus:border-black focus:outline-none focus:ring-1 focus:ring-black",
-                                    !workspaceId && "text-zinc-400"
+                                    "block w-full appearance-none rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3.5 py-2.5 pr-8 text-sm text-zinc-900 dark:text-zinc-100 transition-all",
+                                    "focus:border-black dark:focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-zinc-400",
+                                    !workspaceId && "text-zinc-400 dark:text-zinc-500"
                                 )}
                             >
                                 {pathname === "/" ?
@@ -199,54 +199,54 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                             </select>
                             <ChevronDown
                                 size={15}
-                                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400"
+                                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500"
                             />
                         </div>
                     </div>
 
                     {/* Assign To */}
                     <div>
-                        <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-zinc-700">
-                            <Users size={14} className="text-zinc-400" />
+                        <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                            <Users size={14} className="text-zinc-400 dark:text-zinc-500" />
                             Assign To
                         </label>
                         <div className="relative">
                             <div
                                 onClick={() => setAssignDropdownOpen((v) => !v)}
                                 className={cn(
-                                    "min-h-[42px] flex items-center flex-wrap gap-1.5 w-full rounded-lg border bg-white px-3.5 py-2 text-sm text-zinc-900 transition-all cursor-pointer pr-8",
+                                    "min-h-[42px] flex items-center flex-wrap gap-1.5 w-full rounded-lg border bg-white dark:bg-zinc-900 px-3.5 py-2 text-sm text-zinc-900 dark:text-zinc-100 transition-all cursor-pointer pr-8",
                                     assignDropdownOpen
-                                        ? "border-black ring-1 ring-black"
-                                        : "border-zinc-200 hover:border-zinc-300"
+                                        ? "border-black dark:border-zinc-400 ring-1 ring-black dark:ring-zinc-400"
+                                        : "border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600"
                                 )}
                             >
                                 {selectedAssignees.length > 0 ? (
                                     selectedAssignees.map((u) => (
                                         <span
                                             key={u._id}
-                                            className="inline-flex items-center gap-1 rounded border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-xs font-medium text-zinc-700"
+                                            className="inline-flex items-center gap-1 rounded border border-zinc-200 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-700 px-2 py-0.5 text-xs font-medium text-zinc-700 dark:text-zinc-300"
                                         >
                                             {u.username}
                                         </span>
                                     ))
                                 ) : (
-                                    <span className="text-zinc-400 text-sm">
+                                    <span className="text-zinc-400 dark:text-zinc-500 text-sm">
                                         Select assignees...
                                     </span>
                                 )}
                                 <ChevronDown
                                     size={15}
                                     className={cn(
-                                        "absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 transition-transform duration-150",
+                                        "absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 transition-transform duration-150",
                                         assignDropdownOpen && "rotate-180"
                                     )}
                                 />
                             </div>
 
                             {assignDropdownOpen && (
-                                <div className="absolute z-50 mt-1 w-full rounded-lg border border-zinc-200 bg-white shadow-lg p-1.5 space-y-0.5 max-h-[170px] overflow-y-auto">
+                                <div className="absolute z-50 mt-1 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 shadow-lg p-1.5 space-y-0.5 max-h-[170px] overflow-y-auto">
                                     {workspaceUser?.length === 0 ? (
-                                        <p className="text-xs text-zinc-400 px-3 py-2 text-center">
+                                        <p className="text-xs text-zinc-400 dark:text-zinc-500 px-3 py-2 text-center">
                                             No users available
                                         </p>
                                     ) : (
@@ -259,16 +259,16 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                                                 <label
                                                     key={userId}
                                                     htmlFor={`assignee-${userId}`}
-                                                    className="flex items-center gap-2.5 px-3 py-2 rounded-md hover:bg-zinc-50 cursor-pointer transition-colors"
+                                                    className="flex items-center gap-2.5 px-3 py-2 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-700 cursor-pointer transition-colors"
                                                 >
                                                     <input
                                                         type="checkbox"
                                                         id={`assignee-${userId}`}
                                                         checked={checked}
                                                         onChange={() => toggleAssignee(userId)}
-                                                        className="w-4 h-4 rounded border-zinc-300 accent-black cursor-pointer"
+                                                        className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-700 accent-black dark:accent-white cursor-pointer"
                                                     />
-                                                    <span className="text-sm font-medium text-zinc-700">
+                                                    <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                                                         {username}
                                                     </span>
                                                 </label>
@@ -284,8 +284,8 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                     <div className="grid grid-cols-2 gap-4">
                         {/* Priority */}
                         <div>
-                            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-zinc-700">
-                                <Flag size={14} className="text-zinc-400" />
+                            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                                <Flag size={14} className="text-zinc-400 dark:text-zinc-500" />
                                 Priority
                             </label>
                             <div className="relative">
@@ -313,8 +313,8 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
 
                         {/* Due Date */}
                         <div>
-                            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-zinc-700">
-                                <Calendar size={14} className="text-zinc-400" />
+                            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                                <Calendar size={14} className="text-zinc-400 dark:text-zinc-500" />
                                 Due Date
                             </label>
                             <input
@@ -322,8 +322,8 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                                 value={dueDate}
                                 onChange={(e) => setDueDate(e.target.value)}
                                 className={cn(
-                                    "block w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 transition-all",
-                                    "focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                    "block w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition-all",
+                                    "focus:border-black dark:focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-zinc-400"
                                 )}
                             />
                         </div>
@@ -334,10 +334,10 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                         type="submit"
                         disabled={isSubmitting || submitted}
                         className={cn(
-                            "mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-black px-4 py-2.5 text-sm font-medium text-white transition-colors cursor-pointer shadow-xs",
+                            "mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-black dark:bg-zinc-100 px-4 py-2.5 text-sm font-medium text-white dark:text-zinc-900 transition-colors cursor-pointer shadow-xs",
                             submitted
-                                ? "bg-emerald-600"
-                                : "hover:bg-zinc-800",
+                                ? "bg-emerald-600 dark:bg-emerald-600 text-white"
+                                : "hover:bg-zinc-800 dark:hover:bg-zinc-200",
                             (isSubmitting || submitted) && "opacity-80 cursor-not-allowed"
                         )}
                     >

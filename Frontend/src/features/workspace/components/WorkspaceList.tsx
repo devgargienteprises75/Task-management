@@ -1,129 +1,147 @@
-import type { user, workspace } from '@/types'
-import { MoreHorizontal, Pencil, Trash2, Users } from 'lucide-react'
-import { useState, useRef, useEffect, type Dispatch, type SetStateAction } from 'react';
-import useTask from '@/features/task/hooks/useTask';
-import { useNavigate } from 'react-router-dom';
+import { Folder, MoreVertical, Trash2, Users } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
+import type { UpdateWorkspace, user, workspace } from "@/types";
+import { cn } from "@/lib/cn";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/app/app.store";
+import EditWorkspaceModal from "./EditWorkspaceModal";
+import DeleteWorkspace from "./DeleteWorkspace";
 
-interface WorkspaceType {
-  workspace: workspace;
-  setIsMenuOpen: Dispatch<SetStateAction<boolean>>;
-  setSelectedWorkspaceId: Dispatch<SetStateAction<string>>;
-  modalOption: 'edit' | 'delete' | '';
-  setModalOption: Dispatch<SetStateAction<'edit' | 'delete' | ''>>
-  setSelectedWorkspace: Dispatch<SetStateAction<workspace | null>>;
-  setNewName: Dispatch<SetStateAction<string>>;
-  setNewMemberList: Dispatch<SetStateAction<(string | user)[]>>;
-  setNewDescription: Dispatch<SetStateAction<string>>;
+interface WorkspaceListProps {
+    workspace: workspace;
 }
 
-const WorkspaceList = ({ workspace, setIsMenuOpen, setModalOption, setNewName, setNewMemberList, setSelectedWorkspaceId, setNewDescription, setSelectedWorkspace }: WorkspaceType) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+const WorkspaceList = ({ workspace }: WorkspaceListProps) => {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [modalOption, setModalOption] = useState<'edit' | 'delete' | ''>('')
+    const [newName, setNewName] = useState<string>(workspace.name);
+    const [newDescription, setNewDescription] = useState<string>(workspace.description ?? "");
+    const [newMemberList, setNewMemberList] = useState<(string | user)[]>(workspace.members);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    const user = useSelector((state: RootState) => state.auth.user);
+    const menuRef = useRef<HTMLDivElement>(null);
 
-  const handleEditClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSelectedWorkspace(workspace);
-    setModalOption('edit');
-    setIsMenuOpen(true);
-    setSelectedWorkspaceId(workspace._id);
-    setNewName(workspace.name);
-    setNewDescription(workspace.description ?? "");
-    setNewMemberList(workspace.members);
-    setIsDropdownOpen(false);
-  };
+    const workspaceDetail: UpdateWorkspace = {
+        workspaceId: workspace._id,
+        newName: newName,
+        newDescription: newDescription,
+        newMemberList: newMemberList,
+    }
 
-  const handleDeleteClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSelectedWorkspace(workspace);
-    setModalOption('delete');
-    setIsMenuOpen(true);
-    setSelectedWorkspaceId(workspace._id);
-    setIsDropdownOpen(false);
-  };
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setIsMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
-  const { handleGetTask } = useTask()
-  const navigate = useNavigate()
+    const isOwner = user?._id === workspace.createdBy;
 
-  const getTasks = async (workspaceId: string) => {
-    await handleGetTask(workspaceId)
-    navigate(`/workspaces/${workspace._id}`)
-  }
-
-  return (
-    <div onClick={() => getTasks(workspace._id)} className="bg-white p-3.5 rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] border border-zinc-200 hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:border-zinc-300 transition-all duration-150 cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between group gap-3 relative">
-      <div className="flex items-center gap-3 flex-1 w-full">
-        <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white flex items-center justify-center text-xs font-semibold shrink-0">
-          {workspace?.name?.charAt(0).toUpperCase()}
-        </div>
-        <div className="flex-1 min-w-0 pr-4">
-          <h3 className="font-semibold text-xs text-zinc-900 truncate">
-            {workspace?.name}
-          </h3>
-          <p className="text-[11px] text-zinc-500 truncate mt-0.5 font-normal">
-            {workspace?.description}
-          </p>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-5 shrink-0 w-full sm:w-auto border-t sm:border-t-0 pt-2.5 sm:pt-0 border-zinc-100">
-        <span
-          className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium tracking-wide uppercase ${
-            workspace?.status === "active"
-              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-              : "bg-zinc-100 text-zinc-600 border border-zinc-200"
-          }`}
-        >
-          {workspace?.status}
-        </span>
-
-        <div className="flex items-center gap-2 sm:w-24 border-l border-zinc-100 pl-3">
-          <div className="flex items-center gap-1.5 text-xs font-medium text-zinc-500">
-            <Users size={13} /> {workspace?.members?.length}
-          </div>
-        </div>
-
-        <div className="relative" ref={dropdownRef}>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsDropdownOpen(!isDropdownOpen);
-            }}
-            className="text-zinc-400 hover:text-zinc-700 p-1 hover:bg-zinc-100 rounded cursor-pointer"
-          >
-            <MoreHorizontal size={15} />
-          </button>
-
-          {isDropdownOpen && (
-            <div className="absolute right-0 top-full mt-1.5 w-36 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.12)] border border-zinc-200 overflow-hidden z-20 py-1.5">
-              <button
-                onClick={handleEditClick}
-                className="w-full text-left px-3.5 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 flex items-center gap-2.5 cursor-pointer transition-colors"
-              >
-                <Pencil size={14} className="text-zinc-400" /> Edit
-              </button>
-              <div className="h-px bg-zinc-100 w-full" />
-              <button
-                onClick={handleDeleteClick}
-                className="w-full text-left px-3.5 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 cursor-pointer transition-colors"
-              >
-                <Trash2 size={14} className="text-rose-500" /> Delete
-              </button>
+    return (
+        <div className="p-4 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5 min-w-0">
+                <div className="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-700/70 flex items-center justify-center text-zinc-700 dark:text-zinc-200 shrink-0">
+                    <Folder size={17} strokeWidth={2} />
+                </div>
+                <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                        <Link
+                            to={`/workspaces/${workspace._id}`}
+                            className="font-semibold text-sm text-zinc-900 dark:text-white hover:underline truncate cursor-pointer"
+                        >
+                            {workspace.name}
+                        </Link>
+                        <span className={cn(
+                            "px-1.5 py-0.2 text-[10px] uppercase font-semibold tracking-wider rounded border",
+                            workspace.status === "active"
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60"
+                                : "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-700 dark:text-zinc-300 dark:border-zinc-600"
+                        )}>
+                            {workspace.status}
+                        </span>
+                    </div>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate mt-0.5 font-normal">
+                        {workspace.description || "No description provided."}
+                    </p>
+                </div>
             </div>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
 
-export default WorkspaceList
+            <div className="flex items-center gap-5 shrink-0">
+                <div className="flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-400">
+                    <Users size={13} />
+                    <span>{workspace.members?.length || 0}</span>
+                </div>
+
+                <Link
+                    to={`/workspaces/${workspace._id}`}
+                    className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 hover:underline hidden sm:inline-block cursor-pointer"
+                >
+                    Open →
+                </Link>
+
+                {isOwner && (
+                    <div className="relative" ref={menuRef}>
+                        <button
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-md transition-colors cursor-pointer"
+                        >
+                            <MoreVertical size={16} />
+                        </button>
+
+                        {isMenuOpen && (
+                            <div className="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-zinc-800 rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.35)] border border-zinc-200 dark:border-zinc-700 py-1.5 z-20">
+                                <button
+                                    onClick={() => {
+                                        setModalOption('edit')
+                                        setIsMenuOpen(false);
+                                    }}
+                                    className="w-full text-left px-3.5 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700/60 cursor-pointer"
+                                >
+                                    Edit
+                                </button>
+                                <div className="h-px bg-zinc-100 dark:bg-zinc-700 my-1" />
+                                <button
+                                    onClick={() => {
+                                        setModalOption('delete')
+                                        setIsMenuOpen(false);
+                                    }}
+                                    className="w-full text-left px-3.5 py-2 text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-2 cursor-pointer"
+                                >
+                                    <Trash2 size={14} /> Delete
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+
+            {modalOption === 'edit' && (
+                <EditWorkspaceModal
+                    setNewMemberList={setNewMemberList}
+                    setNewDescription={setNewDescription}
+                    setNewName={setNewName}
+                    workspaceDetail={workspaceDetail}
+                    modalOption={modalOption}
+                    setModalOption={setModalOption}
+                    workspace={workspace}
+                    isMenuOpen={isMenuOpen}
+                    setIsMenuOpen={setIsMenuOpen}
+                />
+            )}
+
+            {modalOption === 'delete' && (
+                <DeleteWorkspace
+                    workspace={workspace}
+                    isMenuOpen={modalOption === 'delete'}
+                    setIsMenuOpen={() => setModalOption('')}
+                />
+            )}
+        </div>
+    );
+};
+
+export default WorkspaceList;

@@ -1,33 +1,48 @@
-import { LayoutGrid, LayoutList } from "lucide-react"
-import type { Dispatch, SetStateAction } from "react"
+import { LayoutGrid, List } from "lucide-react";
+import type { Dispatch, SetStateAction } from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/app/app.store";
 
-interface LayoutType {
-    layoutStyle: string,
-    setLayoutStyle: Dispatch<SetStateAction<"grid" | "list">>
+interface WorkspaceToolbarProps {
+    isCardView: boolean;
+    setIsCardView: Dispatch<SetStateAction<boolean>>;
 }
 
-const WorkspaceToolbar = ({ layoutStyle, setLayoutStyle }: LayoutType) => {
+const WorkspaceToolbar = ({ isCardView, setIsCardView }: WorkspaceToolbarProps) => {
+    const { allWorkspaces } = useSelector((state: RootState) => state.workspace);
+
     return (
-        <div className="flex justify-end items-end mb-4">
-            <div className="relative flex items-center bg-zinc-100 p-0.5 rounded-lg w-fit border border-zinc-200">
-                <div
-                    className={`absolute left-0.5 top-0.5 bottom-0.5 w-[32px] bg-white rounded-md shadow-xs transition-transform duration-200 ease-in-out ${layoutStyle === 'grid' ? 'translate-x-0' : 'translate-x-full'}`}
-                ></div>
+        <div className="flex items-center justify-between">
+            <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                Showing <span className="font-semibold text-zinc-900 dark:text-zinc-100">{allWorkspaces.length}</span> workspaces
+            </p>
+
+            <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800/80 p-1 rounded-lg border border-zinc-200 dark:border-zinc-700/80">
                 <button
-                    onClick={() => setLayoutStyle('grid')}
-                    className={`relative z-10 w-[32px] h-[28px] flex justify-center items-center transition-colors duration-200 cursor-pointer ${layoutStyle === 'grid' ? 'text-zinc-900 font-semibold' : 'text-zinc-400 hover:text-zinc-700'}`}
+                    onClick={() => setIsCardView(true)}
+                    className={`p-1.5 rounded-md transition-all cursor-pointer ${
+                        isCardView
+                            ? "bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-xs"
+                            : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                    }`}
+                    title="Grid view"
                 >
                     <LayoutGrid size={15} />
                 </button>
                 <button
-                    onClick={() => setLayoutStyle('list')}
-                    className={`relative z-10 w-[32px] h-[28px] flex justify-center items-center transition-colors duration-200 cursor-pointer ${layoutStyle === 'list' ? 'text-zinc-900 font-semibold' : 'text-zinc-400 hover:text-zinc-700'}`}
+                    onClick={() => setIsCardView(false)}
+                    className={`p-1.5 rounded-md transition-all cursor-pointer ${
+                        !isCardView
+                            ? "bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-xs"
+                            : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                    }`}
+                    title="List view"
                 >
-                    <LayoutList size={15} />
+                    <List size={15} />
                 </button>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default WorkspaceToolbar
+export default WorkspaceToolbar;

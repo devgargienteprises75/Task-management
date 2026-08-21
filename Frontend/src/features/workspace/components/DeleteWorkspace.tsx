@@ -29,27 +29,27 @@ const DeleteWorkspace = ({ isMenuOpen, setIsMenuOpen, workspace }: DeleteOptionP
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 px-4 backdrop-blur-xs">
-      <div className="w-full max-w-sm overflow-hidden rounded-xl bg-white border border-zinc-200 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-xs">
+      <div className="w-full max-w-sm overflow-hidden rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
         <div className="p-6">
-          <div className="flex items-center justify-center w-11 h-11 rounded-full bg-rose-50 mb-3.5 mx-auto border border-rose-100">
-            <AlertTriangle className="text-rose-600" size={20} />
+          <div className="flex items-center justify-center w-11 h-11 rounded-full bg-rose-50 dark:bg-rose-950/40 mb-3.5 mx-auto border border-rose-100 dark:border-rose-900/60">
+            <AlertTriangle className="text-rose-600 dark:text-rose-400" size={20} />
           </div>
           
-          <h3 className="text-base font-semibold text-zinc-900 text-center mb-1.5">
+          <h3 className="text-base font-semibold text-zinc-900 dark:text-white text-center mb-1.5">
             Delete Workspace
           </h3>
           
-          <p className="text-[13px] leading-relaxed text-zinc-500 text-center mb-6 font-normal">
-            Are you sure you want to delete <span className="font-semibold text-zinc-800">"{workspace?.name || 'this workspace'}"</span>? All data and tasks will be permanently removed.
+          <p className="text-[13px] leading-relaxed text-zinc-500 dark:text-zinc-400 text-center mb-6 font-normal">
+            Are you sure you want to delete <span className="font-semibold text-zinc-800 dark:text-zinc-200">"{workspace?.name || 'this workspace'}"</span>? All data and tasks will be permanently removed.
           </p>
 
           <div className="flex items-center gap-2.5">
             <button
               onClick={() => setIsMenuOpen(false)}
               className={cn(
-                "flex-1 rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 transition-colors cursor-pointer",
-                "hover:bg-zinc-50"
+                "flex-1 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer",
+                "hover:bg-zinc-50 dark:hover:bg-zinc-700"
               )}
             >
               Cancel

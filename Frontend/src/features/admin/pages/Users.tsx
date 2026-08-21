@@ -1,369 +1,276 @@
-import type { RootState } from "@/app/app.store"
-import Sidebar from "@/components/Sidebar"
-import { Pencil, Plus, Search, Menu, Loader2, Users as UsersIcon, X } from "lucide-react"
-import { useSelector, useDispatch } from "react-redux"
-import type { user as UserType } from "@/types"
-import useAdmin from "../hooks/useAdmin"
-import { useMemo, useState } from "react"
-import { cn } from "@/lib/cn"
-import type { CreateUserPayload, UpdateUserPayload } from "@/types/admin.types"
-import Loader from "@/components/Loader"
-import NotFound from "@/components/NotFound"
-import { toggleSidebar } from "@/app/layout.slice"
+import type { RootState } from "@/app/app.store";
+import Sidebar from "@/components/Sidebar";
+import type { CreateUserPayload } from "@/types/admin.types";
+import { Users as UsersIcon, Plus, Search, Shield, X, Loader2, Menu } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import useAdmin from "../hooks/useAdmin";
+import { cn } from "@/lib/cn";
+import { toggleSidebar } from "@/app/layout.slice";
 
 const Users = () => {
+    const { users } = useSelector((state: RootState) => state.admin)
     const dispatch = useDispatch()
 
-    const [formOpen, setFormOpen] = useState<boolean>(false)
-    const [email, setEmail] = useState<string>("")
-    const [username, setUsername] = useState<string>("")
-    const [role, setRole] = useState<'admin' | 'head' | 'user' | "">("")
-    const [password, setPassword] = useState<string>("")
-    const [updateModalOpen, setUpdateModalOpen] = useState<boolean>(false)
-    const [newRole, setNewRole] = useState<'admin' | 'head' | 'user'>('user')
-    const [currentActiveStatus, setCurrentActiveStatus] = useState<boolean>(true)
-    const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
-    const [search, setSearch] = useState<string>("")
-    const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-    const [isUpdating, setIsUpdating] = useState<boolean>(false)
+    const [username, setUsername] = useState<string>('')
+    const [email, setEmail] = useState<string>('')
+    const [password, setPassword] = useState<string>('')
+    const [role, setRole] = useState<'admin' | 'user'>('user')
+    const [searchQuery, setSearchQuery] = useState<string>('')
+    const [isCreateOpen, setIsCreateOpen] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
-    const { users, isLoading } = useSelector((state: RootState) => state.admin)
+    const { handleAddUser, handleGetUsers } = useAdmin()
 
-    const credential: CreateUserPayload = {
-        username,
-        email,
-        role: role as 'admin' | 'head' | 'user',
-        password
-    }
-
-    const { handleAddUser, handleUpdateUser } = useAdmin()
+    useEffect(() => {
+        if (!users.length) {
+            handleGetUsers()
+        }
+    }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSubmitting(true)
+
+        const userDetails: CreateUserPayload = {
+            username,
+            email,
+            password,
+            role,
+        }
+
         try {
-            await handleAddUser(credential)
-            setFormOpen(false)
-            setUsername("")
-            setEmail("")
-            setRole("")
-            setPassword("")
+            await handleAddUser(userDetails)
+            setIsCreateOpen(false)
+            setUsername('')
+            setEmail('')
+            setPassword('')
+            setRole('user')
         } finally {
             setIsSubmitting(false)
         }
     }
 
-    const userUpdateCredentials: UpdateUserPayload = {
-        newRole,
-        currentActiveStatus
-    }
+    const filteredUsers = users.filter(u =>
+        u.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        u.email.toLowerCase().includes(searchQuery.toLowerCase())
+    )
 
-    const handleUpdateSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        if (!selectedUserId) return;
-        
-        setIsUpdating(true)
-        try {
-            await handleUpdateUser(selectedUserId, userUpdateCredentials)
-            setUpdateModalOpen(false)
-            setNewRole("user")
-            setCurrentActiveStatus(true)
-            setSelectedUserId(null)
-        } finally {
-            setIsUpdating(false)
-        }
-    }
-
-    const filterUser = useMemo(() => {
-        const query = search.trim().toLowerCase()
-
-        if(!query) return users
-
-        return users.filter(user => 
-            user.username.toLowerCase().includes(query) ||
-            user.email.toLowerCase().includes(query)
-        )
-    }, [users, search])
+    const adminCount = users.filter(u => u.role === 'admin').length
+    const memberCount = users.filter(u => u.role !== 'admin').length
 
     return (
-        <div className="flex h-screen bg-[#FAFAFA] font-sans text-zinc-900 overflow-hidden">
-            {/* Sidebar */}
+        <div className="flex h-screen bg-[#FAFAFA] dark:bg-zinc-900 font-sans text-zinc-900 dark:text-zinc-100 overflow-hidden transition-colors">
             <Sidebar />
+
             <main className="flex-1 flex flex-col min-w-0">
-                {/* Header */}
-                <header className="px-4 sm:px-8 py-3.5 border-b border-zinc-200/80 bg-white flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                {/* Standardized Navbar */}
+                <header className="px-4 sm:px-8 py-3.5 border-b border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 transition-colors">
                     <div className="flex items-center gap-2.5">
                         <button
                             onClick={() => dispatch(toggleSidebar())}
-                            className="p-1.5 hover:bg-zinc-100 rounded-lg text-zinc-500 hover:text-zinc-800 transition-colors md:hidden cursor-pointer"
+                            className="p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors md:hidden cursor-pointer"
                             aria-label="Toggle sidebar"
                         >
                             <Menu size={18} />
                         </button>
-                        <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center text-white font-medium shadow-2xs shrink-0">
+                        <div className="w-8 h-8 bg-zinc-900 dark:bg-zinc-100 rounded-lg flex items-center justify-center text-white dark:text-zinc-900 font-medium shadow-2xs shrink-0">
                             <UsersIcon size={16} strokeWidth={2} />
                         </div>
-                        <div>
-                            <h2 className="text-base font-semibold tracking-tight text-zinc-900">Team Members</h2>
+                        <div className="flex items-center gap-2">
+                            <h1 className="text-base font-semibold tracking-tight text-zinc-900 dark:text-white">Team Members</h1>
+                            <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs font-mono px-1.5 py-0.5 rounded border border-zinc-200 dark:border-zinc-700">
+                                {users.length}
+                            </span>
                         </div>
                     </div>
 
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full sm:w-auto">
-                        <div className="flex items-center gap-2 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-200 flex-1 sm:flex-initial focus-within:bg-white focus-within:border-zinc-400 transition-colors">
-                            <Search size={14} className="text-zinc-400 shrink-0" />
-                            <input 
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                type="text" 
-                                placeholder="Search users..." 
-                                className="bg-transparent outline-none w-full sm:w-44 text-sm text-zinc-900 placeholder-zinc-400" 
+                        <div className="flex items-center gap-2 bg-zinc-50 dark:bg-zinc-800/80 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700/80 flex-1 sm:flex-initial focus-within:bg-white dark:focus-within:bg-zinc-800 focus-within:border-zinc-400 dark:focus-within:border-zinc-500 transition-colors">
+                            <Search size={14} className="text-zinc-400 dark:text-zinc-500 shrink-0" />
+                            <input
+                                type="text"
+                                placeholder="Search members..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="bg-transparent outline-none w-full sm:w-44 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
                             />
                         </div>
 
-                        {/* Primary Accent Button */}
-                        <button 
-                            onClick={() => setFormOpen(true)} 
-                            className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-black text-white hover:bg-zinc-800 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer w-full sm:w-auto active:scale-98"
+                        <button
+                            onClick={() => setIsCreateOpen(true)}
+                            className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-black dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer w-full sm:w-auto active:scale-98"
                         >
-                            <Plus size={15} strokeWidth={2.5} /> Add user
+                            <Plus size={15} strokeWidth={2.5} /> Add member
                         </button>
                     </div>
                 </header>
 
-                {/* User register form Modal */}
-                {formOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-xs px-4">
-                        <div className="w-full max-w-md bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-zinc-200 overflow-hidden">
-                            <div className="px-6 py-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50/50">
-                                <h3 className="font-semibold text-base text-zinc-900">Add new user</h3>
-                                <button type="button" onClick={() => setFormOpen(false)} className="text-zinc-400 hover:text-zinc-700 transition-colors cursor-pointer p-1 rounded-md hover:bg-zinc-100">
+                <div className="flex-1 overflow-auto p-4 sm:p-8 bg-[#FAFAFA] dark:bg-zinc-900">
+                    <div className="max-w-5xl mx-auto space-y-5">
+                        {/* Summary Bar */}
+                        <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
+                            <div className="flex items-center gap-3">
+                                <span>Total: <strong className="text-zinc-900 dark:text-zinc-100">{users.length}</strong></span>
+                                <span>•</span>
+                                <span>Admins: <strong className="text-zinc-900 dark:text-zinc-100">{adminCount}</strong></span>
+                                <span>•</span>
+                                <span>Members: <strong className="text-zinc-900 dark:text-zinc-100">{memberCount}</strong></span>
+                            </div>
+                        </div>
+
+                        {/* Members Table */}
+                        <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700/80 overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left text-sm">
+                                    <thead className="bg-zinc-50 dark:bg-zinc-900/60 border-b border-zinc-200 dark:border-zinc-700 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                                        <tr>
+                                            <th className="px-6 py-3">Member</th>
+                                            <th className="px-6 py-3">Role</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-zinc-100 dark:divide-zinc-700/60">
+                                        {filteredUsers.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={2} className="px-6 py-12 text-center text-zinc-400 dark:text-zinc-500 text-sm">
+                                                    No members found
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            filteredUsers.map((u) => (
+                                                <tr key={u._id} className="hover:bg-zinc-50/80 dark:hover:bg-zinc-700/50 transition-colors">
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-8.5 h-8.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center font-bold text-xs shrink-0">
+                                                                {u.username.charAt(0).toUpperCase()}
+                                                            </div>
+                                                            <div>
+                                                                <p className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm leading-tight">{u.username}</p>
+                                                                <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">{u.email}</p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <span className={cn(
+                                                            "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border",
+                                                            u.role === 'admin'
+                                                                ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-transparent shadow-xs"
+                                                                : "bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-600"
+                                                        )}>
+                                                            {u.role === 'admin' && <Shield size={10} />}
+                                                            {u.role.toUpperCase()}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Add Member Modal */}
+                {isCreateOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs px-4">
+                        <div className="w-full max-w-md bg-white dark:bg-zinc-800 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.35)] border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+                            <div className="px-6 py-4 border-b border-zinc-100 dark:border-zinc-700 flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/60 rounded-t-xl">
+                                <h3 className="font-semibold text-base text-zinc-900 dark:text-white">Add new team member</h3>
+                                <button type="button" onClick={() => setIsCreateOpen(false)} className="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors cursor-pointer p-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-700">
                                     <X size={18} />
                                 </button>
                             </div>
+
                             <form onSubmit={handleSubmit} className="p-6 space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-zinc-700 mb-1.5">Username</label>
+                                    <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Username <span className="text-rose-500">*</span></label>
                                     <input
                                         type="text"
-                                        id="username"
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                         className={cn(
-                                            "block w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 transition-all",
-                                            "placeholder:text-zinc-400",
-                                            "focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                            "block w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition-all",
+                                            "placeholder:text-zinc-400 dark:placeholder:text-zinc-500",
+                                            "focus:border-black dark:focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-zinc-400"
                                         )}
-                                        placeholder="Enter username"
+                                        placeholder="johndoe"
                                         required
                                     />
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-zinc-700 mb-1.5">Email address</label>
+                                    <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Email address <span className="text-rose-500">*</span></label>
                                     <input
                                         type="email"
-                                        id="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         className={cn(
-                                            "block w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 transition-all",
-                                            "placeholder:text-zinc-400",
-                                            "focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                            "block w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition-all",
+                                            "placeholder:text-zinc-400 dark:placeholder:text-zinc-500",
+                                            "focus:border-black dark:focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-zinc-400"
                                         )}
-                                        placeholder="name@company.com"
+                                        placeholder="john@company.com"
                                         required
                                     />
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-zinc-700 mb-1.5">Role</label>
-                                    <select
-                                        id="role"
-                                        value={role}
-                                        onChange={(e) => setRole(e.target.value as 'admin' | 'head' | 'user')}
-                                        className={cn(
-                                            "block w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 transition-all cursor-pointer",
-                                            "focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
-                                        )}
-                                        required
-                                    >
-                                        <option value="" disabled className="text-zinc-400">Select a role</option>
-                                        <option value="user">User</option>
-                                        <option value="head">Head</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-zinc-700 mb-1.5">Password</label>
+                                    <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Password <span className="text-rose-500">*</span></label>
                                     <input
                                         type="password"
-                                        id="password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         className={cn(
-                                            "block w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 transition-all",
-                                            "placeholder:text-zinc-400",
-                                            "focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                            "block w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition-all",
+                                            "placeholder:text-zinc-400 dark:placeholder:text-zinc-500",
+                                            "focus:border-black dark:focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-zinc-400"
                                         )}
-                                        placeholder="Set temporary password"
+                                        placeholder="••••••••"
                                         required
                                     />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Role</label>
+                                    <select
+                                        value={role}
+                                        onChange={(e) => setRole(e.target.value as 'admin' | 'user')}
+                                        className={cn(
+                                            "block w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition-all",
+                                            "focus:border-black dark:focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-zinc-400"
+                                        )}
+                                    >
+                                        <option value="user">Member (Standard access)</option>
+                                        <option value="admin">Administrator (Full control)</option>
+                                    </select>
                                 </div>
 
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
                                     className={cn(
-                                        "mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-black px-4 py-2.5 text-sm font-medium text-white transition-colors cursor-pointer shadow-xs",
-                                        "hover:bg-zinc-800",
+                                        "mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-black dark:bg-zinc-100 px-4 py-2.5 text-sm font-medium text-white dark:text-zinc-900 transition-colors cursor-pointer shadow-xs",
+                                        "hover:bg-zinc-800 dark:hover:bg-zinc-200",
                                         isSubmitting && "opacity-80 cursor-not-allowed"
                                     )}
                                 >
                                     {isSubmitting ? (
                                         <>
                                             <Loader2 size={15} className="animate-spin" />
-                                            Creating...
+                                            Adding member...
                                         </>
                                     ) : (
-                                        "Create user"
+                                        "Add member"
                                     )}
                                 </button>
                             </form>
                         </div>
                     </div>
                 )}
-
-                {/* Table Area */}
-                {isLoading ? (
-                    <div className="flex-1 flex items-center justify-center min-h-[400px]">
-                        <Loader size="lg" text="Loading users..." />
-                    </div>
-                ) : (filterUser.length > 0 ? (
-                    <div className="flex-1 overflow-auto p-4 sm:p-6 bg-[#FAFAFA]">
-                        <div className="bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] border border-zinc-200 overflow-hidden">
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left border-collapse min-w-[600px]">
-                                    <thead>
-                                        <tr className="bg-zinc-50/70 border-b border-zinc-200 text-xs text-zinc-500 font-semibold uppercase tracking-wider">
-                                            <th className="px-5 py-3">Name</th>
-                                            <th className="px-5 py-3">Role</th>
-                                            <th className="px-5 py-3">Status</th>
-                                            <th className="px-5 py-3 text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="text-sm divide-y divide-zinc-100">
-                                        {filterUser?.map((user: UserType) => (
-                                            <tr key={user._id} className="hover:bg-zinc-50/50 transition-colors">
-                                                <td className="px-5 py-3.5">
-                                                    <div className="font-semibold text-zinc-900 text-sm">{user.username}</div>
-                                                    <div className="text-zinc-500 text-xs mt-0.5">{user.email}</div>
-                                                </td>
-
-                                                {/* Role Badges */}
-                                                <td className="px-5 py-3.5">
-                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium tracking-wide uppercase ${
-                                                        user.role === 'admin' ? 'bg-purple-50 text-purple-700 border border-purple-200' :
-                                                        user.role === 'head' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
-                                                        'bg-zinc-100 text-zinc-700 border border-zinc-200'
-                                                    }`}>
-                                                        {user.role}
-                                                    </span>
-                                                </td>
-
-                                                {/* Status Indicators */}
-                                                <td className="px-5 py-3.5">
-                                                    <span className="flex items-center gap-2">
-                                                        <span className={`w-2 h-2 rounded-full ${user.isActive ? 'bg-emerald-500' : 'bg-zinc-300'}`}></span>
-                                                        <span className="text-zinc-600 text-xs font-normal">{user.isActive ? 'Active' : 'Disabled'}</span>
-                                                    </span>
-                                                </td>
-
-                                                {/* Actions */}
-                                                <td className="px-5 py-3.5 text-right">
-                                                    <button onClick={() => {
-                                                        setSelectedUserId(user._id);
-                                                        setNewRole(user.role as 'admin' | 'head' | 'user');
-                                                        setCurrentActiveStatus(user.isActive);
-                                                        setUpdateModalOpen(true);
-                                                    }} className="p-1.5 text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 rounded-lg transition-colors cursor-pointer">
-                                                        <Pencil size={14} />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            {/* Update User Modal */}
-                            {updateModalOpen && (
-                                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-xs px-4">
-                                    <div className="w-full max-w-sm bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-zinc-200 overflow-hidden text-left">
-                                        <div className="px-6 py-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50/50">
-                                            <h3 className="font-semibold text-base text-zinc-900">Update User</h3>
-                                            <button type="button" onClick={() => setUpdateModalOpen(false)} className="text-zinc-400 hover:text-zinc-700 transition-colors cursor-pointer p-1 rounded-md hover:bg-zinc-100">
-                                                <X size={18} />
-                                            </button>
-                                        </div>
-                                        <form onSubmit={handleUpdateSubmit} className="p-6 space-y-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-zinc-700 mb-1.5">Role</label>
-                                                <select
-                                                    value={newRole}
-                                                    onChange={(e) => setNewRole(e.target.value as 'admin' | 'head' | 'user')}
-                                                    className={cn(
-                                                        "block w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 transition-all cursor-pointer",
-                                                        "focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
-                                                    )}
-                                                >
-                                                    <option value="user">User</option>
-                                                    <option value="head">Head</option>
-                                                    <option value="admin">Admin</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-zinc-700 mb-1.5">Account Status</label>
-                                                <select
-                                                    value={currentActiveStatus ? "true" : "false"}
-                                                    onChange={(e) => setCurrentActiveStatus(e.target.value === "true")}
-                                                    className={cn(
-                                                        "block w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 transition-all cursor-pointer",
-                                                        "focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
-                                                    )}
-                                                >
-                                                    <option value="true">Active</option>
-                                                    <option value="false">Disabled</option>
-                                                </select>
-                                            </div>
-                            
-                                            <button
-                                                type="submit"
-                                                disabled={isUpdating}
-                                                className={cn(
-                                                    "mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-black px-4 py-2.5 text-sm font-medium text-white transition-colors cursor-pointer shadow-xs",
-                                                    "hover:bg-zinc-800",
-                                                    isUpdating && "opacity-80 cursor-not-allowed"
-                                                )}
-                                            >
-                                                {isUpdating ? (
-                                                    <>
-                                                        <Loader2 size={15} className="animate-spin" />
-                                                        Saving...
-                                                    </>
-                                                ) : (
-                                                    "Save changes"
-                                                )}
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                ) : (
-                    <NotFound heading="Users"/>
-                ))}
             </main>
         </div>
-    )
-}
+    );
+};
 
-export default Users
+export default Users;
