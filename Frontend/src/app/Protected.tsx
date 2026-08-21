@@ -17,7 +17,7 @@ const Protected = ({ children }: ProtectedProps) => {
         handleGetMe()
     }, [])
 
-    if(isLoading) return <Loader />
+    if(isLoading) return <Loader fullScreen size="lg" text="Authenticating..." />
 
     if(!user && !isAuthenticated){
         return <Navigate to="/login" replace />

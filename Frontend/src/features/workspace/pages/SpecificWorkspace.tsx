@@ -1,239 +1,246 @@
-import { useEffect, useState } from "react"
-import type { RootState } from "@/app/app.store"
-import Sidebar from "@/components/Sidebar"
-import { useSelector, useDispatch } from "react-redux"
-import { useParams, Link } from "react-router-dom"
-import {
-  Plus,
-  Search,
-  Filter,
-  ArrowLeft,
-  Users,
-  Settings,
-  Grid,
-  List,
-  Menu
-} from "lucide-react"
-import type { task, UpdatedTask } from "@/types"
-import { toggleSidebar } from "@/app/layout.slice"
-import { DragDropProvider } from "@dnd-kit/react"
-import RenderColumn from "@/features/shared/components/RenderColumn"
-import useTask from "@/features/task/hooks/useTask"
-import { socket } from "@/lib/socket"
-import { setDeleteTask, setAddTask, setUpdateTask } from "@/features/task/task.slice"
-import AssignTaskModal from "@/features/shared/components/AssignTaskModal"
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState } from "@/app/app.store";
+import useWorkspace from "../hooks/useWorkspace";
+import useTask from "@/features/task/hooks/useTask";
+import RenderColumn from "@/features/shared/components/RenderColumn";
+import AssignTaskModal from "@/features/shared/components/AssignTaskModal";
+import EditTaskModal from "@/features/shared/components/EditTaskModal";
+import Sidebar from "@/components/Sidebar";
+import Loader from "@/components/Loader";
+import { DragDropProvider } from "@dnd-kit/react";
+import type { task, UpdatedTask } from "@/types";
+import { Folder, Plus, Search, Menu } from "lucide-react";
+import { toggleSidebar } from "@/app/layout.slice";
+import { socket } from "@/lib/socket";
+import { setAddTask, setDeleteTask, setUpdateTask } from "@/features/task/task.slice";
 
 const SpecificWorkspace = () => {
-  const dispatch = useDispatch()
-  const { workspaceId } = useParams()
-  const { allWorkspaces } = useSelector((state: RootState) => state.workspace)
-  const { allTask } = useSelector((state: RootState) => state.task)
-  const [activeTab, setActiveTab] = useState<'Todo' | 'In-progress' | 'Done'>('Todo')
-  const [modalOpen, setModalOpen] = useState<boolean>(false)
-  const { handleUpdateTask, handleGetAllTask } = useTask()
+    const { workspaceId } = useParams<{ workspaceId: string }>();
+    const { allWorkspaces } = useSelector((state: RootState) => state.workspace);
+    const { allTask, isLoading } = useSelector((state: RootState) => state.task);
+    const user = useSelector((state: RootState) => state.auth.user);
+    const dispatch = useDispatch();
 
-  // Find the current workspace name from the store
-  const currentWorkspace = allWorkspaces.find((w) => w._id === workspaceId)
-  const workspaceName = currentWorkspace ? currentWorkspace.name : "Team Workspace"
-  const workspaceDesc = currentWorkspace?.description || "Collaborative space for managing daily tasks, sprints, and issues."
-  const workspaceTask = allTask.filter(t => t.workspaceId === workspaceId)
+    const { handleGetWorkspaces } = useWorkspace();
+    const { handleGetAllTask, handleUpdateTask } = useTask();
 
-  const todoTask = workspaceTask.filter(t => t.status === "Todo")
-  const inProgressTasks = workspaceTask.filter(t => t.status === "In-progress")
-  const doneTasks = workspaceTask.filter(t => t.status === "Done")
+    const [modalOpen, setModalOpen] = useState(false);
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [selectedTask, setSelectedTask] = useState<task | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [activeTab, setActiveTab] = useState<'Todo' | 'In-progress' | 'Done'>('Todo');
 
-  const submitUpdateTask = async (id: string, status: 'Todo' | 'In-progress' | 'Done') => {
-    const taskDetails: UpdatedTask = {
-      _id: id,
-      status,
-      workspaceId,
-    }
-    await handleUpdateTask(taskDetails)
-  }
+    useEffect(() => {
+        if (!allWorkspaces.length) handleGetWorkspaces();
+        if (!allTask.length) handleGetAllTask();
+    }, []);
 
-  useEffect(() => {
-    if (!allTask.length) {
-      handleGetAllTask()
-    }
-  }, [])
+    const workspace = allWorkspaces.find((w) => w._id === workspaceId);
 
-  // Socket Connection
-  useEffect(() => {
-    if (!workspaceId) return;
+    const workspaceTasks = allTask
+        .filter((t) => {
+            const wsId = typeof t.workspaceId === "string" ? t.workspaceId : t.workspaceId?._id;
+            return wsId === workspaceId;
+        })
+        .filter((t) => {
+            if (!searchQuery) return true;
+            return (
+                t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (t.description && t.description.toLowerCase().includes(searchQuery.toLowerCase()))
+            );
+        });
 
-    // Connect Socket
-    socket.connect();
+    const todoTasks = workspaceTasks.filter((t) => t.status === "Todo");
+    const inProgressTasks = workspaceTasks.filter((t) => t.status === "In-progress");
+    const doneTasks = workspaceTasks.filter((t) => t.status === "Done");
 
-    // Join room for the workspace
-    socket.emit('join_workspace', workspaceId);
+    const submitUpdateTask = async (id: string, status: "Todo" | "In-progress" | "Done") => {
+        const taskDetails: UpdatedTask = {
+            _id: id,
+            status,
+            workspaceId: workspaceId || "",
+        };
+        const res = await handleUpdateTask(taskDetails);
+        if (res?.success) {
+            setModalOpen(false);
+            setSelectedTask(null);
+        }
+    };
 
-    // Listen for new task creation
-    socket.on('task:created', (newTask: task) => {
-      dispatch(setAddTask(newTask));
-    });
+    useEffect(() => {
+        if (!workspaceId) return;
+        socket.connect();
+        socket.emit("join_workspace", workspaceId);
 
-    // Listen for updated task
-    socket.on('task:updated', (updatedTask: task) => {
-      dispatch(setUpdateTask(updatedTask))
-    });
+        const onCreated = (newTask: task) => dispatch(setAddTask(newTask));
+        const onUpdated = (updatedTask: task) => dispatch(setUpdateTask(updatedTask));
+        const onDeleted = (deletedTaskId: string) => dispatch(setDeleteTask(deletedTaskId));
 
-    // Listen for deleted task
-    socket.on('task:deleted', (deletedTaskId: string) => {
-      dispatch(setDeleteTask(deletedTaskId))
-    });
+        socket.on("task:created", onCreated);
+        socket.on("task:updated", onUpdated);
+        socket.on("task:deleted", onDeleted);
 
-    return () => {
-      socket.emit('leave_workspace', workspaceId)
-      socket.off('task:created')
-      socket.off('task:updated')
-      socket.off('task:deleted')
-      socket.disconnect();
-    }
+        return () => {
+            socket.emit("leave_workspace", workspaceId);
+            socket.off("task:created", onCreated);
+            socket.off("task:updated", onUpdated);
+            socket.off("task:deleted", onDeleted);
+        };
+    }, [workspaceId, dispatch]);
 
-  }, [workspaceId, dispatch])
+    return (
+        <div className="flex h-screen bg-[#FAFAFA] dark:bg-zinc-900 font-sans text-zinc-900 dark:text-zinc-100 overflow-hidden transition-colors">
+            <Sidebar />
 
-  return (
-    <div className="flex h-screen bg-[#F9FAFB] font-sans text-gray-900 overflow-hidden">
-      {/* Sidebar */}
-      <Sidebar />
+            <main className="flex-1 flex flex-col min-w-0">
+                {/* Standardized Navbar */}
+                <header className="px-4 sm:px-8 py-3.5 border-b border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 transition-colors">
+                    <div className="flex items-center gap-2.5">
+                        <button
+                            onClick={() => dispatch(toggleSidebar())}
+                            className="p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors md:hidden cursor-pointer"
+                            aria-label="Toggle sidebar"
+                        >
+                            <Menu size={18} />
+                        </button>
+                        <div className="w-8 h-8 bg-zinc-900 dark:bg-zinc-100 rounded-lg flex items-center justify-center text-white dark:text-zinc-900 font-medium shadow-2xs shrink-0">
+                            <Folder size={16} strokeWidth={2} />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <h1 className="text-base font-semibold tracking-tight text-zinc-900 dark:text-white truncate max-w-[200px] sm:max-w-xs">
+                                {workspace?.name || "Workspace"}
+                            </h1>
+                            <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs font-mono px-1.5 py-0.5 rounded border border-zinc-200 dark:border-zinc-700">
+                                {workspaceTasks.length}
+                            </span>
+                        </div>
+                    </div>
 
-      {/* Main Board Container */}
-      <main className="flex-1 flex flex-col min-w-0">
-        {/* Workspace Header */}
-        <header className="px-4 sm:px-8 py-5 border-b border-gray-200 bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => dispatch(toggleSidebar())}
-                className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors md:hidden cursor-pointer"
-                aria-label="Toggle sidebar"
-              >
-                <Menu size={20} />
-              </button>
-              <Link to="/workspaces" className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors">
-                <ArrowLeft size={16} />
-              </Link>
-              <div className="w-7 h-7 bg-amber-400 rounded-lg flex items-center justify-center text-white font-extrabold text-sm shadow-sm">
-                W
-              </div>
-              <h2 className="text-xl font-bold tracking-tight text-gray-900">{workspaceName}</h2>
-            </div>
-            <p className="text-xs text-gray-500 ml-10 sm:ml-14 max-w-xl line-clamp-1">{workspaceDesc}</p>
-          </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full sm:w-auto">
+                        <div className="flex items-center gap-2 bg-zinc-50 dark:bg-zinc-800/80 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700/80 flex-1 sm:flex-initial focus-within:bg-white dark:focus-within:bg-zinc-800 focus-within:border-zinc-400 dark:focus-within:border-zinc-500 transition-colors">
+                            <Search size={14} className="text-zinc-400 dark:text-zinc-500 shrink-0" />
+                            <input
+                                type="text"
+                                placeholder="Search workspace tasks..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="bg-transparent outline-none w-full sm:w-44 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
+                            />
+                        </div>
 
-          <div className="flex items-center gap-3 self-stretch md:self-auto justify-end">
-            {/* Share / Settings buttons */}
-            <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors border border-gray-200">
-              <Users size={16} />
-            </button>
-            <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition-colors border border-gray-200">
-              <Settings size={16} />
-            </button>
+                        {user?.role !== "user" && (
+                            <button
+                                onClick={() => setModalOpen(true)}
+                                className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-black dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer w-full sm:w-auto active:scale-98"
+                            >
+                                <Plus size={15} strokeWidth={2.5} /> Create task
+                            </button>
+                        )}
+                    </div>
+                </header>
 
-            {/* Primary Accent Button */}
-            <button
-              onClick={() => setModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white hover:bg-gray-800 rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm cursor-pointer ml-2"
-            >
-              <Plus size={16} strokeWidth={2.5} /> Create Task
-            </button>
+                {/* Sub-toolbar */}
+                <div className="px-4 sm:px-8 py-2.5 border-b border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex justify-between items-center gap-2.5 transition-colors">
+                    <div className="flex items-center gap-4 text-xs text-zinc-500 dark:text-zinc-400">
+                        <div className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-zinc-400" />
+                            <span>To Do:</span>
+                            <span className="font-semibold text-zinc-900 dark:text-zinc-100">{todoTasks.length}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-blue-500" />
+                            <span>In Progress:</span>
+                            <span className="font-semibold text-zinc-900 dark:text-zinc-100">{inProgressTasks.length}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                            <span>Done:</span>
+                            <span className="font-semibold text-zinc-900 dark:text-zinc-100">{doneTasks.length}</span>
+                        </div>
+                    </div>
 
-            {modalOpen && <AssignTaskModal setModalOpen={setModalOpen} />}
-          </div>
-        </header>
+                    <span className="text-xs text-zinc-400 dark:text-zinc-400 hidden sm:inline">
+                        {workspace?.members?.length || 0} members in workspace
+                    </span>
+                </div>
 
-        {/* Toolbar & Filters */}
-        <div className="px-4 sm:px-8 py-4 border-b border-gray-150 bg-white flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3.5">
-          {/* Left Controls: Search */}
-          <div className="flex items-center gap-2.5 bg-gray-50 px-3.5 py-2 rounded-xl border border-gray-200 flex-1 max-w-md">
-            <Search size={15} className="text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search tasks, descriptions..."
-              className="bg-transparent outline-none w-full text-xs text-gray-700 placeholder-gray-400"
-              disabled
-            />
-          </div>
+                {modalOpen && <AssignTaskModal setModalOpen={setModalOpen} />}
 
-          {/* Right Controls: Filters & Views */}
-          <div className="flex items-center gap-2 justify-end">
-            <button className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 bg-white hover:bg-gray-50 transition-colors">
-              <Filter size={13} />
-              <span>Filter</span>
-            </button>
+                {isLoading && !allTask.length ? (
+                    <div className="flex-1 flex items-center justify-center min-h-[400px]">
+                        <Loader size="lg" text="Loading tasks..." />
+                    </div>
+                ) : (
+                    <>
+                        {/* Mobile Tab Switcher */}
+                        <div className="md:hidden px-4 pt-4 bg-[#FAFAFA] dark:bg-zinc-900">
+                            <div className="flex p-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 gap-1">
+                                <button
+                                    onClick={() => setActiveTab("Todo")}
+                                    className={`flex-1 py-1.5 text-center text-xs font-medium rounded-md transition-all cursor-pointer ${
+                                        activeTab === "Todo"
+                                            ? "bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-xs font-semibold"
+                                            : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
+                                    }`}
+                                >
+                                    To Do <span className="ml-1 bg-zinc-200 dark:bg-zinc-600 px-1 py-0.2 rounded text-[10px] text-zinc-600 dark:text-zinc-200">{todoTasks.length}</span>
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab("In-progress")}
+                                    className={`flex-1 py-1.5 text-center text-xs font-medium rounded-md transition-all cursor-pointer ${
+                                        activeTab === "In-progress"
+                                            ? "bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-xs font-semibold"
+                                            : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
+                                    }`}
+                                >
+                                    In Progress <span className="ml-1 bg-zinc-200 dark:bg-zinc-600 px-1 py-0.2 rounded text-[10px] text-zinc-600 dark:text-zinc-200">{inProgressTasks.length}</span>
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab("Done")}
+                                    className={`flex-1 py-1.5 text-center text-xs font-medium rounded-md transition-all cursor-pointer ${
+                                        activeTab === "Done"
+                                            ? "bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-xs font-semibold"
+                                            : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
+                                    }`}
+                                >
+                                    Done <span className="ml-1 bg-zinc-200 dark:bg-zinc-600 px-1 py-0.2 rounded text-[10px] text-zinc-600 dark:text-zinc-200">{doneTasks.length}</span>
+                                </button>
+                            </div>
+                        </div>
 
-            <div className="h-4 w-[1px] bg-gray-200 mx-1"></div>
+                        <DragDropProvider
+                            onDragEnd={(e) => {
+                                if (e.canceled) return;
+                                const dropTargetId = e.operation.target?.id || "";
+                                const draggedTaskId = e.operation.source?.id as string;
+                                submitUpdateTask(draggedTaskId, dropTargetId as "Todo" | "In-progress" | "Done");
+                            }}
+                        >
+                            <div className="flex-1 overflow-auto p-4 sm:p-6 bg-[#FAFAFA] dark:bg-zinc-900">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-start">
+                                    <div className={activeTab === "Todo" ? "block" : "hidden md:block"}>
+                                        <RenderColumn title="To Do" count={todoTasks.length} allTask={todoTasks} statusType="Todo" id="Todo" />
+                                    </div>
+                                    <div className={activeTab === "In-progress" ? "block" : "hidden md:block"}>
+                                        <RenderColumn title="In Progress" count={inProgressTasks.length} allTask={inProgressTasks} statusType="In-progress" id="In-progress" />
+                                    </div>
+                                    <div className={activeTab === "Done" ? "block" : "hidden md:block"}>
+                                        <RenderColumn title="Done" count={doneTasks.length} allTask={doneTasks} statusType="Done" id="Done" />
+                                    </div>
+                                </div>
+                            </div>
+                        </DragDropProvider>
+                    </>
+                )}
 
-            <div className="flex bg-gray-100 p-1 rounded-xl border border-gray-200">
-              <button className="p-1.5 bg-white text-gray-800 rounded-lg shadow-sm">
-                <Grid size={14} />
-              </button>
-              <button className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg">
-                <List size={14} />
-              </button>
-            </div>
-          </div>
+                {editModalOpen && selectedTask && (
+                    <EditTaskModal selectedTask={selectedTask} setEditModalOpen={setEditModalOpen} />
+                )}
+            </main>
         </div>
+    );
+};
 
-        {/* Mobile Tab Switcher */}
-        <div className="md:hidden px-4 pt-4 bg-[#F9FAFB]">
-          <div className="flex p-1 bg-gray-100 rounded-xl border border-gray-200/80 gap-1 shadow-inner shadow-gray-200/40">
-            <button
-              onClick={() => setActiveTab('Todo')}
-              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'Todo'
-                ? 'bg-white text-gray-900 shadow-sm font-extrabold'
-                : 'text-gray-500 hover:text-gray-800'
-                }`}
-            >
-              To Do <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{todoTask.length}</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('In-progress')}
-              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'In-progress'
-                ? 'bg-white text-gray-900 shadow-sm font-extrabold'
-                : 'text-gray-500 hover:text-gray-800'
-                }`}
-            >
-              In Progress <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{inProgressTasks.length}</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('Done')}
-              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${activeTab === 'Done'
-                ? 'bg-white text-gray-900 shadow-sm font-extrabold'
-                : 'text-gray-500 hover:text-gray-800'
-                }`}
-            >
-              Done <span className="ml-1 bg-gray-200 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">{doneTasks.length}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Kanban Columns Board */}
-        <DragDropProvider
-          onDragEnd={(e) => {
-            if (e.canceled) return
-            const dropTargetId = e.operation.target?.id || ""
-            const draggedTaskId = e.operation.source?.id as string
-            submitUpdateTask(draggedTaskId, dropTargetId as 'Todo' | 'In-progress' | 'Done')
-          }}
-        >
-          <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-              <div className={activeTab === 'Todo' ? 'block' : 'hidden md:block'}>
-                <RenderColumn title="To Do" count={todoTask.length} allTask={todoTask} statusType="Todo" id="Todo" />
-              </div>
-              <div className={activeTab === 'In-progress' ? 'block' : 'hidden md:block'}>
-                <RenderColumn title="In Progress" count={inProgressTasks.length} allTask={inProgressTasks} statusType="In-progress" id="In-progress" />
-              </div>
-              <div className={activeTab === 'Done' ? 'block' : 'hidden md:block'}>
-                <RenderColumn title="Done" count={doneTasks.length} allTask={doneTasks} statusType="Done" id="Done" />
-              </div>
-            </div>
-          </div>
-        </DragDropProvider>
-      </main>
-    </div>
-  )
-}
-
-export default SpecificWorkspace
+export default SpecificWorkspace;

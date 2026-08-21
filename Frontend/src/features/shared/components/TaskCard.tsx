@@ -1,13 +1,13 @@
 import type { task, UpdatedTask, user, workspace } from "@/types";
 import { useDraggable } from "@dnd-kit/react";
-import { Calendar, Check, MoreVertical, Pencil, Trash2, } from "lucide-react";
+import { Calendar, ChevronDown, MoreVertical, Pencil, Trash2, Check } from "lucide-react";
 import useTask from "../../task/hooks/useTask";
 import { useState, useEffect, useRef, type Dispatch, type SetStateAction } from "react";
 
 interface TaskCardProps {
   task: task;
   taskUsers: user[];
-  statusType: "Todo" | "In-progress" | "Done";
+  statusType?: "Todo" | "In-progress" | "Done";
   assignedTask?: boolean;
   setEditModalOpen?: Dispatch<SetStateAction<boolean>>;
   setSelectedTask?: Dispatch<SetStateAction<task | null>>;
@@ -16,48 +16,62 @@ interface TaskCardProps {
 const getPriorityStyles = (priority: "High" | "Medium" | "Low") => {
   switch (priority) {
     case "High":
-      return "bg-rose-50 text-rose-600 border border-rose-100";
+      return "bg-rose-50 text-rose-700 border-rose-200/80 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800/60";
     case "Medium":
-      return "bg-amber-50 text-amber-600 border border-amber-100";
+      return "bg-amber-50 text-amber-700 border-amber-200/80 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800/60";
     case "Low":
-      return "bg-emerald-50 text-emerald-600 border border-emerald-100";
+      return "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-700/80 dark:text-zinc-300 dark:border-zinc-600";
     default:
-      return "bg-gray-50 text-gray-600 border border-gray-100";
+      return "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-700/80 dark:text-zinc-300 dark:border-zinc-600";
   }
 };
 
-const getStatusStyles = (priority: "Todo" | "In-progress" | "Done") => {
-  switch (priority) {
-    case "Todo":
-      return "bg-blue-100 text-blue-600 border border-blue-100";
-    case "In-progress":
-      return "bg-amber-100 text-amber-600 border border-amber-100";
-    case "Done":
-      return "bg-emerald-100 text-emerald-600 border border-emerald-100";
-    default:
-      return "bg-gray-50 text-gray-600 border border-gray-100";
-  }
+const STATUS_CONFIG = {
+  Todo: {
+    label: "To Do",
+    dot: "bg-zinc-400 dark:bg-zinc-400",
+    pill: "bg-zinc-100 text-zinc-700 border-zinc-200 hover:bg-zinc-200/60 dark:bg-zinc-700 dark:text-zinc-200 dark:border-zinc-600 dark:hover:bg-zinc-600",
+  },
+  "In-progress": {
+    label: "In Progress",
+    dot: "bg-blue-500",
+    pill: "bg-blue-50 text-blue-700 border-blue-200/80 hover:bg-blue-100/60 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/60 dark:hover:bg-blue-900/60",
+  },
+  Done: {
+    label: "Done",
+    dot: "bg-emerald-500",
+    pill: "bg-emerald-50 text-emerald-700 border-emerald-200/80 hover:bg-emerald-100/60 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60 dark:hover:bg-emerald-900/60",
+  },
 };
 
-const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditModalOpen, setSelectedTask }: TaskCardProps) => {
+const TaskCard = ({ task, taskUsers, assignedTask = false, setEditModalOpen, setSelectedTask }: TaskCardProps) => {
 
   const [status, setStatus] = useState<'Todo' | 'In-progress' | "Done">(task.status)
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false)
+  const [statusMenuOpen, setStatusMenuOpen] = useState<boolean>(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const statusMenuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setStatus(task.status);
+  }, [task.status]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false)
       }
+      if (statusMenuRef.current && !statusMenuRef.current.contains(event.target as Node)) {
+        setStatusMenuOpen(false)
+      }
     }
-    if (dropdownOpen) {
+    if (dropdownOpen || statusMenuOpen) {
       document.addEventListener("mousedown", handleClickOutside)
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
-  }, [dropdownOpen])
+  }, [dropdownOpen, statusMenuOpen])
 
   const assignees = taskUsers.filter((u) =>
     (task.assignTo as string[]).includes(u._id)
@@ -69,16 +83,20 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
 
   const { handleUpdateTask, handleDeleteTask } = useTask()
 
-  const updateStatus = async (taskId: any, nextStatus: UpdatedTask["status"]) => {
-    if (!nextStatus || nextStatus === status) return;
+  const updateStatus = async (nextStatus: UpdatedTask["status"]) => {
+    if (!nextStatus || nextStatus === status) {
+      setStatusMenuOpen(false);
+      return;
+    }
 
     const taskDetails: UpdatedTask = {
-      _id: taskId,
-      status: nextStatus,
+      _id: task._id,
+      status,
       workspaceId: task?.workspaceId
     }
 
     setStatus(nextStatus);
+    setStatusMenuOpen(false);
     await handleUpdateTask(taskDetails);
   };
 
@@ -87,35 +105,75 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
     await handleDeleteTask(workspaceID, taskId);
   }
 
+  const currentStatusConfig = STATUS_CONFIG[status] || STATUS_CONFIG.Todo;
+
   return (
     <div
       ref={ref}
-      className={`relative bg-white p-4 rounded-xl border border-gray-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-200 group cursor-pointer ${statusType === "Done" ? "bg-gray-50/40" : ""
-        }`}
+      className={`relative bg-white dark:bg-zinc-800 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:border-zinc-300 dark:hover:border-zinc-600 transition-all duration-150 group cursor-pointer ${
+        status === "Done" ? "bg-zinc-50/50 dark:bg-zinc-800/60" : ""
+      }`}
     >
-      {/* Tags & Priority */}
-      <div className="flex justify-between items-center mb-2.5">
-        <div className="flex gap-2">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span
-              className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${getPriorityStyles(
-                task.priority
-              )}`}
-            >
-              {task.priority}
-            </span>
-          </div>
+      {/* Tags, Status Pill & Actions */}
+      <div className="flex justify-between items-center mb-2 gap-2">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {/* Priority Badge */}
+          <span
+            className={`inline-flex items-center justify-center h-5 text-[11px] font-medium px-2 rounded-md border leading-none shrink-0 ${getPriorityStyles(
+              task.priority
+            )}`}
+          >
+            {task.priority}
+          </span>
 
-          {assignedTask && <div className="flex items-center gap-1.5 flex-wrap">
-            <span
-              className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${getStatusStyles(
-                task.status
-              )}`}
+          {/* Interactive Status Pill Selector */}
+          <div className="relative inline-flex items-center shrink-0" ref={statusMenuRef}>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setStatusMenuOpen(!statusMenuOpen);
+              }}
+              className={`inline-flex items-center justify-center h-5 gap-1.5 text-[11px] font-medium px-2 rounded-md border leading-none transition-colors cursor-pointer ${currentStatusConfig.pill}`}
+              title="Change status"
             >
-              {task.status}
-            </span>
-          </div>}
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${currentStatusConfig.dot}`} />
+              <span>{currentStatusConfig.label}</span>
+              <ChevronDown size={10} className={`shrink-0 transition-transform duration-150 ${statusMenuOpen ? "rotate-180" : ""}`} />
+            </button>
+
+            {/* Status Dropdown Menu */}
+            {statusMenuOpen && (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="absolute left-0 top-full mt-1 w-36 bg-white dark:bg-zinc-800 rounded-lg shadow-[0_4px_20px_-4px_rgba(0,0,0,0.35)] border border-zinc-200 dark:border-zinc-700 overflow-hidden z-30 py-1 text-left animate-in fade-in zoom-in-95 duration-100"
+              >
+                {(["Todo", "In-progress", "Done"] as const).map((st) => {
+                  const cfg = STATUS_CONFIG[st];
+                  const isSelected = status === st;
+                  return (
+                    <button
+                      key={st}
+                      type="button"
+                      onClick={() => updateStatus(st)}
+                      className={`w-full px-3 py-1.5 text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
+                        isSelected ? "bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-white font-semibold" : "text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700/60 hover:text-zinc-900 dark:hover:text-white"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+                        <span>{cfg.label}</span>
+                      </div>
+                      {isSelected && <Check size={12} className="text-zinc-900 dark:text-white stroke-[2.5]" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Assigned Task Options Menu */}
         {assignedTask && (
           <div ref={dropdownRef} className="relative">
             <button
@@ -123,32 +181,32 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
                 setSelectedTask?.(task)
                 setDropdownOpen(!dropdownOpen)
               }}
-              className="p-1 hover:bg-gray-200/60 rounded-md text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+              className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer"
             >
               <MoreVertical size={16} />
             </button>
 
             {dropdownOpen && (
-              <div className="absolute right-0 mt-1 w-32 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden z-20 py-1">
+              <div className="absolute right-0 mt-1.5 w-36 bg-white dark:bg-zinc-800 rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.35)] border border-zinc-200 dark:border-zinc-700 overflow-hidden z-20 py-1.5">
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
                     setDropdownOpen(false)
                     setEditModalOpen?.(true)
                   }}
-                  className="w-full text-left px-3 py-2 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer transition-colors"
+                  className="w-full text-left px-3.5 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700/60 flex items-center gap-2.5 cursor-pointer transition-colors"
                 >
-                  <Pencil size={14} className="text-gray-400" /> Edit
+                  <Pencil size={14} className="text-zinc-400 dark:text-zinc-400" /> Edit
                 </button>
-                <div className="h-px bg-gray-100 w-full" />
+                <div className="h-px bg-zinc-100 dark:border-zinc-700 w-full" />
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     void handleDeleteClick(task.workspaceId, task._id!)
                   }}
-                  className="w-full text-left px-3 py-2 text-[13px] font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer transition-colors"
+                  className="w-full text-left px-3.5 py-2 text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-2.5 cursor-pointer transition-colors"
                 >
-                  <Trash2 size={14} className="text-red-500" /> Delete
+                  <Trash2 size={14} className="text-rose-500 dark:text-rose-400" /> Delete
                 </button>
               </div>
             )}
@@ -158,62 +216,31 @@ const TaskCard = ({ task, taskUsers, statusType, assignedTask = false, setEditMo
 
       {/* Title & Description */}
       <h4
-        className={`font-bold text-[14px] leading-snug mb-1.5 text-gray-900 group-hover:text-gray-700 ${statusType === "Done" ? "line-through text-gray-500" : ""
-          }`}
+        className={`font-semibold text-sm leading-snug text-zinc-900 dark:text-zinc-100 ${
+          status === "Done" ? "line-through text-zinc-400 dark:text-zinc-500" : ""
+        }`}
       >
         {task.title}
       </h4>
-      <p className="text-gray-500 text-xs line-clamp-2 mb-4 leading-relaxed font-normal">
+      <p className="text-zinc-500 dark:text-zinc-400 text-[13px] line-clamp-2 mb-2.5 leading-relaxed font-normal">
         {task.description}
       </p>
 
-      {/* Task actions */}
-      {!assignedTask && status !== "Done" && (
-        <div className="flex items-center gap-2 mb-3.5 pt-3 border-t border-gray-100">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              void updateStatus(task._id, status === "Todo" ? "In-progress" : "Todo");
-            }}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-bold transition-all duration-200 cursor-pointer ${status === "Todo"
-                ? "bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md"
-                : "bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100"
-              }`}
-          >
-            {status === "Todo" ? "Start work" : "Put on hold"}
-          </button>
-
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              void updateStatus(task._id, "Done");
-            }}
-            className="flex items-center justify-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-bold text-emerald-700 transition-all duration-200 hover:bg-emerald-100 hover:border-emerald-300 cursor-pointer"
-            aria-label="Mark task as done"
-          >
-            <Check size={14} strokeWidth={3} />
-            Done
-          </button>
-        </div>
-      )}
-
       {/* Footer Meta Details */}
-      <div className="flex items-center justify-between pt-3 border-t border-gray-100 text-gray-400 text-xs font-medium">
+      <div className="flex items-center justify-between pt-2 border-t border-zinc-100 dark:border-zinc-700/60 text-zinc-400 dark:text-zinc-400 text-xs font-normal">
         {/* Due date */}
-        <div className="flex items-center gap-1 text-[11px]">
-          <Calendar size={13} className="text-gray-400" />
+        <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 font-mono">
+          <Calendar size={12} className="text-zinc-400 dark:text-zinc-400" />
           <span>{task.dueDate?.split("T")[0] || "—"}</span>
         </div>
 
         {/* Assignees Avatars Stack */}
-        <div className="flex -space-x-1.5 ml-1">
+        <div className="flex -space-x-1 ml-1">
           {assignees.map((user, idx) => (
             <div
               key={idx}
               title={user.username}
-              className="w-6 h-6 rounded-full border-2 border-white bg-blue-500 text-white flex items-center justify-center text-[9px] font-bold shadow-xs"
+              className="w-5.5 h-5.5 rounded-full border-2 border-white dark:border-zinc-800 bg-zinc-800 dark:bg-zinc-600 text-white flex items-center justify-center text-[9px] font-semibold shadow-2xs"
             >
               {user.username
                 ?.split(" ")

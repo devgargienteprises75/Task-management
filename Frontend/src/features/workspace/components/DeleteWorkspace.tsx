@@ -1,7 +1,7 @@
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { workspace } from "@/types";
-import type { Dispatch, SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import useWorkspace from "../hooks/useWorkspace";
 
 interface DeleteOptionProps {
@@ -13,52 +13,64 @@ interface DeleteOptionProps {
 const DeleteWorkspace = ({ isMenuOpen, setIsMenuOpen, workspace }: DeleteOptionProps) => {
   if (!isMenuOpen) return null;
 
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const { handleDeleteWorkspace } = useWorkspace()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsDeleting(true)
 
-    await handleDeleteWorkspace(workspace?._id ?? "")
-    setIsMenuOpen(false)
+    try {
+      await handleDeleteWorkspace(workspace?._id ?? "")
+      setIsMenuOpen(false)
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 px-4 backdrop-blur-sm">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-xs">
+      <div className="w-full max-w-sm overflow-hidden rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
         <div className="p-6">
-          <div className="flex items-center justify-center w-14 h-14 rounded-full bg-red-50 mb-5 mx-auto border-[6px] border-red-50/50">
-            <AlertTriangle className="text-red-600" size={24} />
+          <div className="flex items-center justify-center w-11 h-11 rounded-full bg-rose-50 dark:bg-rose-950/40 mb-3.5 mx-auto border border-rose-100 dark:border-rose-900/60">
+            <AlertTriangle className="text-rose-600 dark:text-rose-400" size={20} />
           </div>
           
-          <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
+          <h3 className="text-base font-semibold text-zinc-900 dark:text-white text-center mb-1.5">
             Delete Workspace
           </h3>
           
-          <p className="text-[15px] leading-relaxed text-gray-500 text-center mb-8">
-            Are you sure you want to delete <span className="font-semibold text-gray-800">"{workspace?.name || 'this workspace'}"</span>? All of its data, tasks, and member associations will be permanently removed. This action cannot be undone.
+          <p className="text-[13px] leading-relaxed text-zinc-500 dark:text-zinc-400 text-center mb-6 font-normal">
+            Are you sure you want to delete <span className="font-semibold text-zinc-800 dark:text-zinc-200">"{workspace?.name || 'this workspace'}"</span>? All data and tasks will be permanently removed.
           </p>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={() => setIsMenuOpen(false)}
               className={cn(
-                "flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3.5 text-[15px] font-bold text-gray-700 transition-all cursor-pointer",
-                "hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900",
-                "focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-1"
+                "flex-1 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer",
+                "hover:bg-zinc-50 dark:hover:bg-zinc-700"
               )}
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
+              disabled={isDeleting}
               className={cn(
-                "flex-1 rounded-xl bg-red-600 px-4 py-3.5 text-[15px] font-bold text-white transition-all cursor-pointer",
-                "hover:bg-red-700 hover:shadow-lg hover:shadow-red-600/20",
-                "focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-1",
-                "active:scale-[0.98]"
+                "flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-4 py-2.5 text-sm font-medium text-white transition-colors cursor-pointer",
+                "hover:bg-rose-700 shadow-xs",
+                isDeleting && "opacity-80 cursor-not-allowed"
               )}
             >
-              Delete
+              {isDeleting ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
             </button>
           </div>
         </div>

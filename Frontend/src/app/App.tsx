@@ -7,8 +7,10 @@ import useWorkspace from "@/features/workspace/hooks/useWorkspace"
 import { useSelector } from "react-redux"
 import type { RootState } from "./app.store"
 import { enableNotification } from "@/lib/helper"
+import { useTheme } from "@/hooks/useTheme"
 
 const App = () => {
+  useTheme()
 
   const { handleGetUsers } = useAdmin()
   const { handleGetMe } = useAuth()

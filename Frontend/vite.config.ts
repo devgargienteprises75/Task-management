@@ -20,10 +20,11 @@ export default defineConfig({
       },
       manifest: {
         id: "/",
-        name: "Todo",
-        short_name: "Todo",
-        background_color: "#ffffff",
-        theme_color: "#ffffff",
+        name: "TaskFlow",
+        short_name: "TaskFlow",
+        description: "Minimalist task & workspace management platform",
+        background_color: "#FAFAFA",
+        theme_color: "#09090B",
         display: "standalone",
         start_url: "/",
         scope: "/",
@@ -32,13 +33,13 @@ export default defineConfig({
             src: "/icons/pwa-192x192.png",
             sizes: "192x192",
             type: "image/png",
-            purpose: "any"
+            purpose: "any maskable"
           },
           {
             src: "/icons/pwa-512x512.png",
             sizes: "512x512",
             type: "image/png",
-            purpose: "any"
+            purpose: "any maskable"
           }
         ]
       }

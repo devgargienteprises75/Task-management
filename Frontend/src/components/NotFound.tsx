@@ -1,17 +1,19 @@
+import { SearchX } from "lucide-react";
+
 interface HeadingType {
     heading: string
 }
 
 const NotFound = ({ heading }: HeadingType) => {
   return (
-    <div className="flex min-h-[240px] items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white px-6 py-8 text-center shadow-sm">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#F4F7E5] text-[#9DBA1F]">
-          <span className="text-lg font-semibold">!</span>
+    <div className="flex min-h-[280px] items-center justify-center p-6">
+      <div className="w-full max-w-md rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 px-6 py-8 text-center shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-colors">
+        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-600">
+          <SearchX size={18} strokeWidth={2} />
         </div>
-        <h2 className="text-lg font-semibold text-gray-900">{heading}</h2>
-        <p className="mt-2 text-sm leading-6 text-gray-500">
-          Nothing is available here right now. Please check back after the user or workspace data has been loaded.
+        <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">No {heading.toLowerCase()} found</h2>
+        <p className="mt-1 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+          Nothing matched your search criteria or no records are available right now.
         </p>
       </div>
     </div>
