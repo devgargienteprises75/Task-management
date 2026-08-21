@@ -70,12 +70,12 @@ const Sidebar = () => {
                 {/* Brand Header */}
                 <div className="px-4 mb-6 flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-lg bg-zinc-900 text-white flex items-center justify-center shadow-xs">
-                            <CheckSquare size={15} strokeWidth={2.5} />
+                        <div className="w-7.5 h-7.5 rounded-lg bg-zinc-900 text-white flex items-center justify-center shadow-xs">
+                            <CheckSquare size={16} strokeWidth={2.5} />
                         </div>
-                        <div className="flex items-center gap-1.5">
-                            <span className="font-semibold text-sm text-zinc-900 tracking-tight">Workspace</span>
-                            <span className="text-[10px] bg-zinc-100 text-zinc-600 px-1.5 py-0.5 rounded font-mono border border-zinc-200">v1.0</span>
+                        <div className="flex items-center gap-2">
+                            <span className="font-semibold text-base text-zinc-900 tracking-tight">Workspace</span>
+                            <span className="text-[11px] bg-zinc-100 text-zinc-600 px-1.5 py-0.5 rounded font-mono border border-zinc-200">v1.0</span>
                         </div>
                     </div>
                     <button
@@ -83,7 +83,7 @@ const Sidebar = () => {
                         className="p-1 hover:bg-zinc-200/60 rounded text-zinc-500 hover:text-zinc-800 transition-colors md:hidden cursor-pointer"
                         aria-label="Close sidebar"
                     >
-                        <X size={16} />
+                        <X size={18} />
                     </button>
                 </div>
 
@@ -91,14 +91,14 @@ const Sidebar = () => {
                 <div className="flex-1 px-3 space-y-6 overflow-y-auto">
                     {/* General Section */}
                     <div>
-                        <p className="px-2.5 mb-1 text-[11px] font-medium text-zinc-400">
+                        <p className="px-2.5 mb-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
                             Workspace
                         </p>
                         <nav className="space-y-0.5">
                             <button 
                                 onClick={() => handleNavigate("/")}
                                 className={cn(
-                                    "flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer text-left",
+                                    "flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13px] font-medium transition-colors cursor-pointer text-left",
                                     isPathActive("/")
                                         ? "bg-zinc-200/80 text-zinc-900 font-semibold"
                                         : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200/40"
@@ -111,7 +111,7 @@ const Sidebar = () => {
                             <button 
                                 onClick={() => handleNavigate("/workspaces")}
                                 className={cn(
-                                    "flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer text-left",
+                                    "flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13px] font-medium transition-colors cursor-pointer text-left",
                                     isPathActive("/workspaces")
                                         ? "bg-zinc-200/80 text-zinc-900 font-semibold"
                                         : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200/40"
@@ -125,7 +125,7 @@ const Sidebar = () => {
                                 <button
                                     onClick={() => handleNavigate("/users")}
                                     className={cn(
-                                        "flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer text-left",
+                                        "flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13px] font-medium transition-colors cursor-pointer text-left",
                                         isPathActive("/users")
                                             ? "bg-zinc-200/80 text-zinc-900 font-semibold"
                                             : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200/40"
@@ -140,14 +140,14 @@ const Sidebar = () => {
 
                     {/* Settings Section */}
                     <div>
-                        <p className="px-2.5 mb-1 text-[11px] font-medium text-zinc-400">
+                        <p className="px-2.5 mb-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
                             Settings
                         </p>
                         <nav className="space-y-0.5">
                             <button 
                                 onClick={() => handleNavigate("/account-setting")}
                                 className={cn(
-                                    "flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer text-left",
+                                    "flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13px] font-medium transition-colors cursor-pointer text-left",
                                     isPathActive("/account-setting")
                                         ? "bg-zinc-200/80 text-zinc-900 font-semibold"
                                         : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200/40"
@@ -169,32 +169,32 @@ const Sidebar = () => {
                                     setIsDropdownOpen(false);
                                     handleNavigate("/account-setting");
                                 }}
-                                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 transition-colors cursor-pointer"
+                                className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 transition-colors cursor-pointer"
                             >
-                                <Settings size={13} className="text-zinc-400" /> Account Settings
+                                <Settings size={15} className="text-zinc-400" /> Account Settings
                             </button>
                             <button
                                 onClick={(e) => {
                                     setIsDropdownOpen(false);
                                     handleLogoutSubmit(e);
                                 }}
-                                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 transition-colors border-t border-zinc-100 cursor-pointer"
+                                className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium text-rose-600 hover:bg-rose-50 transition-colors border-t border-zinc-100 cursor-pointer"
                             >
-                                <LogOut size={13} className="text-rose-500" /> Logout
+                                <LogOut size={15} className="text-rose-500" /> Logout
                             </button>
                         </div>
                     )}
                     
                     <button 
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        className="w-full flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-zinc-200/50 transition-colors cursor-pointer text-left"
+                        className="w-full flex items-center gap-2.5 p-2 rounded-lg hover:bg-zinc-200/50 transition-colors cursor-pointer text-left"
                     >
-                        <div className="w-7 h-7 rounded-md bg-zinc-900 text-white flex items-center justify-center text-xs font-semibold shrink-0">
+                        <div className="w-8 h-8 rounded-md bg-zinc-900 text-white flex items-center justify-center text-xs font-semibold shrink-0">
                             {user?.username?.charAt(0).toUpperCase() || 'U'}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-xs font-semibold text-zinc-900 truncate leading-none">{user?.username || 'User'}</p>
-                            <p className="text-[11px] text-zinc-400 truncate mt-0.5">{user?.email || 'user@example.com'}</p>
+                            <p className="text-[13px] font-semibold text-zinc-900 truncate leading-none">{user?.username || 'User'}</p>
+                            <p className="text-[11px] text-zinc-500 truncate mt-1">{user?.email || 'user@example.com'}</p>
                         </div>
                         <ChevronUp size={14} className={cn("text-zinc-400 transition-transform duration-200", isDropdownOpen && "rotate-180")} />
                     </button>

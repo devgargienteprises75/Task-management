@@ -39,19 +39,19 @@ const RenderColumn = ({ id, title, count, allTask, statusType }: RenderColumnPro
     return (
         <div
             ref={ref}
-            className="flex flex-col bg-[#F4F4F5]/70 rounded-xl border border-zinc-200/70 p-3 min-h-[300px] md:min-h-[640px]">
+            className="flex flex-col bg-[#F4F4F5]/70 rounded-xl border border-zinc-200/70 p-3 max-h-[300px] md:min-h-[640px]">
             {/* Column Header */}
             <div className="flex justify-between items-center mb-3 px-1">
                 <div className="flex items-center gap-2">
                     <span className={`w-2 h-2 rounded-full ${columnTheme.dot}`} />
-                    <h3 className="font-semibold text-zinc-900 text-xs tracking-tight">{title}</h3>
-                    <span className={`text-[10px] px-1.5 py-0.2 rounded font-medium ${columnTheme.badge}`}>
+                    <h3 className="font-semibold text-zinc-900 text-sm tracking-tight">{title}</h3>
+                    <span className={`text-xs px-2 py-0.5 rounded-md font-medium ${columnTheme.badge}`}>
                         {count}
                     </span>
                 </div>
                 <div className="flex items-center">
                     <button className="p-1 hover:bg-zinc-200/60 rounded text-zinc-400 hover:text-zinc-600 transition-colors cursor-pointer">
-                        <MoreHorizontal size={14} />
+                        <MoreHorizontal size={15} />
                     </button>
                 </div>
             </div>
@@ -68,8 +68,8 @@ const RenderColumn = ({ id, title, count, allTask, statusType }: RenderColumnPro
                 ))}
 
                 {/* Add Task Button */}
-                <button className="flex items-center justify-center gap-1.5 py-2 rounded-lg border border-dashed border-zinc-300/80 text-zinc-500 hover:text-zinc-900 hover:border-zinc-400 hover:bg-white text-xs font-medium transition-all cursor-pointer">
-                    <Plus size={13} strokeWidth={2} /> Add task
+                <button className="flex items-center sticky justify-center gap-1.5 py-2 rounded-lg border border-dashed border-zinc-300/80 text-zinc-600 hover:text-zinc-900 hover:border-zinc-400 hover:bg-white text-[13px] font-medium transition-all cursor-pointer">
+                    <Plus size={14} strokeWidth={2} /> Add task
                 </button>
             </div>
         </div>

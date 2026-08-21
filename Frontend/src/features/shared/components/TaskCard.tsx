@@ -115,11 +115,11 @@ const TaskCard = ({ task, taskUsers, assignedTask = false, setEditModalOpen, set
       }`}
     >
       {/* Tags, Status Pill & Actions */}
-      <div className="flex justify-between items-center mb-1.5 gap-1.5">
+      <div className="flex justify-between items-center mb-2 gap-2">
         <div className="flex items-center gap-1.5 flex-wrap">
           {/* Priority Badge */}
           <span
-            className={`inline-flex items-center justify-center h-4.5 text-[10px] font-medium px-1.5 rounded border leading-none shrink-0 ${getPriorityStyles(
+            className={`inline-flex items-center justify-center h-5 text-[11px] font-medium px-2 rounded-md border leading-none shrink-0 ${getPriorityStyles(
               task.priority
             )}`}
           >
@@ -134,19 +134,19 @@ const TaskCard = ({ task, taskUsers, assignedTask = false, setEditModalOpen, set
                 e.stopPropagation();
                 setStatusMenuOpen(!statusMenuOpen);
               }}
-              className={`inline-flex items-center justify-center h-4.5 gap-1 text-[10px] font-medium px-1.5 rounded border leading-none transition-colors cursor-pointer ${currentStatusConfig.pill}`}
+              className={`inline-flex items-center justify-center h-5 gap-1.5 text-[11px] font-medium px-2 rounded-md border leading-none transition-colors cursor-pointer ${currentStatusConfig.pill}`}
               title="Change status"
             >
               <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${currentStatusConfig.dot}`} />
               <span>{currentStatusConfig.label}</span>
-              <ChevronDown size={9} className={`shrink-0 transition-transform duration-150 ${statusMenuOpen ? "rotate-180" : ""}`} />
+              <ChevronDown size={10} className={`shrink-0 transition-transform duration-150 ${statusMenuOpen ? "rotate-180" : ""}`} />
             </button>
 
             {/* Status Dropdown Menu */}
             {statusMenuOpen && (
               <div
                 onClick={(e) => e.stopPropagation()}
-                className="absolute left-0 top-full mt-1 w-32 bg-white rounded-lg shadow-[0_4px_20px_-4px_rgba(0,0,0,0.12)] border border-zinc-200 overflow-hidden z-30 py-1 text-left animate-in fade-in zoom-in-95 duration-100"
+                className="absolute left-0 top-full mt-1 w-36 bg-white rounded-lg shadow-[0_4px_20px_-4px_rgba(0,0,0,0.12)] border border-zinc-200 overflow-hidden z-30 py-1 text-left animate-in fade-in zoom-in-95 duration-100"
               >
                 {(["Todo", "In-progress", "Done"] as const).map((st) => {
                   const cfg = STATUS_CONFIG[st];
@@ -156,15 +156,15 @@ const TaskCard = ({ task, taskUsers, assignedTask = false, setEditModalOpen, set
                       key={st}
                       type="button"
                       onClick={() => updateStatus(st)}
-                      className={`w-full px-2.5 py-1 text-[11px] font-medium flex items-center justify-between transition-colors cursor-pointer ${
+                      className={`w-full px-3 py-1.5 text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
                         isSelected ? "bg-zinc-100 text-zinc-900 font-semibold" : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
                       }`}
                     >
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-2">
                         <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
                         <span>{cfg.label}</span>
                       </div>
-                      {isSelected && <Check size={11} className="text-zinc-900 stroke-[2.5]" />}
+                      {isSelected && <Check size={12} className="text-zinc-900 stroke-[2.5]" />}
                     </button>
                   );
                 })}
@@ -181,22 +181,22 @@ const TaskCard = ({ task, taskUsers, assignedTask = false, setEditModalOpen, set
                 setSelectedTask?.(task)
                 setDropdownOpen(!dropdownOpen)
               }}
-              className="p-0.5 hover:bg-zinc-100 rounded text-zinc-400 hover:text-zinc-600 transition-colors cursor-pointer"
+              className="p-1 hover:bg-zinc-100 rounded text-zinc-400 hover:text-zinc-600 transition-colors cursor-pointer"
             >
-              <MoreVertical size={13} />
+              <MoreVertical size={14} />
             </button>
 
             {dropdownOpen && (
-              <div className="absolute right-0 mt-1 w-28 bg-white rounded-lg shadow-[0_4px_20px_-4px_rgba(0,0,0,0.12)] border border-zinc-200 overflow-hidden z-20 py-1">
+              <div className="absolute right-0 mt-1.5 w-36 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.12)] border border-zinc-200 overflow-hidden z-20 py-1.5">
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
                     setDropdownOpen(false)
                     setEditModalOpen?.(true)
                   }}
-                  className="w-full text-left px-2.5 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-50 flex items-center gap-1.5 cursor-pointer transition-colors"
+                  className="w-full text-left px-3.5 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 flex items-center gap-2.5 cursor-pointer transition-colors"
                 >
-                  <Pencil size={12} className="text-zinc-400" /> Edit
+                  <Pencil size={14} className="text-zinc-400" /> Edit
                 </button>
                 <div className="h-px bg-zinc-100 w-full" />
                 <button
@@ -204,9 +204,9 @@ const TaskCard = ({ task, taskUsers, assignedTask = false, setEditModalOpen, set
                     e.stopPropagation();
                     void handleDeleteClick(task.workspaceId, task._id!)
                   }}
-                  className="w-full text-left px-2.5 py-1 text-[11px] font-medium text-rose-600 hover:bg-rose-50 flex items-center gap-1.5 cursor-pointer transition-colors"
+                  className="w-full text-left px-3.5 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 cursor-pointer transition-colors"
                 >
-                  <Trash2 size={12} className="text-rose-500" /> Delete
+                  <Trash2 size={14} className="text-rose-500" /> Delete
                 </button>
               </div>
             )}
@@ -216,21 +216,21 @@ const TaskCard = ({ task, taskUsers, assignedTask = false, setEditModalOpen, set
 
       {/* Title & Description */}
       <h4
-        className={`font-semibold text-[13px] leading-snug mb-0.5 text-zinc-900 ${
+        className={`font-semibold text-sm leading-snug text-zinc-900 ${
           status === "Done" ? "line-through text-zinc-400" : ""
         }`}
       >
         {task.title}
       </h4>
-      <p className="text-zinc-500 text-xs line-clamp-2 mb-2 leading-relaxed font-normal">
+      <p className="text-zinc-500 text-[13px] line-clamp-2 mb-2.5 leading-relaxed font-normal">
         {task.description}
       </p>
 
       {/* Footer Meta Details */}
-      <div className="flex items-center justify-between pt-1.5 border-t border-zinc-100 text-zinc-400 text-xs font-normal">
+      <div className="flex items-center justify-between pt-2 border-t border-zinc-100 text-zinc-400 text-xs font-normal">
         {/* Due date */}
-        <div className="flex items-center gap-1 text-[11px] text-zinc-500 font-mono">
-          <Calendar size={11} className="text-zinc-400" />
+        <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-mono">
+          <Calendar size={12} className="text-zinc-400" />
           <span>{task.dueDate?.split("T")[0] || "—"}</span>
         </div>
 
@@ -240,7 +240,7 @@ const TaskCard = ({ task, taskUsers, assignedTask = false, setEditModalOpen, set
             <div
               key={idx}
               title={user.username}
-              className="w-5 h-5 rounded-full border border-white bg-zinc-800 text-white flex items-center justify-center text-[8px] font-medium shadow-2xs"
+              className="w-5.5 h-5.5 rounded-full border-2 border-white bg-zinc-800 text-white flex items-center justify-center text-[9px] font-semibold shadow-2xs"
             >
               {user.username
                 ?.split(" ")

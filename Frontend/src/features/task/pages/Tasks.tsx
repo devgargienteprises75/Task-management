@@ -162,7 +162,7 @@ const Tasks = () => {
       {/* Main Task View */}
       <main className="flex-1 flex flex-col min-w-0">
         {/* Page Top Header */}
-        <header className="px-4 sm:px-8 py-3.5 border-b border-zinc-200/80 bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+        <header className="px-4 sm:px-8 py-4 border-b border-zinc-200/80 bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
           <div className="flex items-center gap-3">
             <button
               onClick={() => dispatch(toggleSidebar())}
@@ -171,13 +171,13 @@ const Tasks = () => {
             >
               <Menu size={18} />
             </button>
-            <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center text-white font-medium shadow-2xs shrink-0">
-              <FolderKanban size={16} strokeWidth={2} />
+            <div className="w-8.5 h-8.5 bg-zinc-900 rounded-lg flex items-center justify-center text-white font-medium shadow-2xs shrink-0">
+              <FolderKanban size={17} strokeWidth={2} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-base font-semibold tracking-tight text-zinc-900">Task Board</h1>
-                <span className="bg-zinc-100 text-zinc-600 text-[11px] font-medium px-2 py-0.5 rounded border border-zinc-200">
+                <h1 className="text-lg font-bold tracking-tight text-zinc-900">Task Board</h1>
+                <span className="bg-zinc-100 text-zinc-600 text-xs font-medium px-2 py-0.5 rounded-md border border-zinc-200">
                   {allTask.length}
                 </span>
               </div>
@@ -186,21 +186,21 @@ const Tasks = () => {
 
           <div className="flex items-center gap-3 self-stretch md:self-auto justify-end w-full md:w-auto">
             {/* Quick Metrics */}
-            <div className="hidden lg:flex items-center gap-3 mr-1 border-r border-zinc-200 pr-4 text-xs text-zinc-500">
+            <div className="hidden lg:flex items-center gap-4 mr-1 border-r border-zinc-200 pr-4 text-xs text-zinc-500">
               <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
+                <span className="w-2 h-2 rounded-full bg-zinc-400" />
                 <span>To Do:</span>
-                <span className="font-semibold text-zinc-900">{todoTasks.length}</span>
+                <span className="font-semibold text-zinc-900 text-sm">{todoTasks.length}</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                <span className="w-2 h-2 rounded-full bg-blue-500" />
                 <span>In Progress:</span>
-                <span className="font-semibold text-zinc-900">{inProgressTasks.length}</span>
+                <span className="font-semibold text-zinc-900 text-sm">{inProgressTasks.length}</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
                 <span>Done:</span>
-                <span className="font-semibold text-zinc-900">{doneTasks.length}</span>
+                <span className="font-semibold text-zinc-900 text-sm">{doneTasks.length}</span>
               </div>
             </div>
 
@@ -208,9 +208,9 @@ const Tasks = () => {
             {user?.role !== "user" && (
               <button 
                 onClick={() => setModalOpen(true)} 
-                className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-black text-white hover:bg-zinc-800 rounded-lg font-medium text-xs transition-colors shadow-xs cursor-pointer w-full md:w-auto active:scale-98"
+                className="flex items-center justify-center gap-1.5 px-4 py-2 bg-black text-white hover:bg-zinc-800 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer w-full md:w-auto active:scale-98"
               >
-                <Plus size={14} strokeWidth={2.5} /> Create task
+                <Plus size={15} strokeWidth={2.5} /> Create task
               </button>
             )}
           </div>
@@ -219,16 +219,16 @@ const Tasks = () => {
         {modalOpen && <AssignTaskModal setModalOpen={setModalOpen} />}
 
         {/* Toolbar: Search, Filters & View Options */}
-        <div className="px-4 sm:px-8 py-2.5 border-b border-zinc-200/80 bg-white flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2.5">
+        <div className="px-4 sm:px-8 py-3 border-b border-zinc-200/80 bg-white flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
           {/* Search Box */}
-          <div className="flex items-center gap-2 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-200 flex-1 max-w-sm focus-within:bg-white focus-within:border-zinc-400 transition-colors">
-            <Search size={14} className="text-zinc-400" />
+          <div className="flex items-center gap-2.5 bg-zinc-50 px-3.5 py-2 rounded-lg border border-zinc-200 flex-1 max-w-sm focus-within:bg-white focus-within:border-zinc-400 transition-colors">
+            <Search size={15} className="text-zinc-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search tasks..."
-              className="bg-transparent outline-none w-full text-xs text-zinc-900 placeholder-zinc-400"
+              className="bg-transparent outline-none w-full text-sm text-zinc-900 placeholder-zinc-400"
             />
           </div>
 
@@ -238,7 +238,7 @@ const Tasks = () => {
             <div className="flex items-center rounded-lg border border-zinc-200 bg-zinc-100 p-0.5">
               <button 
                 onClick={() => setAssignedTask(false)} 
-                className={`rounded-md px-2.5 py-1 text-xs font-medium transition-all cursor-pointer ${
+                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
                   !assignedTask 
                     ? "bg-white text-zinc-900 shadow-xs font-semibold" 
                     : "text-zinc-500 hover:text-zinc-800"
@@ -248,7 +248,7 @@ const Tasks = () => {
               </button>
               <button 
                 onClick={() => setAssignedTask(true)} 
-                className={`rounded-md px-2.5 py-1 text-xs font-medium transition-all cursor-pointer ${
+                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
                   assignedTask 
                     ? "bg-white text-zinc-900 shadow-xs font-semibold" 
                     : "text-zinc-500 hover:text-zinc-800"

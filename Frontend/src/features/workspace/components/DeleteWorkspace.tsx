@@ -31,24 +31,24 @@ const DeleteWorkspace = ({ isMenuOpen, setIsMenuOpen, workspace }: DeleteOptionP
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 px-4 backdrop-blur-xs">
       <div className="w-full max-w-sm overflow-hidden rounded-xl bg-white border border-zinc-200 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
-        <div className="p-5">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-rose-50 mb-3 mx-auto border border-rose-100">
-            <AlertTriangle className="text-rose-600" size={18} />
+        <div className="p-6">
+          <div className="flex items-center justify-center w-11 h-11 rounded-full bg-rose-50 mb-3.5 mx-auto border border-rose-100">
+            <AlertTriangle className="text-rose-600" size={20} />
           </div>
           
-          <h3 className="text-sm font-semibold text-zinc-900 text-center mb-1">
+          <h3 className="text-base font-semibold text-zinc-900 text-center mb-1.5">
             Delete Workspace
           </h3>
           
-          <p className="text-xs leading-relaxed text-zinc-500 text-center mb-5 font-normal">
+          <p className="text-[13px] leading-relaxed text-zinc-500 text-center mb-6 font-normal">
             Are you sure you want to delete <span className="font-semibold text-zinc-800">"{workspace?.name || 'this workspace'}"</span>? All data and tasks will be permanently removed.
           </p>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={() => setIsMenuOpen(false)}
               className={cn(
-                "flex-1 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-700 transition-colors cursor-pointer",
+                "flex-1 rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 transition-colors cursor-pointer",
                 "hover:bg-zinc-50"
               )}
             >
@@ -58,14 +58,14 @@ const DeleteWorkspace = ({ isMenuOpen, setIsMenuOpen, workspace }: DeleteOptionP
               onClick={handleSubmit}
               disabled={isDeleting}
               className={cn(
-                "flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-xs font-medium text-white transition-colors cursor-pointer",
+                "flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-4 py-2.5 text-sm font-medium text-white transition-colors cursor-pointer",
                 "hover:bg-rose-700 shadow-xs",
                 isDeleting && "opacity-80 cursor-not-allowed"
               )}
             >
               {isDeleting ? (
                 <>
-                  <Loader2 size={13} className="animate-spin" />
+                  <Loader2 size={14} className="animate-spin" />
                   Deleting...
                 </>
               ) : (

@@ -115,26 +115,26 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                 style={{ maxHeight: "90vh" }}
             >
                 {/* Header */}
-                <div className="px-5 py-3.5 border-b border-zinc-100 bg-zinc-50/50 flex items-center justify-between rounded-t-xl shrink-0">
-                    <h3 className="font-semibold text-sm text-zinc-900">Create new task</h3>
+                <div className="px-6 py-4 border-b border-zinc-100 bg-zinc-50/50 flex items-center justify-between rounded-t-xl shrink-0">
+                    <h3 className="font-semibold text-base text-zinc-900">Create new task</h3>
                     <button
                         type="button"
                         onClick={() => setModalOpen(false)}
-                        className="text-zinc-400 hover:text-zinc-700 transition-colors cursor-pointer p-1 rounded hover:bg-zinc-100"
+                        className="text-zinc-400 hover:text-zinc-700 transition-colors cursor-pointer p-1 rounded-md hover:bg-zinc-100"
                         aria-label="Close modal"
                     >
-                        <X size={16} />
+                        <X size={18} />
                     </button>
                 </div>
 
                 {/* Scrollable body */}
                 <form
                     onSubmit={handleSubmit}
-                    className="p-5 space-y-3.5 overflow-y-auto flex-1"
+                    className="p-6 space-y-4 overflow-y-auto flex-1"
                 >
                     {/* Title */}
                     <div>
-                        <label className="block text-xs font-medium text-zinc-700 mb-1">
+                        <label className="block text-sm font-medium text-zinc-700 mb-1.5">
                             Title <span className="text-rose-500">*</span>
                         </label>
                         <input
@@ -142,7 +142,7 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                             onChange={(e) => setTitle(e.target.value)}
                             type="text"
                             className={cn(
-                                "block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 transition-all",
+                                "block w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 transition-all",
                                 "placeholder:text-zinc-400",
                                 "focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
                             )}
@@ -153,8 +153,8 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
 
                     {/* Description */}
                     <div>
-                        <label className="mb-1 flex items-center gap-1.5 text-xs font-medium text-zinc-700">
-                            <AlignLeft size={13} className="text-zinc-400" />
+                        <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-zinc-700">
+                            <AlignLeft size={14} className="text-zinc-400" />
                             Description
                         </label>
                         <textarea
@@ -162,7 +162,7 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                             onChange={(e) => setDescription(e.target.value)}
                             rows={3}
                             className={cn(
-                                "block w-full resize-none rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 transition-all",
+                                "block w-full resize-none rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 transition-all",
                                 "placeholder:text-zinc-400",
                                 "focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
                             )}
@@ -172,7 +172,7 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
 
                     {/* Workspace */}
                     <div>
-                        <label className="block text-xs font-medium text-zinc-700 mb-1">
+                        <label className="block text-sm font-medium text-zinc-700 mb-1.5">
                             Workspace <span className="text-rose-500">*</span>
                         </label>
                         <div className="relative">
@@ -181,7 +181,7 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                                 onChange={(e) => setWorkspaceId(e.target.value)}
                                 required
                                 className={cn(
-                                    "block w-full appearance-none rounded-lg border border-zinc-200 bg-white px-3 py-2 pr-8 text-xs text-zinc-900 transition-all",
+                                    "block w-full appearance-none rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 pr-8 text-sm text-zinc-900 transition-all",
                                     "focus:border-black focus:outline-none focus:ring-1 focus:ring-black",
                                     !workspaceId && "text-zinc-400"
                                 )}
@@ -198,7 +198,7 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                                 ))}
                             </select>
                             <ChevronDown
-                                size={14}
+                                size={15}
                                 className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400"
                             />
                         </div>
@@ -206,15 +206,15 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
 
                     {/* Assign To */}
                     <div>
-                        <label className="mb-1 flex items-center gap-1.5 text-xs font-medium text-zinc-700">
-                            <Users size={13} className="text-zinc-400" />
+                        <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-zinc-700">
+                            <Users size={14} className="text-zinc-400" />
                             Assign To
                         </label>
                         <div className="relative">
                             <div
                                 onClick={() => setAssignDropdownOpen((v) => !v)}
                                 className={cn(
-                                    "min-h-[38px] flex items-center flex-wrap gap-1.5 w-full rounded-lg border bg-white px-3 py-1.5 text-xs text-zinc-900 transition-all cursor-pointer pr-8",
+                                    "min-h-[42px] flex items-center flex-wrap gap-1.5 w-full rounded-lg border bg-white px-3.5 py-2 text-sm text-zinc-900 transition-all cursor-pointer pr-8",
                                     assignDropdownOpen
                                         ? "border-black ring-1 ring-black"
                                         : "border-zinc-200 hover:border-zinc-300"
@@ -224,18 +224,18 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                                     selectedAssignees.map((u) => (
                                         <span
                                             key={u._id}
-                                            className="inline-flex items-center gap-1 rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-[10px] font-medium text-zinc-700"
+                                            className="inline-flex items-center gap-1 rounded border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-xs font-medium text-zinc-700"
                                         >
                                             {u.username}
                                         </span>
                                     ))
                                 ) : (
-                                    <span className="text-zinc-400 text-xs">
+                                    <span className="text-zinc-400 text-sm">
                                         Select assignees...
                                     </span>
                                 )}
                                 <ChevronDown
-                                    size={14}
+                                    size={15}
                                     className={cn(
                                         "absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 transition-transform duration-150",
                                         assignDropdownOpen && "rotate-180"
@@ -244,7 +244,7 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                             </div>
 
                             {assignDropdownOpen && (
-                                <div className="absolute z-50 mt-1 w-full rounded-lg border border-zinc-200 bg-white shadow-lg p-1 space-y-0.5 max-h-[160px] overflow-y-auto">
+                                <div className="absolute z-50 mt-1 w-full rounded-lg border border-zinc-200 bg-white shadow-lg p-1.5 space-y-0.5 max-h-[170px] overflow-y-auto">
                                     {workspaceUser?.length === 0 ? (
                                         <p className="text-xs text-zinc-400 px-3 py-2 text-center">
                                             No users available
@@ -259,16 +259,16 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                                                 <label
                                                     key={userId}
                                                     htmlFor={`assignee-${userId}`}
-                                                    className="flex items-center gap-2 px-2.5 py-1.5 rounded hover:bg-zinc-50 cursor-pointer transition-colors"
+                                                    className="flex items-center gap-2.5 px-3 py-2 rounded-md hover:bg-zinc-50 cursor-pointer transition-colors"
                                                 >
                                                     <input
                                                         type="checkbox"
                                                         id={`assignee-${userId}`}
                                                         checked={checked}
                                                         onChange={() => toggleAssignee(userId)}
-                                                        className="w-3.5 h-3.5 rounded border-zinc-300 accent-black cursor-pointer"
+                                                        className="w-4 h-4 rounded border-zinc-300 accent-black cursor-pointer"
                                                     />
-                                                    <span className="text-xs font-medium text-zinc-700">
+                                                    <span className="text-sm font-medium text-zinc-700">
                                                         {username}
                                                     </span>
                                                 </label>
@@ -281,11 +281,11 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                     </div>
 
                     {/* Status & Priority */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-4">
                         {/* Priority */}
                         <div>
-                            <label className="mb-1 flex items-center gap-1.5 text-xs font-medium text-zinc-700">
-                                <Flag size={13} className="text-zinc-400" />
+                            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-zinc-700">
+                                <Flag size={14} className="text-zinc-400" />
                                 Priority
                             </label>
                             <div className="relative">
@@ -295,7 +295,7 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                                         setPriority(e.target.value as "High" | "Medium" | "Low")
                                     }
                                     className={cn(
-                                        "block w-full appearance-none rounded-lg border px-3 py-2 pr-8 text-xs font-medium transition-all focus:outline-none",
+                                        "block w-full appearance-none rounded-lg border px-3.5 py-2.5 pr-8 text-sm font-medium transition-all focus:outline-none",
                                         selectedPriority.color
                                     )}
                                 >
@@ -306,15 +306,15 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                                     ))}
                                 </select>
                                 <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                                    <ChevronDown size={12} className="text-zinc-500" />
+                                    <ChevronDown size={14} className="text-zinc-500" />
                                 </div>
                             </div>
                         </div>
 
                         {/* Due Date */}
                         <div>
-                            <label className="mb-1 flex items-center gap-1.5 text-xs font-medium text-zinc-700">
-                                <Calendar size={13} className="text-zinc-400" />
+                            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-zinc-700">
+                                <Calendar size={14} className="text-zinc-400" />
                                 Due Date
                             </label>
                             <input
@@ -322,7 +322,7 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                                 value={dueDate}
                                 onChange={(e) => setDueDate(e.target.value)}
                                 className={cn(
-                                    "block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 transition-all",
+                                    "block w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 transition-all",
                                     "focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
                                 )}
                             />
@@ -334,7 +334,7 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                         type="submit"
                         disabled={isSubmitting || submitted}
                         className={cn(
-                            "mt-4 flex w-full items-center justify-center gap-1.5 rounded-lg bg-black px-4 py-2.5 text-xs font-medium text-white transition-colors cursor-pointer shadow-xs",
+                            "mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-black px-4 py-2.5 text-sm font-medium text-white transition-colors cursor-pointer shadow-xs",
                             submitted
                                 ? "bg-emerald-600"
                                 : "hover:bg-zinc-800",
@@ -343,12 +343,12 @@ const AssignTaskModal = ({ setModalOpen }: AssignTaskModalProps) => {
                     >
                         {isSubmitting ? (
                             <>
-                                <Loader2 size={14} className="animate-spin" />
+                                <Loader2 size={15} className="animate-spin" />
                                 Creating task...
                             </>
                         ) : submitted ? (
                             <>
-                                <CheckCircle2 size={14} />
+                                <CheckCircle2 size={15} />
                                 Task created!
                             </>
                         ) : (

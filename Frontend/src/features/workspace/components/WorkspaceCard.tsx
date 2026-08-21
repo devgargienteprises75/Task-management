@@ -66,12 +66,12 @@ const WorkspaceCard = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
       className="bg-white p-4 rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] border border-zinc-200 hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:border-zinc-300 transition-all duration-150 cursor-pointer flex flex-col h-full group relative"
     >
       <div className="flex justify-between items-start mb-3">
-        <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white flex items-center justify-center text-xs font-semibold">
+        <div className="w-8.5 h-8.5 rounded-lg bg-zinc-900 text-white flex items-center justify-center text-xs font-semibold">
           {workspace?.name?.charAt(0).toUpperCase()}
         </div>
         <div className="flex items-center gap-2">
           <span
-            className={`inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-medium tracking-wide uppercase ${
+            className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium tracking-wide uppercase ${
               workspace?.status === "active"
                 ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                 : "bg-zinc-100 text-zinc-600 border border-zinc-200"
@@ -85,25 +85,25 @@ const WorkspaceCard = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
                 e.stopPropagation();
                 setIsDropdownOpen(!isDropdownOpen);
               }}
-              className="text-zinc-400 hover:text-zinc-700 p-1 rounded hover:bg-zinc-100 transition-colors"
+              className="text-zinc-400 hover:text-zinc-700 p-1 rounded hover:bg-zinc-100 transition-colors cursor-pointer"
             >
-              <MoreHorizontal size={14}/>
+              <MoreHorizontal size={15}/>
             </button>
 
             {isDropdownOpen && (
-              <div className="absolute right-0 top-full mt-1 w-28 bg-white rounded-lg shadow-[0_4px_20px_-4px_rgba(0,0,0,0.12)] border border-zinc-200 overflow-hidden z-20 py-1">
+              <div className="absolute right-0 top-full mt-1.5 w-36 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.12)] border border-zinc-200 overflow-hidden z-20 py-1.5">
                 <button
                   onClick={handleEditClick}
-                  className="w-full text-left px-2.5 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-50 flex items-center gap-1.5 cursor-pointer transition-colors"
+                  className="w-full text-left px-3.5 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 flex items-center gap-2.5 cursor-pointer transition-colors"
                 >
-                  <Pencil size={12} className="text-zinc-400" /> Edit
+                  <Pencil size={14} className="text-zinc-400" /> Edit
                 </button>
                 <div className="h-px bg-zinc-100 w-full" />
                 <button
                   onClick={handleDeleteClick}
-                  className="w-full text-left px-2.5 py-1 text-[11px] font-medium text-rose-600 hover:bg-rose-50 flex items-center gap-1.5 cursor-pointer transition-colors"
+                  className="w-full text-left px-3.5 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 cursor-pointer transition-colors"
                 >
-                  <Trash2 size={12} className="text-rose-500" /> Delete
+                  <Trash2 size={14} className="text-rose-500" /> Delete
                 </button>
               </div>
             )}
@@ -111,21 +111,21 @@ const WorkspaceCard = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
         </div>
       </div>
 
-      <h3 className="font-semibold text-sm mb-1 text-zinc-900">
+      <h3 className="font-semibold text-[15px] mb-1 text-zinc-900">
         {workspace?.name}
       </h3>
-      <p className="text-xs text-zinc-500 mb-4 flex-1 line-clamp-2 leading-relaxed font-normal">
+      <p className="text-[13px] text-zinc-500 mb-4 flex-1 line-clamp-2 leading-relaxed font-normal">
         {workspace?.description}
       </p>
 
       <div className="flex justify-between items-center mt-auto pt-2.5 border-t border-zinc-100">
         <div className="flex -space-x-1">
-          <div className="w-5 h-5 rounded-full border border-white bg-zinc-800 text-white flex items-center justify-center text-[8px] font-medium">
+          <div className="w-5.5 h-5.5 rounded-full border-2 border-white bg-zinc-800 text-white flex items-center justify-center text-[9px] font-semibold">
             {workspace?.name?.charAt(0) || 'W'}
           </div>
         </div>
-        <div className="flex items-center gap-1 text-[11px] font-medium text-zinc-500">
-          <Users size={11} /> {workspace?.members?.length}
+        <div className="flex items-center gap-1.5 text-xs font-medium text-zinc-500">
+          <Users size={13} /> {workspace?.members?.length}
         </div>
       </div>
     </div>

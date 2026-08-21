@@ -77,7 +77,7 @@ const WorkspaceList = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
 
       <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-5 shrink-0 w-full sm:w-auto border-t sm:border-t-0 pt-2.5 sm:pt-0 border-zinc-100">
         <span
-          className={`inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-medium tracking-wide uppercase ${
+          className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium tracking-wide uppercase ${
             workspace?.status === "active"
               ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
               : "bg-zinc-100 text-zinc-600 border border-zinc-200"
@@ -87,8 +87,8 @@ const WorkspaceList = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
         </span>
 
         <div className="flex items-center gap-2 sm:w-24 border-l border-zinc-100 pl-3">
-          <div className="flex items-center gap-1 text-[11px] font-medium text-zinc-500">
-            <Users size={11} /> {workspace?.members?.length}
+          <div className="flex items-center gap-1.5 text-xs font-medium text-zinc-500">
+            <Users size={13} /> {workspace?.members?.length}
           </div>
         </div>
 
@@ -100,23 +100,23 @@ const WorkspaceList = ({ workspace, setIsMenuOpen, setModalOption, setNewName, s
             }}
             className="text-zinc-400 hover:text-zinc-700 p-1 hover:bg-zinc-100 rounded cursor-pointer"
           >
-            <MoreHorizontal size={14} />
+            <MoreHorizontal size={15} />
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute right-0 top-full mt-1 w-28 bg-white rounded-lg shadow-[0_4px_20px_-4px_rgba(0,0,0,0.12)] border border-zinc-200 overflow-hidden z-20 py-1">
+            <div className="absolute right-0 top-full mt-1.5 w-36 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.12)] border border-zinc-200 overflow-hidden z-20 py-1.5">
               <button
                 onClick={handleEditClick}
-                className="w-full text-left px-2.5 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-50 flex items-center gap-1.5 cursor-pointer transition-colors"
+                className="w-full text-left px-3.5 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 flex items-center gap-2.5 cursor-pointer transition-colors"
               >
-                <Pencil size={12} className="text-zinc-400" /> Edit
+                <Pencil size={14} className="text-zinc-400" /> Edit
               </button>
               <div className="h-px bg-zinc-100 w-full" />
               <button
                 onClick={handleDeleteClick}
-                className="w-full text-left px-2.5 py-1 text-[11px] font-medium text-rose-600 hover:bg-rose-50 flex items-center gap-1.5 cursor-pointer transition-colors"
+                className="w-full text-left px-3.5 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 cursor-pointer transition-colors"
               >
-                <Trash2 size={12} className="text-rose-500" /> Delete
+                <Trash2 size={14} className="text-rose-500" /> Delete
               </button>
             </div>
           )}
