@@ -6,12 +6,9 @@ import { useParams, Link } from "react-router-dom"
 import {
   Plus,
   Search,
-  Filter,
   ArrowLeft,
   Users,
   Settings,
-  Grid,
-  List,
   Menu,
   Folder
 } from "lucide-react"
