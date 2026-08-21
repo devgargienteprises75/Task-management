@@ -33,17 +33,33 @@ const SpecificWorkspace = () => {
   const { allTask, isLoading: isTaskLoading } = useSelector((state: RootState) => state.task)
   const [activeTab, setActiveTab] = useState<'Todo' | 'In-progress' | 'Done'>('Todo')
   const [modalOpen, setModalOpen] = useState<boolean>(false)
+  const [searchQuery, setSearchQuery] = useState<string>("")
   const { handleUpdateTask, handleGetAllTask } = useTask()
+  const users = useSelector((state: RootState) => state.admin.users)
 
   // Find the current workspace name from the store
   const currentWorkspace = allWorkspaces.find((w) => w._id === workspaceId)
   const workspaceName = currentWorkspace ? currentWorkspace.name : "Team Workspace"
   const workspaceDesc = currentWorkspace?.description || "Collaborative space for managing daily tasks, sprints, and issues."
   const workspaceTask = allTask.filter(t => t.workspaceId === workspaceId)
+  console.log(searchQuery);
+  
 
-  const todoTask = workspaceTask.filter(t => t.status === "Todo")
-  const inProgressTasks = workspaceTask.filter(t => t.status === "In-progress")
-  const doneTasks = workspaceTask.filter(t => t.status === "Done")
+  const filteredTask = workspaceTask.filter(task => {
+    if (!searchQuery) return true;
+    const lowerQuery = searchQuery.toLowerCase();
+
+    const matchesTitle = task.title.toLowerCase().includes(lowerQuery)
+    const matchesAssignee = typeof task.assignBy === "string" ?
+      users.find(u => u._id === task.assignBy)?.username?.toLowerCase().includes(lowerQuery) : 
+      task.assignBy?.username?.toLowerCase().includes(lowerQuery)
+
+    return matchesTitle || matchesAssignee
+  })
+
+  const todoTask = filteredTask.filter(t => t.status === "Todo")
+  const inProgressTasks = filteredTask.filter(t => t.status === "In-progress")
+  const doneTasks = filteredTask.filter(t => t.status === "Done")
 
   const submitUpdateTask = async (id: string, status: 'Todo' | 'In-progress' | 'Done') => {
     const taskDetails: UpdatedTask = {
@@ -152,28 +168,10 @@ const SpecificWorkspace = () => {
             <input
               type="text"
               placeholder="Search tasks..."
-              className="bg-transparent outline-none w-full text-xs text-zinc-900 placeholder-zinc-400"
-              disabled
+              className="bg-transparent outline-none w-full text-sm text-zinc-900 placeholder-zinc-400"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </div>
-
-          {/* Right Controls: Filters & Views */}
-          <div className="flex items-center gap-2 justify-end">
-            <button className="flex items-center gap-1.5 px-2.5 py-1.5 border border-zinc-200 rounded-lg text-xs font-medium text-zinc-600 bg-white hover:bg-zinc-50 transition-colors">
-              <Filter size={12} />
-              <span>Filter</span>
-            </button>
-
-            <div className="h-4 w-[1px] bg-zinc-200 mx-0.5"></div>
-
-            <div className="flex bg-zinc-100 p-0.5 rounded-lg border border-zinc-200">
-              <button className="p-1 bg-white text-zinc-900 rounded shadow-xs">
-                <Grid size={13} />
-              </button>
-              <button className="p-1 text-zinc-400 hover:text-zinc-600 rounded">
-                <List size={13} />
-              </button>
-            </div>
           </div>
         </div>
 
