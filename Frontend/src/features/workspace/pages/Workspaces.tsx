@@ -73,7 +73,7 @@ const Workspaces = () => {
             <main className="flex-1 flex flex-col min-w-0">
                 {/* Header */}
                 <header className="px-4 sm:px-8 py-3.5 border-b border-zinc-200/80 bg-white flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2.5">
                         <button
                             onClick={() => dispatch(toggleSidebar())}
                             className="p-1.5 hover:bg-zinc-100 rounded-lg text-zinc-500 hover:text-zinc-800 transition-colors md:hidden cursor-pointer"
@@ -97,16 +97,16 @@ const Workspaces = () => {
                                 onChange={(e) => setSearch(e.target.value)}
                                 type="text"
                                 placeholder="Search workspaces..." 
-                                className="bg-transparent outline-none w-full sm:w-44 text-xs text-zinc-900 placeholder-zinc-400" 
+                                className="bg-transparent outline-none w-full sm:w-44 text-sm text-zinc-900 placeholder-zinc-400" 
                             />
                         </div>
 
                         {/* Primary Accent Button */}
                         <button 
                             onClick={() => setWorkspaceModal(true)} 
-                            className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-black text-white hover:bg-zinc-800 rounded-lg font-medium text-xs transition-colors shadow-xs cursor-pointer w-full sm:w-auto active:scale-98"
+                            className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-black text-white hover:bg-zinc-800 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer w-full sm:w-auto active:scale-98"
                         >
-                            <Plus size={14} strokeWidth={2.5} /> Create workspace
+                            <Plus size={15} strokeWidth={2.5} /> Create workspace
                         </button>
                     </div>
                 </header>

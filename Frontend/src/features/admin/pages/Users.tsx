@@ -91,8 +91,8 @@ const Users = () => {
             <Sidebar />
             <main className="flex-1 flex flex-col min-w-0">
                 {/* Header */}
-                <header className="px-4 sm:px-8 py-4 border-b border-zinc-200/80 bg-white flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-                    <div className="flex items-center gap-3">
+                <header className="px-4 sm:px-8 py-3.5 border-b border-zinc-200/80 bg-white flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                    <div className="flex items-center gap-2.5">
                         <button
                             onClick={() => dispatch(toggleSidebar())}
                             className="p-1.5 hover:bg-zinc-100 rounded-lg text-zinc-500 hover:text-zinc-800 transition-colors md:hidden cursor-pointer"
@@ -100,30 +100,30 @@ const Users = () => {
                         >
                             <Menu size={18} />
                         </button>
-                        <div className="w-8.5 h-8.5 bg-zinc-900 rounded-lg flex items-center justify-center text-white font-medium shadow-2xs shrink-0">
-                            <UsersIcon size={17} strokeWidth={2} />
+                        <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center text-white font-medium shadow-2xs shrink-0">
+                            <UsersIcon size={16} strokeWidth={2} />
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold tracking-tight text-zinc-900">Team Members</h2>
+                            <h2 className="text-base font-semibold tracking-tight text-zinc-900">Team Members</h2>
                         </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
-                        <div className="flex items-center gap-2.5 bg-zinc-50 px-3.5 py-2 rounded-lg border border-zinc-200 flex-1 sm:flex-initial focus-within:bg-white focus-within:border-zinc-400 transition-colors">
-                            <Search size={15} className="text-zinc-400 shrink-0" />
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full sm:w-auto">
+                        <div className="flex items-center gap-2 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-200 flex-1 sm:flex-initial focus-within:bg-white focus-within:border-zinc-400 transition-colors">
+                            <Search size={14} className="text-zinc-400 shrink-0" />
                             <input 
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 type="text" 
                                 placeholder="Search users..." 
-                                className="bg-transparent outline-none w-full sm:w-48 text-sm text-zinc-900 placeholder-zinc-400" 
+                                className="bg-transparent outline-none w-full sm:w-44 text-sm text-zinc-900 placeholder-zinc-400" 
                             />
                         </div>
 
                         {/* Primary Accent Button */}
                         <button 
                             onClick={() => setFormOpen(true)} 
-                            className="flex items-center justify-center gap-1.5 px-4 py-2 bg-black text-white hover:bg-zinc-800 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer w-full sm:w-auto active:scale-98"
+                            className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-black text-white hover:bg-zinc-800 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer w-full sm:w-auto active:scale-98"
                         >
                             <Plus size={15} strokeWidth={2.5} /> Add user
                         </button>
@@ -243,22 +243,22 @@ const Users = () => {
                                 <table className="w-full text-left border-collapse min-w-[600px]">
                                     <thead>
                                         <tr className="bg-zinc-50/70 border-b border-zinc-200 text-xs text-zinc-500 font-semibold uppercase tracking-wider">
-                                            <th className="px-6 py-3.5">Name</th>
-                                            <th className="px-6 py-3.5">Role</th>
-                                            <th className="px-6 py-3.5">Status</th>
-                                            <th className="px-6 py-3.5 text-right">Actions</th>
+                                            <th className="px-5 py-3">Name</th>
+                                            <th className="px-5 py-3">Role</th>
+                                            <th className="px-5 py-3">Status</th>
+                                            <th className="px-5 py-3 text-right">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody className="text-sm divide-y divide-zinc-100">
                                         {filterUser?.map((user: UserType) => (
                                             <tr key={user._id} className="hover:bg-zinc-50/50 transition-colors">
-                                                <td className="px-6 py-3.5">
+                                                <td className="px-5 py-3.5">
                                                     <div className="font-semibold text-zinc-900 text-sm">{user.username}</div>
                                                     <div className="text-zinc-500 text-xs mt-0.5">{user.email}</div>
                                                 </td>
 
                                                 {/* Role Badges */}
-                                                <td className="px-6 py-3.5">
+                                                <td className="px-5 py-3.5">
                                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium tracking-wide uppercase ${
                                                         user.role === 'admin' ? 'bg-purple-50 text-purple-700 border border-purple-200' :
                                                         user.role === 'head' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
@@ -269,7 +269,7 @@ const Users = () => {
                                                 </td>
 
                                                 {/* Status Indicators */}
-                                                <td className="px-6 py-3.5">
+                                                <td className="px-5 py-3.5">
                                                     <span className="flex items-center gap-2">
                                                         <span className={`w-2 h-2 rounded-full ${user.isActive ? 'bg-emerald-500' : 'bg-zinc-300'}`}></span>
                                                         <span className="text-zinc-600 text-xs font-normal">{user.isActive ? 'Active' : 'Disabled'}</span>
@@ -277,7 +277,7 @@ const Users = () => {
                                                 </td>
 
                                                 {/* Actions */}
-                                                <td className="px-6 py-3.5 text-right">
+                                                <td className="px-5 py-3.5 text-right">
                                                     <button onClick={() => {
                                                         setSelectedUserId(user._id);
                                                         setNewRole(user.role as 'admin' | 'head' | 'user');

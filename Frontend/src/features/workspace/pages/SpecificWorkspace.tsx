@@ -104,7 +104,7 @@ const SpecificWorkspace = () => {
       <main className="flex-1 flex flex-col min-w-0">
         {/* Workspace Header */}
         <header className="px-4 sm:px-8 py-3.5 border-b border-zinc-200/80 bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-0.5">
             <div className="flex items-center gap-2.5">
               <button
                 onClick={() => dispatch(toggleSidebar())}
@@ -114,30 +114,30 @@ const SpecificWorkspace = () => {
                 <Menu size={18} />
               </button>
               <Link to="/workspaces" className="p-1 hover:bg-zinc-100 rounded text-zinc-400 hover:text-zinc-700 transition-colors">
-                <ArrowLeft size={15} />
+                <ArrowLeft size={16} />
               </Link>
-              <div className="w-6 h-6 bg-zinc-900 rounded flex items-center justify-center text-white text-xs font-semibold">
-                <Folder size={12} />
+              <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center text-white font-medium shadow-2xs shrink-0">
+                <Folder size={16} strokeWidth={2} />
               </div>
               <h2 className="text-base font-semibold tracking-tight text-zinc-900">{workspaceName}</h2>
             </div>
-            <p className="text-[11px] text-zinc-400 ml-8 max-w-xl line-clamp-1">{workspaceDesc}</p>
+            <p className="text-xs text-zinc-400 ml-16 max-w-xl line-clamp-1">{workspaceDesc}</p>
           </div>
 
           <div className="flex items-center gap-2.5 self-stretch md:self-auto justify-end">
             <button className="p-1.5 hover:bg-zinc-100 rounded-lg text-zinc-500 hover:text-zinc-800 transition-colors border border-zinc-200">
-              <Users size={14} />
+              <Users size={15} />
             </button>
             <button className="p-1.5 hover:bg-zinc-100 rounded-lg text-zinc-500 hover:text-zinc-800 transition-colors border border-zinc-200">
-              <Settings size={14} />
+              <Settings size={15} />
             </button>
 
             {/* Primary Action Button */}
             <button
               onClick={() => setModalOpen(true)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-black text-white hover:bg-zinc-800 rounded-lg font-medium text-xs transition-colors shadow-xs cursor-pointer active:scale-98"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-black text-white hover:bg-zinc-800 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer active:scale-98"
             >
-              <Plus size={14} strokeWidth={2.5} /> Create task
+              <Plus size={15} strokeWidth={2.5} /> Create task
             </button>
 
             {modalOpen && <AssignTaskModal setModalOpen={setModalOpen} />}

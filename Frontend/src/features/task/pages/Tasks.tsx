@@ -161,9 +161,9 @@ const Tasks = () => {
 
       {/* Main Task View */}
       <main className="flex-1 flex flex-col min-w-0">
-        {/* Page Top Header */}
-        <header className="px-4 sm:px-8 py-4 border-b border-zinc-200/80 bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-          <div className="flex items-center gap-3">
+        {/* Standardized Navbar */}
+        <header className="px-4 sm:px-8 py-3.5 border-b border-zinc-200/80 bg-white flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={() => dispatch(toggleSidebar())}
               className="p-1.5 hover:bg-zinc-100 rounded-lg text-zinc-500 hover:text-zinc-800 transition-colors md:hidden cursor-pointer"
@@ -171,44 +171,35 @@ const Tasks = () => {
             >
               <Menu size={18} />
             </button>
-            <div className="w-8.5 h-8.5 bg-zinc-900 rounded-lg flex items-center justify-center text-white font-medium shadow-2xs shrink-0">
-              <FolderKanban size={17} strokeWidth={2} />
+            <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center text-white font-medium shadow-2xs shrink-0">
+              <FolderKanban size={16} strokeWidth={2} />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold tracking-tight text-zinc-900">Task Board</h1>
-                <span className="bg-zinc-100 text-zinc-600 text-xs font-medium px-2 py-0.5 rounded-md border border-zinc-200">
-                  {allTask.length}
-                </span>
-              </div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-base font-semibold tracking-tight text-zinc-900">Task Board</h1>
+              <span className="bg-zinc-100 text-zinc-600 text-xs font-mono px-1.5 py-0.5 rounded border border-zinc-200">
+                {allTask.length}
+              </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 self-stretch md:self-auto justify-end w-full md:w-auto">
-            {/* Quick Metrics */}
-            <div className="hidden lg:flex items-center gap-4 mr-1 border-r border-zinc-200 pr-4 text-xs text-zinc-500">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-zinc-400" />
-                <span>To Do:</span>
-                <span className="font-semibold text-zinc-900 text-sm">{todoTasks.length}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-blue-500" />
-                <span>In Progress:</span>
-                <span className="font-semibold text-zinc-900 text-sm">{inProgressTasks.length}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span>Done:</span>
-                <span className="font-semibold text-zinc-900 text-sm">{doneTasks.length}</span>
-              </div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full sm:w-auto">
+            {/* Search Box in Navbar */}
+            <div className="flex items-center gap-2 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-200 flex-1 sm:flex-initial focus-within:bg-white focus-within:border-zinc-400 transition-colors">
+              <Search size={14} className="text-zinc-400 shrink-0" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search tasks..."
+                className="bg-transparent outline-none w-full sm:w-44 text-sm text-zinc-900 placeholder-zinc-400"
+              />
             </div>
 
-            {/* Primary Action Button (Vercel solid black button) */}
+            {/* Primary Action Button */}
             {user?.role !== "user" && (
               <button 
                 onClick={() => setModalOpen(true)} 
-                className="flex items-center justify-center gap-1.5 px-4 py-2 bg-black text-white hover:bg-zinc-800 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer w-full md:w-auto active:scale-98"
+                className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-black text-white hover:bg-zinc-800 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer w-full sm:w-auto active:scale-98"
               >
                 <Plus size={15} strokeWidth={2.5} /> Create task
               </button>
@@ -218,27 +209,33 @@ const Tasks = () => {
 
         {modalOpen && <AssignTaskModal setModalOpen={setModalOpen} />}
 
-        {/* Toolbar: Search, Filters & View Options */}
-        <div className="px-4 sm:px-8 py-3 border-b border-zinc-200/80 bg-white flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
-          {/* Search Box */}
-          <div className="flex items-center gap-2.5 bg-zinc-50 px-3.5 py-2 rounded-lg border border-zinc-200 flex-1 max-w-sm focus-within:bg-white focus-within:border-zinc-400 transition-colors">
-            <Search size={15} className="text-zinc-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search tasks..."
-              className="bg-transparent outline-none w-full text-sm text-zinc-900 placeholder-zinc-400"
-            />
+        {/* Sub-toolbar: Metrics & View Switcher */}
+        <div className="px-4 sm:px-8 py-2.5 border-b border-zinc-200/80 bg-white flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2.5">
+          {/* Quick Metrics */}
+          <div className="flex items-center gap-4 text-xs text-zinc-500">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-zinc-400" />
+              <span>To Do:</span>
+              <span className="font-semibold text-zinc-900">{todoTasks.length}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-blue-500" />
+              <span>In Progress:</span>
+              <span className="font-semibold text-zinc-900">{inProgressTasks.length}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>Done:</span>
+              <span className="font-semibold text-zinc-900">{doneTasks.length}</span>
+            </div>
           </div>
 
-          {/* Controls & Switcher */}
+          {/* View Switcher */}
           <div className="flex items-center gap-2 justify-end">
-            {/* View Switcher */}
             <div className="flex items-center rounded-lg border border-zinc-200 bg-zinc-100 p-0.5">
               <button 
                 onClick={() => setAssignedTask(false)} 
-                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+                className={`rounded-md px-3 py-1 text-xs font-medium transition-all cursor-pointer ${
                   !assignedTask 
                     ? "bg-white text-zinc-900 shadow-xs font-semibold" 
                     : "text-zinc-500 hover:text-zinc-800"
@@ -248,7 +245,7 @@ const Tasks = () => {
               </button>
               <button 
                 onClick={() => setAssignedTask(true)} 
-                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+                className={`rounded-md px-3 py-1 text-xs font-medium transition-all cursor-pointer ${
                   assignedTask 
                     ? "bg-white text-zinc-900 shadow-xs font-semibold" 
                     : "text-zinc-500 hover:text-zinc-800"
@@ -338,7 +335,7 @@ const Tasks = () => {
                   </div>
                   <div>
                     <h2 className="text-sm font-semibold tracking-tight text-zinc-900">Tasks assigned by you</h2>
-                    <p className="text-[11px] text-zinc-500">Tasks you have delegated to team members.</p>
+                    <p className="text-xs text-zinc-500">Tasks you have delegated to team members.</p>
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -435,12 +432,12 @@ const Tasks = () => {
                   ))}
                 </div>
               ) : (
-                <div className="flex min-h-60 flex-col items-center justify-center rounded-xl border border-dashed border-zinc-300 bg-white px-6 text-center">
-                  <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-100 text-zinc-400">
-                    <UsersRound size={18} />
+                <div className="flex min-h-[280px] flex-col items-center justify-center rounded-xl border border-zinc-200 bg-white p-8 text-center shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+                  <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 text-zinc-600 border border-zinc-200">
+                    <UsersRound size={18} strokeWidth={2} />
                   </div>
-                  <h3 className="text-xs font-semibold text-zinc-800">No assigned tasks</h3>
-                  <p className="mt-0.5 max-w-sm text-xs leading-relaxed text-zinc-400">Tasks you assign to teammates will appear here.</p>
+                  <h3 className="text-sm font-semibold text-zinc-900">No assigned tasks</h3>
+                  <p className="mt-1 max-w-sm text-xs leading-relaxed text-zinc-500">Tasks you assign to teammates will appear here.</p>
                 </div>
               )}
             </div>
