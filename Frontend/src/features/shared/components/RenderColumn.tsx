@@ -1,5 +1,4 @@
 import { useDroppable } from "@dnd-kit/react";
-import { MoreHorizontal, Plus } from "lucide-react";
 import TaskCard from "./TaskCard";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/app.store";
@@ -49,11 +48,6 @@ const RenderColumn = ({ id, title, count, allTask, statusType }: RenderColumnPro
                         {count}
                     </span>
                 </div>
-                <div className="flex items-center">
-                    <button className="p-1 hover:bg-zinc-200/60 rounded text-zinc-400 hover:text-zinc-600 transition-colors cursor-pointer">
-                        <MoreHorizontal size={15} />
-                    </button>
-                </div>
             </div>
 
             {/* Task Cards Stack */}
@@ -66,11 +60,6 @@ const RenderColumn = ({ id, title, count, allTask, statusType }: RenderColumnPro
                         statusType={statusType}
                     />
                 ))}
-
-                {/* Add Task Button */}
-                <button className="flex items-center sticky justify-center gap-1.5 py-2 rounded-lg border border-dashed border-zinc-300/80 text-zinc-600 hover:text-zinc-900 hover:border-zinc-400 hover:bg-white text-[13px] font-medium transition-all cursor-pointer">
-                    <Plus size={14} strokeWidth={2} /> Add task
-                </button>
             </div>
         </div>
     );

@@ -183,7 +183,7 @@ const TaskCard = ({ task, taskUsers, assignedTask = false, setEditModalOpen, set
               }}
               className="p-1 hover:bg-zinc-100 rounded text-zinc-400 hover:text-zinc-600 transition-colors cursor-pointer"
             >
-              <MoreVertical size={14} />
+              <MoreVertical size={16} />
             </button>
 
             {dropdownOpen && (
