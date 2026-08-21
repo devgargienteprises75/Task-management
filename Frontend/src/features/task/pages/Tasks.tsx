@@ -55,17 +55,21 @@ const Tasks = () => {
   }, [])
 
   const submitUpdateTask = async (id: string, status: 'Todo' | 'In-progress' | 'Done') => {
+    const targetTask = allTask.find(t => t._id === id);
     const taskDetails: UpdatedTask = {
       _id: id,
       status,
+      workspaceId: targetTask?.workspaceId,
     }
 
     const res = await handleUpdateTask(taskDetails);
 
     if (res.success) {
       setModalOpen(false)
+      setSelectedTask(null)
     }
   }
+  
 
   const tasksAssignedByCurrentUser = allTask.filter((task) => {
     const assignedById = typeof task.assignBy === "string" ? task.assignBy : task.assignBy?._id;
@@ -128,6 +132,7 @@ const Tasks = () => {
 
   useEffect(() => {
     allWorkspaces?.forEach(workspace => {
+      socket.connect();
       socket.emit('join_workspace', workspace._id)
 
       socket.on('task:created', (newTask: task) => {
