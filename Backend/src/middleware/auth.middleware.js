@@ -3,7 +3,10 @@ import { config } from '../config/config.js';
 import { redis } from '../config/cache.js';
 
 export async function verifyUser(req, res, next) {
-    const { token } = req.cookies
+    const authHeader = req.headers.authorization
+    const token = (authHeader && authHeader.startsWith('Bearer ')) 
+        ? authHeader.split(' ')
+        : req.cookies.token;
 
     if(!token){
         return res.status(401).json({
