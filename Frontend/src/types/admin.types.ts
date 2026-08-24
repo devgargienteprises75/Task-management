@@ -8,8 +8,8 @@ export interface CreateUserPayload {
 }
 
 export interface UpdateUserPayload {
-    newRole: 'admin' | 'head' | 'user';
-    currentActiveStatus?: boolean
+    newRole?: 'admin' | 'head' | 'user' | '';
+    currentActiveStatus?: boolean | null
 }
 
 export interface AdminState {

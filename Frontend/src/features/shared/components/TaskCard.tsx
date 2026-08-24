@@ -74,8 +74,16 @@ const TaskCard = ({ task, taskUsers, assignedTask = false, setEditModalOpen, set
   }, [dropdownOpen, statusMenuOpen])
 
   const assignees = taskUsers.filter((u) =>
-    (task.assignTo as string[]).includes(u._id)
+    (task.assignTo as (string | user)[]).some(
+      (a) => (typeof a === "string" ? a : a?._id) === u._id
+    )
   );
+
+  const assigner =
+    typeof task.assignBy === "object" && task.assignBy !== null
+      ? (task.assignBy as user)
+      : taskUsers.find((u) => u._id === task.assignBy);
+  const assignerName = assigner?.username;
 
   const { ref } = useDraggable({
     id: task._id ?? `task-${task.title}`,
@@ -227,27 +235,44 @@ const TaskCard = ({ task, taskUsers, assignedTask = false, setEditModalOpen, set
       </p>
 
       {/* Footer Meta Details */}
-      <div className="flex items-center justify-between pt-2 border-t border-zinc-100 dark:border-zinc-700/60 text-zinc-400 dark:text-zinc-400 text-xs font-normal">
+      <div className="flex items-center justify-between pt-2 border-t border-zinc-100 dark:border-zinc-700/60 text-zinc-400 dark:text-zinc-400 text-xs font-normal gap-2">
         {/* Due date */}
-        <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 font-mono">
+        <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 font-mono shrink-0">
           <Calendar size={12} className="text-zinc-400 dark:text-zinc-400" />
           <span>{task.dueDate?.split("T")[0] || "—"}</span>
         </div>
 
-        {/* Assignees Avatars Stack */}
-        <div className="flex -space-x-1 ml-1">
-          {assignees.map((user, idx) => (
+        {/* Assigner & Assignees Flow */}
+        <div className="flex items-center gap-1.5 shrink-0 overflow-hidden">
+          {assignerName && (
             <div
-              key={idx}
-              title={user.username}
-              className="w-5.5 h-5.5 rounded-full border-2 border-white dark:border-zinc-800 bg-zinc-800 dark:bg-zinc-600 text-white flex items-center justify-center text-[9px] font-semibold shadow-2xs"
+              className="flex items-center gap-1 text-[11px] text-zinc-400 dark:text-zinc-500"
+              title={`Assigned by ${assignerName}`}
             >
-              {user.username
-                ?.split(" ")
-                ?.map((n: string) => n[0])
-                ?.join("")}
+              <span className="font-normal text-[10px] text-zinc-400 dark:text-zinc-500">by</span>
+              <span className="font-medium text-zinc-600 dark:text-zinc-300 max-w-[65px] truncate">
+                {assignerName.split(" ")[0]}
+              </span>
             </div>
-          ))}
+          )}
+
+          {/* Assignees Avatars Stack */}
+          {assignees.length > 0 && (
+            <div className="flex -space-x-1 ml-0.5">
+              {assignees.map((user, idx) => (
+                <div
+                  key={idx}
+                  title={`Assigned to ${user.username}`}
+                  className="w-5.5 h-5.5 rounded-full border-2 border-white dark:border-zinc-800 bg-zinc-800 dark:bg-zinc-600 text-white flex items-center justify-center text-[9px] font-semibold shadow-2xs shrink-0"
+                >
+                  {user.username
+                    ?.split(" ")
+                    ?.map((n: string) => n[0])
+                    ?.join("")}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
