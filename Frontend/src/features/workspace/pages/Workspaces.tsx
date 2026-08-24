@@ -16,6 +16,7 @@ const Workspaces = () => {
     const { allWorkspaces, isLoading } = useSelector((state: RootState) => state.workspace);
     const { handleGetWorkspaces } = useWorkspace();
     const dispatch = useDispatch();
+    const user = useSelector((state: RootState) => state.auth.user)
 
     const [isCardView, setIsCardView] = useState<boolean>(true);
     const [searchQuery, setSearchQuery] = useState<string>("");
@@ -27,7 +28,11 @@ const Workspaces = () => {
         }
     }, []);
 
-    const filteredWorkspaces = allWorkspaces.filter(w =>
+    const currentUserWorkspace = allWorkspaces.filter(w =>
+        w?.members?.some(member => (typeof member === "string" ? member : member?._id) === user?._id)
+    );
+
+    const filteredWorkspaces = currentUserWorkspace.filter(w =>
         w.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (w.description && w.description.toLowerCase().includes(searchQuery.toLowerCase()))
     );

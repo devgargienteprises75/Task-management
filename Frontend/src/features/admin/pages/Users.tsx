@@ -1,12 +1,13 @@
 import type { RootState } from "@/app/app.store";
 import Sidebar from "@/components/Sidebar";
 import type { CreateUserPayload } from "@/types/admin.types";
-import { Users as UsersIcon, Plus, Search, Shield, X, Loader2, Menu } from "lucide-react";
+import { Users as UsersIcon, Plus, Search, Shield, X, Loader2, Menu, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import useAdmin from "../hooks/useAdmin";
 import { cn } from "@/lib/cn";
 import { toggleSidebar } from "@/app/layout.slice";
+import EditUser from "../components/EditUser";
 
 const Users = () => {
     const { users } = useSelector((state: RootState) => state.admin)
@@ -19,7 +20,9 @@ const Users = () => {
     const [searchQuery, setSearchQuery] = useState<string>('')
     const [isCreateOpen, setIsCreateOpen] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
-
+    const [currentEditId, setCurrentEditId] = useState<string | null>(null)
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
+    
     const { handleAddUser, handleGetUsers } = useAdmin()
 
     useEffect(() => {
@@ -127,12 +130,13 @@ const Users = () => {
                                         <tr>
                                             <th className="px-6 py-3">Member</th>
                                             <th className="px-6 py-3">Role</th>
+                                            <th className="px-6 py-3 text-right">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-zinc-100 dark:divide-zinc-700/60">
                                         {filteredUsers.length === 0 ? (
                                             <tr>
-                                                <td colSpan={2} className="px-6 py-12 text-center text-zinc-400 dark:text-zinc-500 text-sm">
+                                                <td colSpan={3} className="px-6 py-12 text-center text-zinc-400 dark:text-zinc-500 text-sm">
                                                     No members found
                                                 </td>
                                             </tr>
@@ -161,6 +165,18 @@ const Users = () => {
                                                             {u.role.toUpperCase()}
                                                         </span>
                                                     </td>
+                                                    <td className="px-6 py-4 text-right">
+                                                        <button
+                                                            onClick={() => {
+                                                                setCurrentEditId(u._id);
+                                                                setIsUpdateModalOpen(true);
+                                                            }}
+                                                            className="p-1.5 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors cursor-pointer"
+                                                            title="Edit member"
+                                                        >
+                                                            <Pencil size={15} />
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                             ))
                                         )}
@@ -170,6 +186,13 @@ const Users = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Edit User Modal */}
+                {isUpdateModalOpen && <EditUser 
+                                        userId={currentEditId} 
+                                        isUpdateModalOpen={isUpdateModalOpen} 
+                                        setIsUpdateModalOpen={setIsUpdateModalOpen} 
+                                    />}
 
                 {/* Add Member Modal */}
                 {isCreateOpen && (
@@ -241,8 +264,9 @@ const Users = () => {
                                             "focus:border-black dark:focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-zinc-400"
                                         )}
                                     >
-                                        <option value="user">Member (Standard access)</option>
-                                        <option value="admin">Administrator (Full control)</option>
+                                        <option value="user">Member</option>
+                                        <option value="head">Lead</option>
+                                        <option value="admin">Administrator</option>
                                     </select>
                                 </div>
 
