@@ -2,6 +2,8 @@ import type { user } from "./user.types";
 
 export interface AuthResponse {
     user: user;
+    token?: string;
+    message: string;
 }
 
 // Structure of Redux slice for Authentication
