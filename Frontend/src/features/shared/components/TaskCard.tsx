@@ -91,7 +91,7 @@ const TaskCard = ({ task, taskUsers, assignedTask = false, setEditModalOpen, set
 
     const taskDetails: UpdatedTask = {
       _id: task._id,
-      status,
+      status: nextStatus,
       workspaceId: task?.workspaceId
     }
 
