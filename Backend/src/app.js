@@ -9,15 +9,19 @@ import webpush from 'web-push'
 import { config } from './config/config.js'
 import { verifyUser } from './middleware/auth.middleware.js'
 import { subscriptionModel } from './models/subscription.model.js'
+import path from 'path'
 
 const app = express()
 
-app.use(cors({
-    origin: ["https://task-management-mauve-beta-80.vercel.app", "http://localhost:5173", "http://localhost:4173"],
+const __dirname = path.join(process.cwd(), "")
+
+app.use(cors({  
+    origin: ["https://task-management-mauve-beta-80.vercel.app", "http://localhost:5173", "http://localhost:4173", "http://localhost:8000"],
     credentials: true
 }))
 app.use(express.json())
 app.use(cookieParser())
+app.use(express.static("./public"))
 
 webpush.setVapidDetails(
     "https://task-management-mauve-beta-80.vercel.app",
@@ -78,5 +82,9 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRouter)
 app.use('/api/workspace', workspaceRouter)
 app.use('/api/tasks', taskRouter)
+
+app.get("*name", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"))
+})
 
 export default app

@@ -2,7 +2,9 @@ import axios from "axios";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL || (
     import.meta.env.PROD
-        ? "https://task-management-wjl7.onrender.com/api"
+        ? (window.location.origin.includes("vercel.app") 
+            ? "https://task-management-wjl7.onrender.com/api" 
+            : "/api")
         : "http://localhost:8000/api"
 );
 
@@ -28,7 +30,8 @@ api.interceptors.response.use((response) => {
 }, (error) => {
     if(error.response?.status === 401){
         localStorage.removeItem('token')
-        console.error("Unauthorized Redirecting to login...")
+        console.error("Token expired, Redirecting to login...")
+        window.location.href = "/login"
     }
     return Promise.reject(error)
 })

@@ -10,9 +10,9 @@ export async function verifyUser(req, res, next) {
 
     if(!token){
         return res.status(401).json({
-            message: "Token missing, user not logged in",
+            message: "Token invalid, please login again",
             success: false,
-            err: "Token missing"
+            err: "TokenExpiredError"
         })
     }
 
