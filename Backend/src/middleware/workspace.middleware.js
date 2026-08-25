@@ -2,8 +2,6 @@ import jwt from 'jsonwebtoken'
 import { userModel } from '../models/user.model.js';
 import { workspaceModel } from '../models/workspace.model.js';
 import { config } from '../config/config.js';
-import mongoose from 'mongoose';
-import { assign } from 'nodemailer/lib/shared/index.js';
 
 export async function requireAdminOrHead(req, res, next) {
     const { token } = req.cookies

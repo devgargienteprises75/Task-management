@@ -2,6 +2,11 @@ import cron from "node-cron";
 import { taskModel } from "../models/task.model.js";
 import { sendPushToUser } from "./push.service.js";
 
+const CronJobManager = class{
+    // Implement one more cron job to check for overdue tasks
+    // Send reminder to assignee and assigner
+}
+
 export const initializeCronJobs = () => {
     cron.schedule('0 12 * * *', async () => {
         console.log("Running Daily Deadline checker");
