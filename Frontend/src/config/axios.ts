@@ -30,8 +30,10 @@ api.interceptors.response.use((response) => {
 }, (error) => {
     if(error.response?.status === 401){
         localStorage.removeItem('token')
-        console.error("Token expired, Redirecting to login...")
-        window.location.href = "/login"
+        // Don't force a hard redirect — let React's Protected component
+        // detect the unauthenticated state and navigate via React Router.
+        // Using window.location.href causes a full page reload that
+        // destroys Redux state and can create redirect loops.
     }
     return Promise.reject(error)
 })
