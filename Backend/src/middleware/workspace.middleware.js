@@ -4,7 +4,10 @@ import { workspaceModel } from '../models/workspace.model.js';
 import { config } from '../config/config.js';
 
 export async function requireAdminOrHead(req, res, next) {
-    const { token } = req.cookies
+    const authHeader = req.headers.authorization
+    const token = (authHeader && authHeader.startsWith('Bearer ')) 
+        ? authHeader.split(' ')[1]
+        : req.cookies?.token;
 
     if(!token){
         return res.status(401).json({
