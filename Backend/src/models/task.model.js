@@ -37,9 +37,9 @@ const taskSchema = new mongoose.Schema({
     dueDate: {
         type: Date,
     },
-    reminderSent: {
-        type: Boolean,
-        default: false
+    reminderSentCount: {
+        type: Number,
+        default: 0
     }
 }, { timestamps: true })
 

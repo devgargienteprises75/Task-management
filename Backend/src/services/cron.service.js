@@ -3,8 +3,8 @@ import { taskModel } from "../models/task.model.js";
 import { sendPushToUser } from "./push.service.js";
 import { userModel } from "../models/user.model.js";
 
-export const initializeCronJobs = () => {
-    cron.schedule('0 12 * * *', async () => {
+const reminderSchedule = async ({ hour }) => {
+    cron.schedule(`0 ${hour} * * *`, async () => {
         console.log("Running Daily Deadline checker");
 
         try {
@@ -13,17 +13,19 @@ export const initializeCronJobs = () => {
 
             const tasksDueToday = await taskModel.find({
                 dueDate: todayUTC,
-                status: { $ne: "Done"},
-                reminderSent: false
+                status: { $ne: "Done" },
+                reminderSentCount: {
+                    $lt: 2
+                }
             });
 
-            if(tasksDueToday.length === 0){
+            if (tasksDueToday.length === 0) {
                 console.log("No pending tasks due today.");
-                return 
+                return
             }
 
-            for(const task of tasksDueToday){
-                for(const assignee of task.assignTo){
+            for (const task of tasksDueToday) {
+                for (const assignee of task.assignTo) {
                     await sendPushToUser(assignee.toString(), {
                         title: "Deadline Today! ⏰",
                         body: `Action required: Your task "${task.title}" is due today. Please complete it before the end of the day.`,
@@ -35,22 +37,27 @@ export const initializeCronJobs = () => {
 
                 await sendPushToUser(task.assignBy.toString(), {
                     title: "Task Deadline Reached ⚠️",
-                    body: `Status update: The task "${task.title}" you assigned to ${user.username} is deadline today and is still pending completion.`,
+                    body: `Status update: The task "${task.title}" you assigned to ${user?.username || 'someone'} which deadline is today and is still pending completion.`,
                     url: `/workspaces/${task.workspaceId}`
                 })
 
-                task.reminderSent = true;
+                task.reminderSentCount += 1;
                 await task.save();
             }
 
             console.log(`Successfully sent reminder for ${tasksDueToday.length} tasks.`);
-            
+
         } catch (err) {
             console.error(`Error runnign deadline cron job: ${err}`)
         }
-        
+
     }, {
         schedule: true,
         timezone: "Asia/Kolkata"
     })
+}
+
+export const initializeCronJobs = () => {
+    reminderSchedule({ hour: 12 })
+    reminderSchedule({ hour: 18 }) // 6:00 PM
 }
