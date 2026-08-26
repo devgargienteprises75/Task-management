@@ -104,7 +104,7 @@ const Workspaces = () => {
                                 ))}
                             </div>
                         ) : (
-                            <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700/80 rounded-xl overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+                            <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700/80 rounded-xl overflow-visible shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
                                 <div className="divide-y divide-zinc-100 dark:divide-zinc-700/60">
                                     {filteredWorkspaces.map((ws) => (
                                         <WorkspaceList key={ws._id} workspace={ws} />
