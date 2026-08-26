@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import { taskModel } from "../models/task.model.js";
 import { sendPushToUser } from "./push.service.js";
+import { userModel } from "../models/user.model.js";
 
 export const initializeCronJobs = () => {
     cron.schedule('0 12 * * *', async () => {
@@ -16,7 +17,7 @@ export const initializeCronJobs = () => {
                 reminderSent: false
             });
 
-            if(!tasksDueToday){
+            if(tasksDueToday.length === 0){
                 console.log("No pending tasks due today.");
                 return 
             }
@@ -30,9 +31,11 @@ export const initializeCronJobs = () => {
                     })
                 }
 
+                const user = await userModel.findById(task.assignTo[0])
+
                 await sendPushToUser(task.assignBy.toString(), {
                     title: "Task Deadline Reached ⚠️",
-                    body: `Status update: The task "${task.title}" you assigned is due today and is still pending completion.`,
+                    body: `Status update: The task "${task.title}" you assigned to ${user.username} is deadline today and is still pending completion.`,
                     url: `/workspaces/${task.workspaceId}`
                 })
 
