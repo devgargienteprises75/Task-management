@@ -2,7 +2,7 @@ import type { RootState } from "@/app/app.store";
 import { cn } from "@/lib/cn"
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { ChevronRight, Loader2, X } from "lucide-react";
+import { ChevronUp, Loader2, X } from "lucide-react";
 import useWorkspace from "../hooks/useWorkspace";
 import type { user, workspace } from "@/types";
 
@@ -45,6 +45,8 @@ const CreateWorkspaceModal = ({ setWorkspaceModal }: CreateWorkspaceModalProps) 
             setIsSubmitting(false)
         }
     }
+
+    const filterUsers = users.filter(u => u._id !== user?._id)
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs px-4">
@@ -100,35 +102,62 @@ const CreateWorkspaceModal = ({ setWorkspaceModal }: CreateWorkspaceModalProps) 
                                 <span className="text-zinc-500 dark:text-zinc-400">
                                     {members.length ? `${members.length} members selected` : "Select members..."}
                                 </span>
-                                <ChevronRight size={15} className={`text-zinc-400 dark:text-zinc-500 transition-transform duration-150 ${selectBoxOpen ? 'rotate-90' : ''}`} />
+                                <ChevronUp size={15} className={`text-zinc-400 dark:text-zinc-500 transition-transform duration-150 ${selectBoxOpen ? 'rotate-180' : ''}`} />
                             </div>
                             
                             {selectBoxOpen && (
-                                <div className="absolute top-full left-0 right-0 mt-1 w-full z-50 max-h-[170px] overflow-y-auto rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-1.5 shadow-lg space-y-0.5">
-                                    {users.map(u => (
-                                        <label 
-                                            key={u._id}
-                                            htmlFor={u._id}
-                                            className="flex items-center gap-2.5 px-3 py-2 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-700 cursor-pointer transition-colors"
-                                        >
-                                            <input 
-                                                onChange={(e) => {
-                                                    if(e.target.checked) {
-                                                        setMembers([...members, u])
-                                                    } else {
-                                                        setMembers(members.filter(m => m._id !== u._id))
-                                                    }
-                                                }}
-                                                checked={members.some(m => m._id === u._id)}
-                                                type="checkbox" 
-                                                id={u._id} 
-                                                className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-700 text-black focus:ring-0 cursor-pointer accent-black dark:accent-white"
-                                            />
-                                            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                                                {u.username}
-                                            </span>
-                                        </label>
-                                    ))}
+                                <div className="absolute z-50 bottom-full mb-1 left-0 right-0 w-full max-h-[190px] overflow-y-auto rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-1.5 shadow-lg space-y-0.5">
+                                    {filterUsers.length === 0 ? (
+                                        <p className="text-xs text-zinc-400 dark:text-zinc-500 px-3 py-2 text-center">
+                                            No members available
+                                        </p>
+                                    ) : (
+                                        <>
+                                            <div className="sticky -top-1.5 -mx-1.5 px-3 py-1.5 mb-1 border-b border-zinc-100 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 flex items-center justify-between z-10">
+                                                <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                                                    {members.length} selected
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectBoxOpen(false);
+                                                    }}
+                                                    className="text-xs font-medium px-2.5 py-1 rounded-md bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors cursor-pointer"
+                                                >
+                                                    Done
+                                                </button>
+                                            </div>
+                                            <div className="space-y-0.5">
+                                                {filterUsers.map(u => {
+                                                    return (
+                                                        <label 
+                                                            key={u._id}
+                                                            htmlFor={u._id}
+                                                            className="flex items-center gap-2.5 px-3 py-2 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-700 cursor-pointer transition-colors"
+                                                        >
+                                                            <input 
+                                                                onChange={(e) => {
+                                                                    if(e.target.checked) {
+                                                                        setMembers([...members, u])
+                                                                    } else {
+                                                                        setMembers(members.filter(m => m._id !== u._id))
+                                                                    }
+                                                                }}
+                                                                checked={members.some(m => m._id === u._id)}
+                                                                type="checkbox" 
+                                                                id={u._id} 
+                                                                className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-700 text-black focus:ring-0 cursor-pointer accent-black dark:accent-white"
+                                                            />
+                                                            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                                                                {u.username}
+                                                            </span>
+                                                        </label>
+                                                    );
+                                                })}
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>
