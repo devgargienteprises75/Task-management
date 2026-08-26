@@ -6,3 +6,8 @@ export interface user {
     password: string;
     isActive: boolean;
 }
+
+export interface EditUserPayload {
+    role: 'admin' | 'head' | 'user' | '';
+    isActive: boolean | null;
+}

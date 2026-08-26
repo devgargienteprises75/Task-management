@@ -1,5 +1,4 @@
 import { useDroppable } from "@dnd-kit/react";
-import { MoreVertical, Plus } from "lucide-react";
 import TaskCard from "./TaskCard";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/app.store";
@@ -16,19 +15,16 @@ interface RenderColumnProps {
 const RenderColumn = ({ id, title, count, allTask, statusType }: RenderColumnProps) => {
     const columnTheme = {
         Todo: {
-            dot: "bg-slate-400",
-            badge: "bg-slate-100 text-slate-700",
-            accent: "border-t-2 border-t-slate-400",
+            dot: "bg-zinc-400 dark:bg-zinc-400",
+            badge: "bg-zinc-200/70 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-200",
         },
         "In-progress": {
-            dot: "bg-amber-500",
-            badge: "bg-amber-100 text-amber-800",
-            accent: "border-t-2 border-t-amber-500",
+            dot: "bg-blue-500",
+            badge: "bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300",
         },
         Done: {
             dot: "bg-emerald-500",
-            badge: "bg-emerald-100 text-emerald-800",
-            accent: "border-t-2 border-t-emerald-500",
+            badge: "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300",
         },
     }[statusType];
 
@@ -36,32 +32,26 @@ const RenderColumn = ({ id, title, count, allTask, statusType }: RenderColumnPro
         id,
     })
     const users = useSelector((state: RootState) => state.admin.users)
-    console.log(allTask);
 
-    const sortedTask = [...allTask].sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    const sortedTask = [...allTask].sort((a: any, b: any) => new Date(b.createdAt || b.createAt || 0).getTime() - new Date(a.createdAt || a.createAt || 0).getTime())
 
     return (
         <div
             ref={ref}
-            className={`flex flex-col bg-gray-50/70 rounded-2xl border border-gray-200/80 p-4 min-h-[300px] md:min-h-[640px] ${columnTheme.accent}`}>
+            className="flex flex-col bg-[#F4F4F5]/70 dark:bg-zinc-800/60 rounded-xl border border-zinc-200/70 dark:border-zinc-700/70 p-3 max-h-[300px] md:min-h-[640px] transition-colors">
             {/* Column Header */}
-            <div className="flex justify-between items-center mb-4 px-1 pb-2 border-b border-gray-200/60">
-                <div className="flex items-center gap-2.5">
-                    <span className={`w-2.5 h-2.5 rounded-full ${columnTheme.dot}`} />
-                    <h3 className="font-bold text-gray-800 text-sm tracking-tight">{title}</h3>
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-extrabold ${columnTheme.badge}`}>
+            <div className="flex justify-between items-center mb-3 px-1">
+                <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${columnTheme.dot}`} />
+                    <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm tracking-tight">{title}</h3>
+                    <span className={`text-xs px-2 py-0.5 rounded-md font-medium ${columnTheme.badge}`}>
                         {count}
                     </span>
-                </div>
-                <div className="flex items-center gap-1">
-                    <button className="p-1 hover:bg-gray-200/60 rounded-md text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
-                        <MoreVertical size={16} />
-                    </button>
                 </div>
             </div>
 
             {/* Task Cards Stack */}
-            <div className="flex-1 flex flex-col gap-3.5 overflow-y-auto pr-0.5">
+            <div className="flex-1 flex flex-col gap-2.5 overflow-y-auto pr-0.5">
                 {sortedTask?.map((task) => (
                     <TaskCard
                         key={task._id}
@@ -70,11 +60,6 @@ const RenderColumn = ({ id, title, count, allTask, statusType }: RenderColumnPro
                         statusType={statusType}
                     />
                 ))}
-
-                {/* Add Task Button */}
-                <button className="flex items-center justify-center gap-2 py-3 rounded-xl border border-dashed border-gray-300 text-gray-500 hover:text-gray-900 hover:border-gray-400 hover:bg-white text-xs font-bold transition-all duration-200 mt-1 cursor-pointer shadow-2xs">
-                    <Plus size={15} strokeWidth={2.5} /> Add task
-                </button>
             </div>
         </div>
     );

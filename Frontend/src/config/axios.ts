@@ -2,7 +2,9 @@ import axios from "axios";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL || (
     import.meta.env.PROD
-        ? "https://task-management-wjl7.onrender.com/api"
+        ? (window.location.origin.includes("vercel.app") 
+            ? "https://task-management-wjl7.onrender.com/api" 
+            : "/api")
         : "http://localhost:8000/api"
 );
 
@@ -13,6 +15,10 @@ const api = axios.create({
 
 // Request Inteceptor
 api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token')
+    if(token){
+        config.headers.Authorization = `Bearer ${token}`
+    }
     return config
 }, (error) => {
     return Promise.reject(error)
@@ -23,7 +29,11 @@ api.interceptors.response.use((response) => {
     return response
 }, (error) => {
     if(error.response?.status === 401){
-        console.error("Unauthorized Redirecting to login...")
+        localStorage.removeItem('token')
+        // Don't force a hard redirect — let React's Protected component
+        // detect the unauthenticated state and navigate via React Router.
+        // Using window.location.href causes a full page reload that
+        // destroys Redux state and can create redirect loops.
     }
     return Promise.reject(error)
 })

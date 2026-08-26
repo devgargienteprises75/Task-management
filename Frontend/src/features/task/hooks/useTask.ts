@@ -53,7 +53,7 @@ const useTask = () => {
             dispatch(setLoading(false))
         }
     }
-    
+
     const handleCreateTask = async (workspaceId: string, taskDetails: task) => {
         dispatch(setLoading(true))
 
@@ -64,7 +64,7 @@ const useTask = () => {
                 success: true,
                 message: res.message
             }
-        } catch (err:any) {
+        } catch (err: any) {
             const message = err?.response?.data?.message || err.message;
             dispatch(setError(message))
             return {
@@ -80,8 +80,8 @@ const useTask = () => {
         dispatch(setLoading(true))
 
         const previousTask = allTask.find(t => t._id === taskDetails._id)
-        dispatch(setUpdateTask({...previousTask, ...taskDetails}))
-        
+        dispatch(setUpdateTask({ ...previousTask, ...taskDetails }))
+
         try {
             const res = await updateTask(taskDetails)
             dispatch(setUpdateTask(res.newTask))
@@ -89,7 +89,7 @@ const useTask = () => {
                 success: true,
                 message: res.message
             }
-        } catch (err:any) {
+        } catch (err: any) {
             const message = err?.response?.data?.message || err.message;
             dispatch(setError(message))
             return {
@@ -115,7 +115,7 @@ const useTask = () => {
                 success: true,
                 message: res.message
             }
-        } catch (err:any) {
+        } catch (err: any) {
             // Rollback: restore the task at its original position
             if (previousTask) dispatch(setRestoreTask({ task: previousTask, index }))
             const message = err?.response?.data?.message || err.message;

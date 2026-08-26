@@ -46,9 +46,13 @@ export async function enableNotification(): Promise<void>{
     const subscription = await subscribe(registeration);
     if(!subscription) return;
 
-    const baseURL = import.meta.env.PROD
-        ? "https://task-management-wjl7.onrender.com/api"
-        : "http://localhost:8000/api"
+    const baseURL = import.meta.env.VITE_API_BASE_URL || (
+        import.meta.env.PROD
+            ? (window.location.origin.includes("vercel.app") 
+                ? "https://task-management-wjl7.onrender.com/api" 
+                : "/api")
+            : "http://localhost:8000/api"
+    );
 
     await axios.post(`${baseURL}/subscribe`, subscription.toJSON(), {
         withCredentials: true

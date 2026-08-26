@@ -94,6 +94,7 @@ export async function loginController(req, res){
     res.status(200).json({
         message: "User logged in successfully",
         success: true,
+        token,
         user: {
             username: user.username,
             email: user.email,
@@ -442,7 +443,10 @@ export async function deleteUserController(req, res) {
 
 export async function logoutController(req, res) {
     try {
-        const { token } = req.cookies
+        const authHeader = req.headers.authorization
+        const token = (authHeader && authHeader.startswith('Bearer '))
+            ? authHeader.split(" ")[1]
+            : req.cookies.token
 
         if(!token){
             return res.status(400).json({
